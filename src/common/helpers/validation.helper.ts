@@ -91,7 +91,8 @@ export function isValidEmail(email: string): boolean {
     if (!isNonEmptyString(email)) {
       return false;
     }
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    // Use a more secure regex pattern that avoids ReDoS vulnerability
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
     return emailRegex.test(email);
   } catch (error) {
     logger.error('Error validating email', String(error));

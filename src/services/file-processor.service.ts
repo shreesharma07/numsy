@@ -595,8 +595,10 @@ Thank you for using 🔢 Numsy!
   async cleanupFiles(filePaths: string[]): Promise<void> {
     for (const filePath of filePaths) {
       try {
-        if (!isPathInsideDir(path.join(process.cwd(), 'uploads'), filePath) &&
-            !isPathInsideDir(path.join(process.cwd(), 'temp'), filePath)) {
+        if (
+          !isPathInsideDir(path.join(process.cwd(), 'uploads'), filePath) &&
+          !isPathInsideDir(path.join(process.cwd(), 'temp'), filePath)
+        ) {
           this.logger.warn(`Skipping deletion of file outside allowed directories: ${filePath}`);
           continue;
         }
