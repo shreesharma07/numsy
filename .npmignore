@@ -1,0 +1,43 @@
+# Source files
+src/
+test/
+
+# Development files
+*.ts
+!*.d.ts
+tsconfig*.json
+.eslintrc.js
+.prettierrc
+
+# Test and coverage
+coverage/
+*.spec.ts
+*.test.ts
+
+# Documentation (keep only essential)
+CONTRIBUTING.md
+PROJECT-SUMMARY.md
+QUICKSTART.md
+
+# Config files
+.env*
+!.env.example
+.vscode/
+.idea/
+
+# Build artifacts
+node_modules/
+*.log
+npm-debug.log*
+pnpm-debug.log*
+
+# Temporary files
+uploads/
+temp/
+*.tmp
+.DS_Store
+
+# Git
+.git/
+.gitignore
+.gitattributes

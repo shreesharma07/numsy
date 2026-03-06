@@ -1,0 +1,16 @@
+{
+  "schema": "vscode://schemas/settings",
+  "editor.formatOnSave": true,
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "files.exclude": {
+    "**/node_modules": true,
+    "**/dist": true,
+    "**/temp": true
+  },
+  "search.exclude": {
+    "**/node_modules": true,
+    "**/dist": true,
+    "**/temp": true
+  },
+  "markdown": false
+}
