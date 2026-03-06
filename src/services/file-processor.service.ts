@@ -5,6 +5,12 @@ import archiver from 'archiver';
 import { PhoneValidatorService } from './phone-validator.service';
 import { FileParserService, ParsedDataRow } from './file-parser.service';
 
+function isPathInsideDir(baseDir: string, targetPath: string): boolean {
+  const normalizedBase = path.resolve(baseDir) + path.sep;
+  const normalizedTarget = path.resolve(targetPath);
+  return normalizedTarget.startsWith(normalizedBase);
+}
+
 /**
  * Interface for processing result
  */
@@ -589,6 +595,11 @@ Thank you for using 🔢 Numsy!
   async cleanupFiles(filePaths: string[]): Promise<void> {
     for (const filePath of filePaths) {
       try {
+        if (!isPathInsideDir(path.join(process.cwd(), 'uploads'), filePath) &&
+            !isPathInsideDir(path.join(process.cwd(), 'temp'), filePath)) {
+          this.logger.warn(`Skipping deletion of file outside allowed directories: ${filePath}`);
+          continue;
+        }
         if (fs.existsSync(filePath)) {
           fs.unlinkSync(filePath);
           this.logger.debug(`Deleted file: ${filePath}`);
@@ -606,10 +617,18 @@ Thank you for using 🔢 Numsy!
    */
   async cleanupDirectory(dirPath: string): Promise<void> {
     try {
+      if (!isPathInsideDir(path.join(process.cwd(), 'temp'), dirPath)) {
+        this.logger.warn(`Skipping cleanup of directory outside allowed temp dir: ${dirPath}`);
+        return;
+      }
       if (fs.existsSync(dirPath)) {
         const files = fs.readdirSync(dirPath);
         for (const file of files) {
           const filePath = path.join(dirPath, file);
+          if (!isPathInsideDir(path.join(process.cwd(), 'temp'), filePath)) {
+            this.logger.warn(`Skipping deletion of file outside allowed temp dir: ${filePath}`);
+            continue;
+          }
           fs.unlinkSync(filePath);
         }
         this.logger.log(`Cleaned up directory: ${dirPath}`);

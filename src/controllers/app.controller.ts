@@ -147,7 +147,12 @@ export class AppController {
    */
   @Get('download/:id')
   async downloadFile(@Param('id') id: string, @Res() res: Response): Promise<void> {
-    const zipFilePath = path.join(this.tempDir, `${id}.zip`);
+    const tempDirResolved = path.resolve(this.tempDir);
+    const zipFilePath = path.resolve(path.join(this.tempDir, `${id}.zip`));
+
+    if (!zipFilePath.startsWith(tempDirResolved + path.sep)) {
+      throw new HttpException('File not found or already downloaded', HttpStatus.NOT_FOUND);
+    }
 
     if (!fs.existsSync(zipFilePath)) {
       throw new HttpException('File not found or already downloaded', HttpStatus.NOT_FOUND);
