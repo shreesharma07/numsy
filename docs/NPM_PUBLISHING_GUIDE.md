@@ -109,7 +109,7 @@ Test your package locally before publishing:
 # Pack the package (creates a .tgz file)
 pnpm pack
 
-# This creates: razorpod-number-processor-1.0.0.tgz
+# This creates: razorpod-number-processor-1.0.0.tgzm,mv 
 ```
 
 You can test install it in another project:

@@ -1,446 +1,377 @@
-# 📱 Number Processor
+# Numsy - Professional Phone Number Processor
 
-[![npm version](https://badge.fury.io/js/%40razorpod%2Fnumber-processor.svg)](https://badge.fury.io/js/%40razorpod%2Fnumber-processor)
+[![NPM Version](https://img.shields.io/npm/v/numsy.svg)](https://www.npmjs.com/package/numsy)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![pnpm](https://img.shields.io/badge/maintained%20with-pnpm-cc00ff.svg)](https://pnpm.io/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.3-blue.svg)](https://www.typescriptlang.org/)
 
-A TypeScript-based phone number processor with CSV/Excel parsing capabilities built with NestJS. This application validates and sanitizes Indian phone numbers, providing a clean way to process bulk contact data.
+A professional, production-ready TypeScript library for Indian phone number validation, sanitization, and CSV/Excel file processing. Built with class-based architecture, comprehensive error handling, and extensive logging capabilities.
 
-## 🚀 Features
+## ✨ Features
 
-- ✅ **CSV & Excel Support** - Parse both CSV and Excel (.xlsx, .xls) files
-- 📱 **Indian Phone Number Validation** - Validates 10-digit Indian mobile numbers
-- 🔢 **Multiple Numbers Per Row** - Extract and process multiple phone numbers from a single cell separated by `/`, `-`, or spaces
-- 🧹 **Advanced Sanitization** - Removes +, +91, 0091, spaces, hyphens, dots, and other separators
-- 🔍 **Intelligent Column Detection** - Recognizes 120+ phone field name variations using regex-based analysis
-- 🎯 **Flexible Field Support** - All fields except phone numbers are optional
-- 📊 **Comprehensive Analytics** - Detailed text report with statistics, carrier distribution, duplicates, and more
-- 📈 **Detailed Reports** - Generates CSV files for valid and invalid numbers plus analytics text file
-- 📦 **ZIP Download** - Download processed files as a convenient ZIP archive
-- 🎨 **Drag & Drop UI** - Modern, intuitive web interface with real-time analytics
-- 🗑️ **Automatic Cleanup** - Removes temporary files after download
-
-## 📋 Supported Fields
-
-### Required Field: Phone Numbers
-
-The application focuses on extracting phone numbers and recognizes **120+ field name variations**, including:
-
-**Common Names:**
-- `phone`, `mobile`, `contact`, `telephone`, `cell`, `tel`
-- `phone_number`, `mobile_number`, `contact_number`
-- `phonenumber`, `mobilenumber`, `contactnumber`
-
-**Carrier/Type Specific:**
-- `whatsapp`, `whatsapp_number`, `whatsapp_mobile`
-- `customer_phone`, `client_mobile`, `business_phone`
-- `office_phone`, `work_mobile`, `home_phone`, `personal_mobile`
-
-**Context Specific:**
-- `primary_phone`, `secondary_mobile`, `alternate_phone`
-- `emergency_contact`, `registered_mobile`, `verified_phone`
-- `user_phone`, `login_mobile`, `otp_phone`
-
-**Abbreviated:**
-- `phone_no`, `mobile_no`, `contact_no`, `tel_no`
-
-**And many more variations with different separators (spaces, underscores, dots, etc.)**
-
-The system uses regex-based pattern matching to intelligently detect phone columns regardless of naming convention.
-
-### Optional Fields (Preserved if Present)
-
-All other fields in your CSV/Excel file are **optional** and will be preserved in the output:
-- Names, addresses, emails, IDs, custom fields, etc.
-- The phone column is the only required field
-- All other columns are automatically carried over to output files
-
-## 🛠️ Tech Stack
-
-- **NestJS** - Progressive Node.js framework
-- **TypeScript** - Type-safe JavaScript
-- **Node.js** - Runtime environment
-- **csv-parser** - CSV file parsing
-- **csv-writer** - CSV file generation
-- **xlsx** - Excel file processing
-- **archiver** - ZIP file creation
-- **multer** - File upload handling
+- 🔢 **Phone Number Validation** - Validate Indian mobile numbers (10-digit starting with 6-9)
+- 🧹 **Smart Sanitization** - Clean and normalize phone numbers from various formats
+- 📊 **File Processing** - Parse CSV and Excel files with automatic phone column detection
+- 🔍 **Multiple Number Extraction** - Extract multiple phone numbers from text
+- 📝 **Comprehensive Logging** - Built-in logging with configurable log levels
+- 🛡️ **Error Handling** - Try-catch blocks everywhere with custom error classes
+- 🎯 **TypeScript Support** - Full type definitions included
+- ⚡ **Fast Compilation** - Built with SWC for lightning-fast builds
+- 🧪 **Well Tested** - Comprehensive test coverage
+- 📦 **Modular Architecture** - Use individual components or the unified API
+- 🎨 **Class-Based Design** - Modern, maintainable, and extensible
+- 📚 **Helper Functions** - Extensive utility functions for common tasks
 
 ## 📦 Installation
 
-### Prerequisites
-
-- Node.js (v16 or higher)
-- pnpm (v8 or higher)
-
-**Install pnpm** (if not already installed):
+```bash
+npm install numsy
+```
 
 ```bash
-npm install -g pnpm
-# or use Node.js Corepack
-corepack enable
+pnpm add numsy
 ```
+
+```bash
+yarn add numsy
+```
+
+## 🚀 Quick Start
+
+### Basic Usage
+
+```typescript
+import Numsy from 'numsy';
+
+const numsy = new Numsy();
+
+// Validate a phone number
+const result = numsy.validate('9876543210');
+console.log(result);
+// { original: '9876543210', sanitized: '9876543210', isValid: true }
+
+// Check if valid
+console.log(numsy.isValid('9876543210')); // true
+
+// Sanitize number
+console.log(numsy.sanitize('+91-987-654-3210')); // '9876543210'
+
+// Format with country code
+console.log(numsy.format('9876543210', true)); // '+919876543210'
+```
+
+### Using Parser
+
+```typescript
+import { Parser } from 'numsy';
+// or
+import parser from 'numsy/parser';
+
+const parser = new Parser();
+
+// Parse CSV file
+const result = await parser.parseFile('./contacts.csv');
+console.log(result.data);
+console.log(result.totalRows);
+```
+
+### Process Files
+
+```typescript
+import Numsy from 'numsy';
+
+const numsy = new Numsy();
+
+// Process file with validation
+const result = await numsy.processFile('./contacts.csv', './output');
+console.log(`Processed ${result.totalRecords} records`);
+console.log(`Valid: ${result.validRecords}, Invalid: ${result.invalidRecords}`);
+```
+
+## 💡 API Examples
+
+### Phone Validation
+
+```typescript
+import Numsy from 'numsy';
+
+const numsy = new Numsy();
+
+// Single validation
+const result = numsy.validate('9876543210');
+
+// Batch validation
+const numbers = ['9876543210', '8123456789', '1234567890'];
+const results = numsy.validateBatch(numbers);
+
+// Extract multiple numbers from text
+const text = 'Contact me at 9876543210 or 8123456789';
+const extracted = numsy.extractMultiple(text);
+console.log(extracted.validNumbers); // ['9876543210', '8123456789']
+```
+
+### File Operations
+
+```typescript
+import Numsy from 'numsy';
+
+const numsy = new Numsy();
+
+// Parse file
+const parsed = await numsy.parseFile('./data.csv');
+
+// Process with validation
+const result = await numsy.processFile('./data.csv', './output');
+
+// Write to CSV
+await numsy.writeCsv(data, './output/clean-data.csv');
+```
+
+### Using Individual Components
+
+```typescript
+import { Parser, PhoneValidator, FileProcessor } from 'numsy';
+
+// Use Parser separately
+const parser = new Parser({
+  normalizeColumns: true,
+  detectPhoneColumn: true
+});
+
+// Use PhoneValidator separately
+const validator = new PhoneValidator({
+  enableLogging: false
+});
+
+// Use FileProcessor separately
+const processor = new FileProcessor({
+  outputDir: './output'
+});
+```
+
+## 🎯 Configuration Options
+
+```typescript
+import Numsy from 'numsy';
+
+const numsy = new Numsy({
+  enableLogging: true,           // Enable console logging
+  logLevel: 'debug',             // Log level: 'log' | 'error' | 'warn' | 'debug' | 'verbose'
+  throwOnError: false            // Throw errors vs return error objects
+});
+
+// Update options at runtime
+numsy.setOptions({ enableLogging: false });
+```
+
+## 📚 API Reference
+
+### Numsy Class
+
+Main class providing unified API:
+
+#### Methods
+
+- `validate(phone: string): PhoneValidationResult` - Validate single phone number
+- `validateBatch(phones: string[]): PhoneValidationResult[]` - Validate multiple numbers
+- `sanitize(phone: string): string` - Clean phone number
+- `isValid(phone: string): boolean` - Quick validation check
+- `format(phone: string, withCountryCode?: boolean): string` - Format phone number
+- `extractMultiple(text: string): MultipleNumbersResult` - Extract numbers from text
+- `parseFile(filePath: string): Promise<FileParseResult>` - Parse CSV/Excel file
+- `processFile(filePath: string, outputDir?: string): Promise<ProcessingResult>` - Process file with validation
+- `writeCsv(data: ParsedDataRow[], outputPath: string): Promise<void>` - Write to CSV
+- `detectPhoneColumn(data: ParsedDataRow[]): string | null` - Detect phone column
+
+### Parser Class
+
+File parsing operations:
+
+- `parseFile(filePath: string): Promise<FileParseResult>` - Parse file
+- `writeCsv(data, outputPath): Promise<void>` - Write CSV
+- `writeProcessedFiles(validData, invalidData, validPath, invalidPath): Promise<void>` - Write multiple files
+
+### PhoneValidator Class
+
+Phone validation operations:
+
+- `validate(phone: string): PhoneValidationResult` - Validate number
+- `validateBatch(phones: string[]): PhoneValidationResult[]` - Batch validation
+- `sanitize(phone: string): string` - Sanitize number
+- `isValid(phone: string): boolean` - Check validity
+- `extractMultiple(text: string): MultipleNumbersResult` - Extract numbers
+- `format(phone: string, withCountryCode?: boolean): string` - Format number
+
+### Helper Functions
+
+Pure utility functions:
+
+```typescript
+import {
+  sanitizePhoneNumber,
+  validatePhoneNumber,
+  extractPhoneNumbers,
+  normalizeDataRows,
+  detectPhoneColumn,
+  isNonEmptyString,
+  isValidNumber,
+  LoggerHelper,
+  AppError
+} from 'numsy';
+```
+
+## 🏗️ Architecture
+
+Numsy follows a modern, class-based architecture:
+
+```
+src/
+├── common/
+│   ├── interfaces/      # TypeScript interfaces
+│   ├── functions/       # Pure utility functions
+│   └── helpers/         # Helper classes (Logger, Error, File, Validation)
+├── core/
+│   ├── Numsy.ts         # Main class
+│   ├── Parser.ts        # File parser
+│   ├── PhoneValidator.ts # Phone validator
+│   └── FileProcessor.ts  # File processor
+└── index.ts             # Package entry point
+```
+
+## 🔧 Development
 
 ### Setup
 
-1. Clone the repository:
 ```bash
-cd number-processor
-```
-
-2. Install dependencies:
-```bash
+# Install dependencies
 pnpm install
-```
 
-3. Build the project:
-```bash
+# Build package
 pnpm run build
-```
 
-## 🎯 Usage
+# Run tests
+pnpm test
 
-### Development Mode
+# Development with auto-reload
+pnpm run dev
 
-Start the development server with hot-reload:
-
-```bash
+# Start server (for web interface)
 pnpm run start:dev
 ```
 
-The application will be available at `http://localhost:3000`
+### Scripts
 
-### Production Mode
+- `pnpm run build` - Build with SWC (fast compilation)
+- `pnpm run build:nest` - Build with Nest CLI
+- `pnpm run dev` - Development mode with nodemon
+- `pnpm run test` - Run tests
+- `pnpm run test:watch` - Watch mode
+- `pnpm run test:cov` - Coverage report
+- `pnpm run lint` - Lint code
+- `pnpm run format` - Format code
 
-Build and run in production:
+## 📖 Documentation
+
+- [Usage Examples](./docs/USAGE_EXAMPLES.md) - Comprehensive usage examples
+- [API Documentation](./docs/API_DOCUMENTATION.md) - Complete API reference
+- [Quick Start Guide](./docs/QUICKSTART.md) - Get started quickly
+- [Publishing Guide](./docs/NPM_PUBLISHING_GUIDE.md) - NPM publishing guide
+
+## 🧪 Testing
+
+Numsy includes comprehensive test coverage:
 
 ```bash
-pnpm run build
-pnpm run start:prod
+# Run all tests
+pnpm test
+
+# Watch mode
+pnpm test:watch
+
+# Coverage report
+pnpm test:cov
 ```
 
-## 📝 API Endpoints
+## 🛡️ Error Handling
 
-### Health Check
-```http
-GET /api/health
-```
+Numsy provides comprehensive error handling:
 
-Returns server health status.
+```typescript
+import { Numsy, AppError } from 'numsy';
 
-### Upload File
-```http
-POST /api/upload
-```
-
-**Request:**
-- Content-Type: `multipart/form-data`
-- Field name: `file`
-- Accepted formats: `.csv`, `.xlsx`, `.xls`
-- Max size: 10MB
-
-**Response:**
-```json
-{
-  "success": true,
-  "message": "File processed successfully",
-  "downloadId": "processed_1234567890",
-  "summary": {
-    "totalRecords": 100,
-    "validRecords": 85,
-    "invalidRecords": 15,
-    "phoneColumnDetected": "phone",
-    "analytics": {
-      "totalNumbersExtracted": 120,
-      "totalValidNumbers": 85,
-      "totalInvalidNumbers": 35,
-      "recordsWithMultipleNumbers": 18,
-      "averageNumbersPerRecord": 1.2,
-      "duplicateNumbers": 5,
-      "uniqueValidNumbers": 80
-    }
+try {
+  const numsy = new Numsy({ throwOnError: true });
+  const result = await numsy.processFile('./data.csv');
+} catch (error) {
+  if (error instanceof AppError) {
+    console.error(`Error [${error.code}]: ${error.message}`);
+    console.error('Details:', error.details);
   }
 }
 ```
 
-### Download Processed Files
-```http
-GET /api/download/:id
-```
+## 📝 TypeScript Support
 
-Downloads a ZIP file containing:
-1. **valid_numbers_*.csv** - All valid phone numbers with associated data
-2. **invalid_numbers_*.csv** - All invalid phone numbers with validation reasons
-3. **analytics_*.txt** - Comprehensive analytics report
-
-### Analytics Report Contents
-
-The analytics text file includes:
-
-**Summary Statistics:**
-- Total records processed
-- Extraction and validation results
-- Success and deduplication rates
-
-**Carrier Series Distribution:**
-- Distribution by first digit (6, 7, 8, 9 series)
-- Percentage breakdown
-
-**Top Number Prefixes:**
-- Most common 4-digit prefixes
-- Frequency analysis
-
-**Duplicate Detection:**
-- List of duplicate numbers
-- Occurrence counts
-
-**Field Distribution:**
-- All fields detected in input
-- Usage statistics per field
-
-**Validation Details:**
-- Rules applied
-- Invalid number reasons
-- Recommendations for data quality
-
-## 🔧 Phone Number Extraction & Validation
-
-### Multiple Numbers Per Row
-
-The application can now extract and process multiple phone numbers from a single cell:
-
-**Supported Separators:**
-- Forward Slash: `/`
-- Hyphen: `-`
-- Multiple Spaces: Two or more spaces between numbers
-
-**Example Input:**
-```csv
-Customer Name,Mobile Number,City
-John Doe,9876543210 / 8765432109,Mumbai
-Jane Smith,7654321098-9876543211,Delhi
-Bob Wilson,8765432109  9876543212,Bangalore
-```
-
-**Output Behavior:**
-- Each valid number will be extracted into a separate row in the output CSV
-- All other fields (Customer Name, City, etc.) will be duplicated for each valid number
-- Invalid numbers within the same cell are tracked separately
-
-**Analytics Provided:**
-- Total numbers extracted from all rows
-- Count of rows containing multiple numbers
-- Average numbers per record
-- Duplicate detection across the entire dataset
-- Unique valid numbers count
-- Carrier series distribution
-- Prefix frequency analysis
-
-### Validation Rules
-
-**Valid Numbers:**
-- Must be exactly 10 digits after sanitization
-- Must start with 6, 7, 8, or 9 (Indian mobile number format)
-- Can contain separators (spaces, hyphens, dots, parentheses) which will be removed
-- Country codes are automatically stripped: `+91`, `0091`, `91`
-- Leading zeros are removed (handles format: `09876543210`)
-
-**Automatic Sanitization:**
-- Removes: `+`, `-`, ` ` (spaces), `.`, `(`, `)`
-- Strips country codes: `+91`, `0091`, `91`
-- Handles various formats uniformly
-
-### Examples of Valid Inputs
-
-**Single Numbers:**
-- `9876543210` - Standard format
-- `98765-43210` - With hyphens
-- `98765 43210` - With spaces
-- `+91 9876543210` - With country code and plus
-- `+919876543210` - Compact format with plus
-- `0091 9876543210` - International format
-- `919876543210` - With country code (no plus)
-- `9876 543 210` - Multiple spaces
-- `9876.543.210` - With dots
-- `(98765) 43210` - With parentheses
-- `09876543210` - With leading zero
-
-**Multiple Numbers (Separated):**
-- `+91 9876543210`
-- `919876543210`
-- `9876 543 210`
-- `9876543210 / 8765432109` (multiple numbers)
-- `7654321098-9876543211` (multiple numbers)
-- `8765432109  9876543212` (multiple numbers with spaces)+91) is automatically stripped
-
-### Examples of Valid Inputs
-
-- `9876543210`
-- `98765-43210`
-- `98765 43210`
-- `+91 9876543210`
-- `919876543210`
-- `9876 543 210`
-
-### Invalid Numbers
-
-- Less or more than 10 digits (after sanitization)
-- Starting with digits other than 6, 7, 8, or 9
-- All same digits (e.g., `9999999999`)
-- Non-numeric characters (after removing valid separators)
-
-## 📁 Project Structure
-
-```
-number-processor/
-├── src/
-│   ├── controllers/
-│   │   └── app.controller.ts          # Main API controller
-│   ├── services/
-│   │   ├── phone-validator.service.ts # Phone validation logic
-│   │   ├── file-parser.service.ts     # CSV/Excel parsing
-│   │   └── file-processor.service.ts  # File processing orchestration
-│   ├── app.module.ts                  # Root module
-│   └── main.ts                        # Application entry point
-├── public/
-│   └── index.html                     # Web UI
-├── uploads/                           # Temporary upload directory
-├── temp/                              # Temporary processing directory
-├── package.json
-├── tsconfig.json
-├── nest-cli.json
-└── README.md
-```
-
-## 🎨 Code Standards
-
-### Naming Conventions
-
-- **Functions & Methods**: camelCase (e.g., `validateAndSanitize()`)
-- **Classes**: PascalCase (e.g., `PhoneValidatorService`)
-- **Interfaces**: PascalCase with descriptive names (e.g., `PhoneValidationResult`)
-- **Constants**: UPPER_SNAKE_CASE (e.g., `MAX_FILE_SIZE`)
-
-### Comments
-
-- JSDoc comments for all public methods
-- Inline comments for complex logic
-- Clear parameter and return type descriptions
-
-### Example:
+Full TypeScript support with complete type definitions:
 
 ```typescript
-/**
- * Validates and sanitizes a phone number
- * @param phoneNumber - The phone number to validate
- * @returns PhoneValidationResult object with validation details
- */
-validateAndSanitize(phoneNumber: string): PhoneValidationResult {
-  // Implementation
-}
-```
+import {
+  Numsy,
+  NumsyOptions,
+  PhoneValidationResult,
+  MultipleNumbersResult,
+  ProcessingResult,
+  FileParseResult,
+  ParsedDataRow
+} from 'numsy';
 
-## 🧪 Testing
+const options: NumsyOptions = {
+  enableLogging: true,
+  logLevel: 'debug',
+  throwOnError: false
+};
 
-Run tests:
-
-```bash
-pnpm test
-```
-
-Run tests with coverage:
-
-```bash
-pnpm run test:cov
-```
-
-## � Publishing to NPM
-
-This package is ready to be published to NPM. See the publishing guides:
-
-- **Quick Guide**: [PUBLISH.md](PUBLISH.md) - Fast track to publishing
-- **Detailed Guide**: [NPM_PUBLISHING_GUIDE.md](NPM_PUBLISHING_GUIDE.md) - Comprehensive instructions
-
-### Quick Publish
-
-```bash
-pnpm login
-pnpm publish --access public
-```
-
-Users can then install it:
-
-```bash
-pnpm add @numsy
-```
-
-## �🔒 Security Features
-
-- File type validation (only CSV and Excel files)
-- File size limits (10MB maximum)
-- Automatic file cleanup after download
-- Input sanitization for phone numbers
-- Secure file handling with unique filenames
-
-## 📊 Sample Data Format
-
-### Input CSV/Excel Format
-
-```csv
-name,phone,address
-John Doe,9876543210,Mumbai
-Jane Smith,98765-43210,Delhi
-Bob Wilson,+91 9876543210,Bangalore
-```
-
-### Output Format
-
-**valid_numbers.csv:**
-```csv
-name,phone,address,originalPhone,sanitizedPhone,validationStatus
-John Doe,9876543210,Mumbai,9876543210,9876543210,Valid
-```
-
-**invalid_numbers.csv:**
-```csv
-name,phone,address,originalPhone,sanitizedPhone,validationStatus,validationReason
-Invalid User,12345,Chennai,12345,12345,Invalid,Invalid format - must be 10 digits
+const numsy = new Numsy(options);
+const result: PhoneValidationResult = numsy.validate('9876543210');
 ```
 
 ## 🤝 Contributing
 
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add some amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
+Contributions are welcome! Please read [CONTRIBUTING.md](./CONTRIBUTING.md) for details.
 
 ## 📄 License
 
-This project is licensed under the MIT License.
+MIT License - see [LICENSE](./LICENSE) file for details.
 
-## 👥 Author
+## 👨‍💻 Author
 
-Your Name
+**Shri Kumar Sharma**
 
-## 🐛 Known Issues
+## 🔗 Links
 
-- None currently reported
+- [NPM Package](https://www.npmjs.com/package/numsy)
+- [GitHub Repository](https://github.com/your-username/numsy)
+- [Documentation](./docs/)
+- [Issue Tracker](https://github.com/your-username/numsy/issues)
 
-## 🚀 Future Enhancements
+## 🌟 Support
 
-- [ ] Support for multiple country phone formats
-- [ ] Bulk processing with progress tracking
-- [ ] Advanced filtering and sorting options
-- [ ] User authentication and file history
-- [ ] API rate limiting
-- [ ] Docker containerization
-- [ ] Unit and E2E test coverage
+If you find this package helpful, please give it a star on GitHub!
 
-## 📞 Support
+## 📊 Stats
 
-For issues, questions, or contributions, please open an issue on GitHub.
+- **Bundle Size**: Optimized and tree-shakeable
+- **TypeScript**: 100% TypeScript codebase
+- **Test Coverage**: Comprehensive test suite
+- **Dependencies**: Minimal and well-maintained
+
+## 🚀 Optimizations
+
+- ⚡ **SWC Compilation** - 20x faster than TypeScript compiler
+- 🎯 **Tree-Shakeable** - Import only what you need
+- 📦 **Modular Design** - Use individual components
+- 🔧 **Zero Config** - Works out of the box
+- 🛡️ **Type Safe** - Full TypeScript support
 
 ---
 
-Made with ❤️ using NestJS and TypeScript
+Made with ❤️ by **Shri Kumar Sharma**

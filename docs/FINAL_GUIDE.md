@@ -4,7 +4,7 @@
 
 **All 42 tests passed successfully!**
 
-```
+```text
 Test Suites: 3 passed, 3 total
 Tests:       42 passed, 42 total
 Time:        7.917 s
@@ -22,7 +22,7 @@ Time:        7.917 s
 
 ### 1. **Complete Package Structure**
 
-```
+```text
 Number-Processor/
 ├── src/
 │   ├── common/                    ✅ Created
