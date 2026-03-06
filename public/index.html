@@ -561,25 +561,57 @@
             }
         }
 
+        // HTML escape function to prevent XSS attacks
+        function escapeHtml(unsafe) {
+            if (unsafe === null || unsafe === undefined) return '';
+            return String(unsafe)
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        }
+
+        // Sanitize and validate numeric values
+        function sanitizeNumber(value) {
+            const num = Number(value);
+            return (!isNaN(num) && isFinite(num)) ? num : 0;
+        }
+
         function showSuccess(data) {
             const { summary, downloadId } = data;
             const analytics = summary.analytics || {};
-            const hasMultipleNumbers = analytics.totalNumbersExtracted > summary.validRecords;
+
+            // Sanitize all numeric values
+            const totalRecords = sanitizeNumber(summary.totalRecords);
+            const validRecords = sanitizeNumber(summary.validRecords);
+            const invalidRecords = sanitizeNumber(summary.invalidRecords);
+            const totalNumbersExtracted = sanitizeNumber(analytics.totalNumbersExtracted);
+            const uniqueValidNumbers = sanitizeNumber(analytics.uniqueValidNumbers || validRecords);
+            const recordsWithMultipleNumbers = sanitizeNumber(analytics.recordsWithMultipleNumbers);
+            const averageNumbersPerRecord = sanitizeNumber(analytics.averageNumbersPerRecord);
+            const duplicateNumbers = sanitizeNumber(analytics.duplicateNumbers);
+
+            // Escape text values
+            const phoneColumnDetected = escapeHtml(summary.phoneColumnDetected);
+            const safeDownloadId = escapeHtml(downloadId);
+
+            const hasMultipleNumbers = totalNumbersExtracted > validRecords;
 
             result.className = 'result show success';
             result.innerHTML = `
                 <h3>✅ Processing Complete!</h3>
                 <div class="stats">
                     <div class="stat-card">
-                        <div class="stat-value">${summary.totalRecords}</div>
+                        <div class="stat-value">${totalRecords}</div>
                         <div class="stat-label">Total Records</div>
                     </div>
                     <div class="stat-card">
-                        <div class="stat-value success">${summary.validRecords}</div>
+                        <div class="stat-value success">${validRecords}</div>
                         <div class="stat-label">Valid Numbers</div>
                     </div>
                     <div class="stat-card">
-                        <div class="stat-value danger">${summary.invalidRecords}</div>
+                        <div class="stat-value danger">${invalidRecords}</div>
                         <div class="stat-label">Invalid Numbers</div>
                     </div>
                 </div>
@@ -589,32 +621,32 @@
                     <h4>📊 Enhanced Analytics</h4>
                     <div class="analytics-grid">
                         <div class="analytics-item info">
-                            <div class="analytics-value">${analytics.totalNumbersExtracted || 0}</div>
+                            <div class="analytics-value">${totalNumbersExtracted}</div>
                             <div class="analytics-label">Numbers Extracted</div>
                             <div class="analytics-description">Total phone numbers found in all rows</div>
                         </div>
                         
                         <div class="analytics-item success">
-                            <div class="analytics-value">${analytics.uniqueValidNumbers || summary.validRecords}</div>
+                            <div class="analytics-value">${uniqueValidNumbers}</div>
                             <div class="analytics-label">Unique Valid Numbers</div>
                             <div class="analytics-description">Distinct valid phone numbers</div>
                         </div>
                         
                         <div class="analytics-item warning">
-                            <div class="analytics-value">${analytics.recordsWithMultipleNumbers || 0}</div>
+                            <div class="analytics-value">${recordsWithMultipleNumbers}</div>
                             <div class="analytics-label">Multi-Number Rows</div>
                             <div class="analytics-description">Rows containing multiple numbers</div>
                         </div>
                         
                         <div class="analytics-item">
-                            <div class="analytics-value">${(analytics.averageNumbersPerRecord || 0).toFixed(2)}</div>
+                            <div class="analytics-value">${averageNumbersPerRecord.toFixed(2)}</div>
                             <div class="analytics-label">Avg Numbers/Row</div>
                             <div class="analytics-description">Average numbers per record</div>
                         </div>
                         
-                        ${analytics.duplicateNumbers > 0 ? `
+                        ${duplicateNumbers > 0 ? `
                         <div class="analytics-item warning">
-                            <div class="analytics-value">${analytics.duplicateNumbers}</div>
+                            <div class="analytics-value">${duplicateNumbers}</div>
                             <div class="analytics-label">Duplicate Numbers</div>
                             <div class="analytics-description">Numbers appearing multiple times</div>
                         </div>
@@ -624,10 +656,10 @@
                 ` : ''}
                 
                 <p style="color: #666; margin-bottom: 15px;">
-                    📋 Phone column detected: <strong>${summary.phoneColumnDetected}</strong>
+                    📋 Phone column detected: <strong>${phoneColumnDetected}</strong>
                     ${hasMultipleNumbers ? '<br>✨ Multiple numbers per row were detected and split into separate entries' : ''}
                 </p>
-                <button class="download-btn" onclick="downloadFile('${downloadId}')">
+                <button class="download-btn" onclick="downloadFile('${safeDownloadId}')">
                     📥 Download Processed Files (ZIP)
                 </button>
             `;
@@ -635,14 +667,19 @@
 
         function showError(message) {
             result.className = 'result show error';
-            result.innerHTML = `
-                <h3>❌ Error</h3>
-                <p class="error-message">${message}</p>
-            `;
+            // Use textContent instead of innerHTML to prevent XSS
+            result.innerHTML = '<h3>❌ Error</h3><p class="error-message"></p>';
+            result.querySelector('.error-message').textContent = String(message || 'An error occurred');
         }
 
         function downloadFile(downloadId) {
-            window.location.href = `/api/download/${downloadId}`;
+            // Validate downloadId to prevent XSS and path traversal
+            const safeId = String(downloadId).replace(/[^a-zA-Z0-9_-]/g, '');
+            if (safeId && safeId === downloadId) {
+                window.location.href = `/api/download/${encodeURIComponent(safeId)}`;
+            } else {
+                showError('Invalid download ID');
+            }
         }
 
         function formatFileSize(bytes) {
