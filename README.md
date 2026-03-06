@@ -8,7 +8,7 @@
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.3-blue.svg?style=flat-square&logo=typescript)](https://www.typescriptlang.org/)
 [![Node Version](https://img.shields.io/node/v/numsy.svg?style=flat-square)](https://nodejs.org)
 
-[![CI Pipeline](https://img.shields.io/github/actions/workflow/status/shreesharma07/numsy/ci.yml?style=flat-square&label=CI&logo=github)](https://github.com/shreesharma07/numsy/actions)
+[![CI/CD Pipeline](https://github.com/shreesharma07/numsy/actions/workflows/main.yml/badge.svg)](https://github.com/shreesharma07/numsy/actions/workflows/main.yml)
 [![Security](https://img.shields.io/github/actions/workflow/status/shreesharma07/numsy/security.yml?style=flat-square&label=Security&logo=github)](https://github.com/shreesharma07/numsy/actions)
 [![codecov](https://img.shields.io/codecov/c/github/shreesharma07/numsy?style=flat-square&logo=codecov)](https://codecov.io/gh/shreesharma07/numsy)
 [![Known Vulnerabilities](https://snyk.io/test/github/shreesharma07/numsy/badge.svg?style=flat-square)](https://snyk.io/test/github/shreesharma07/numsy)
