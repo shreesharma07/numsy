@@ -4,6 +4,7 @@
 /uploads
 /temp
 *.zip
+*.tsbuildinfo
 
 # pnpm
 pnpm-lock.yaml
