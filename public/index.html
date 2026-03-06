@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Number Processor - Indian Phone Number Validator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 800px;
+            width: 100%;
+            padding: 40px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            color: #333;
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            color: #666;
+            font-size: 16px;
+        }
+
+        .drop-zone {
+            border: 3px dashed #667eea;
+            border-radius: 15px;
+            padding: 60px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: #f8f9ff;
+            margin-bottom: 20px;
+        }
+
+        .drop-zone:hover {
+            border-color: #764ba2;
+            background: #f0f2ff;
+        }
+
+        .drop-zone.dragover {
+            border-color: #764ba2;
+            background: #e8ebff;
+            transform: scale(1.02);
+        }
+
+        .drop-zone-icon {
+            font-size: 64px;
+            margin-bottom: 20px;
+        }
+
+        .drop-zone-text {
+            color: #667eea;
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .drop-zone-hint {
+            color: #999;
+            font-size: 14px;
+        }
+
+        .file-input {
+            display: none;
+        }
+
+        .selected-file {
+            background: #f0f2ff;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+            display: none;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .selected-file.show {
+            display: flex;
+        }
+
+        .file-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .file-icon {
+            font-size: 32px;
+        }
+
+        .file-details h3 {
+            color: #333;
+            font-size: 16px;
+            margin-bottom: 5px;
+        }
+
+        .file-details p {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .remove-file {
+            background: #ff4757;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 8px 16px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background 0.3s ease;
+        }
+
+        .remove-file:hover {
+            background: #ee5a6f;
+        }
+
+        .upload-btn {
+            width: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            padding: 15px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: none;
+        }
+
+        .upload-btn.show {
+            display: block;
+        }
+
+        .upload-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .upload-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #e0e0e0;
+            border-radius: 10px;
+            margin: 20px 0;
+            overflow: hidden;
+            display: none;
+        }
+
+        .progress-bar.show {
+            display: block;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .result {
+            background: #f0f2ff;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+            display: none;
+        }
+
+        .result.show {
+            display: block;
+        }
+
+        .result.success {
+            background: #d4edda;
+            border: 2px solid #28a745;
+        }
+
+        .result.error {
+            background: #f8d7da;
+            border: 2px solid #dc3545;
+        }
+
+        .result h3 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 20px;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-2px);
+        }
+
+        .stat-value {
+            font-size: 28px;
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 5px;
+        }
+
+        .stat-value.success {
+            color: #28a745;
+        }
+
+        .stat-value.warning {
+            color: #ffc107;
+        }
+
+        .stat-value.danger {
+            color: #dc3545;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: #666;
+            font-weight: 500;
+        }
+
+        .analytics-section {
+            background: #f8f9ff;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .analytics-section h4 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .analytics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .analytics-item {
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            border-left: 4px solid #667eea;
+        }
+
+        .analytics-item.success {
+            border-left-color: #28a745;
+        }
+
+        .analytics-item.warning {
+            border-left-color: #ffc107;
+        }
+
+        .analytics-item.info {
+            border-left-color: #17a2b8;
+        }
+
+        .analytics-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .analytics-label {
+            font-size: 13px;
+            color: #666;
+        }
+
+        .analytics-description {
+            font-size: 11px;
+            color: #999;
+            margin-top: 5px;
+        }
+
+        .download-btn {
+            width: 100%;
+            background: #28a745;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .download-btn:hover {
+            background: #218838;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(40, 167, 69, 0.4);
+        }
+
+        .error-message {
+            color: #dc3545;
+            font-size: 16px;
+            line-height: 1.6;
+        }
+
+        .info-box {
+            background: #fff3cd;
+            border: 2px solid #ffc107;
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 20px;
+        }
+
+        .info-box h4 {
+            color: #856404;
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+
+        .info-box ul {
+            list-style-position: inside;
+            color: #856404;
+            font-size: 14px;
+            line-height: 1.8;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin-left: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📱 Number Processor</h1>
+            <p>Upload CSV or Excel files to validate and sanitize Indian phone numbers</p>
+        </div>
+
+        <div class="drop-zone" id="dropZone">
+            <div class="drop-zone-icon">📂</div>
+            <div class="drop-zone-text">Drag & Drop your file here</div>
+            <div class="drop-zone-hint">or click to browse (CSV, XLSX, XLS files only)</div>
+        </div>
+
+        <input type="file" id="fileInput" class="file-input" accept=".csv,.xlsx,.xls">
+
+        <div class="selected-file" id="selectedFile">
+            <div class="file-info">
+                <div class="file-icon">📄</div>
+                <div class="file-details">
+                    <h3 id="fileName">No file selected</h3>
+                    <p id="fileSize">0 KB</p>
+                </div>
+            </div>
+            <button class="remove-file" id="removeFile">Remove</button>
+        </div>
+
+        <button class="upload-btn" id="uploadBtn">Process File</button>
+
+        <div class="progress-bar" id="progressBar">
+            <div class="progress-fill" id="progressFill"></div>
+        </div>
+
+        <div class="result" id="result"></div>
+
+        <div class="info-box">
+            <h4>ℹ️ Supported Fields:</h4>
+            <ul>
+                <li><strong>Name:</strong> Customer or person name</li>
+                <li><strong>Phone:</strong> 10-digit Indian mobile numbers (starting with 6, 7, 8, or 9)</li>
+                <li><strong>Address:</strong> Location or address information</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        const dropZone = document.getElementById('dropZone');
+        const fileInput = document.getElementById('fileInput');
+        const selectedFile = document.getElementById('selectedFile');
+        const fileName = document.getElementById('fileName');
+        const fileSize = document.getElementById('fileSize');
+        const removeFile = document.getElementById('removeFile');
+        const uploadBtn = document.getElementById('uploadBtn');
+        const progressBar = document.getElementById('progressBar');
+        const progressFill = document.getElementById('progressFill');
+        const result = document.getElementById('result');
+
+        let selectedFileObj = null;
+
+        // Click to browse
+        dropZone.addEventListener('click', () => fileInput.click());
+
+        // Drag and drop events
+        dropZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            dropZone.classList.add('dragover');
+        });
+
+        dropZone.addEventListener('dragleave', () => {
+            dropZone.classList.remove('dragover');
+        });
+
+        dropZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropZone.classList.remove('dragover');
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                handleFileSelection(files[0]);
+            }
+        });
+
+        // File input change
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) {
+                handleFileSelection(e.target.files[0]);
+            }
+        });
+
+        // Remove file
+        removeFile.addEventListener('click', () => {
+            selectedFileObj = null;
+            fileInput.value = '';
+            selectedFile.classList.remove('show');
+            uploadBtn.classList.remove('show');
+            result.classList.remove('show');
+        });
+
+        // Upload button
+        uploadBtn.addEventListener('click', uploadFile);
+
+        function handleFileSelection(file) {
+            const validExtensions = ['csv', 'xlsx', 'xls'];
+            const fileExtension = file.name.split('.').pop().toLowerCase();
+
+            if (!validExtensions.includes(fileExtension)) {
+                alert('Please select a valid file (CSV, XLSX, or XLS)');
+                return;
+            }
+
+            if (file.size > 10 * 1024 * 1024) {
+                alert('File size must be less than 10MB');
+                return;
+            }
+
+            selectedFileObj = file;
+            fileName.textContent = file.name;
+            fileSize.textContent = formatFileSize(file.size);
+            selectedFile.classList.add('show');
+            uploadBtn.classList.add('show');
+            result.classList.remove('show');
+        }
+
+        async function uploadFile() {
+            if (!selectedFileObj) return;
+
+            const formData = new FormData();
+            formData.append('file', selectedFileObj);
+
+            uploadBtn.disabled = true;
+            uploadBtn.innerHTML = 'Processing<span class="spinner"></span>';
+            progressBar.classList.add('show');
+            progressFill.style.width = '0%';
+            result.classList.remove('show');
+
+            // Simulate progress
+            let progress = 0;
+            const progressInterval = setInterval(() => {
+                progress += 5;
+                if (progress <= 90) {
+                    progressFill.style.width = progress + '%';
+                }
+            }, 200);
+
+            try {
+                const response = await fetch('/api/upload', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                clearInterval(progressInterval);
+                progressFill.style.width = '100%';
+
+                const data = await response.json();
+
+                if (response.ok && data.success) {
+                    showSuccess(data);
+                } else {
+                    showError(data.message || 'Failed to process file');
+                }
+            } catch (error) {
+                clearInterval(progressInterval);
+                showError('Network error: ' + error.message);
+            } finally {
+                uploadBtn.disabled = false;
+                uploadBtn.textContent = 'Process File';
+                setTimeout(() => {
+                    progressBar.classList.remove('show');
+                    progressFill.style.width = '0%';
+                }, 1000);
+            }
+        }
+
+        function showSuccess(data) {
+            const { summary, downloadId } = data;
+            const analytics = summary.analytics || {};
+            const hasMultipleNumbers = analytics.totalNumbersExtracted > summary.validRecords;
+            
+            result.className = 'result show success';
+            result.innerHTML = `
+                <h3>✅ Processing Complete!</h3>
+                <div class="stats">
+                    <div class="stat-card">
+                        <div class="stat-value">${summary.totalRecords}</div>
+                        <div class="stat-label">Total Records</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value success">${summary.validRecords}</div>
+                        <div class="stat-label">Valid Numbers</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value danger">${summary.invalidRecords}</div>
+                        <div class="stat-label">Invalid Numbers</div>
+                    </div>
+                </div>
+
+                ${hasMultipleNumbers ? `
+                <div class="analytics-section">
+                    <h4>📊 Enhanced Analytics</h4>
+                    <div class="analytics-grid">
+                        <div class="analytics-item info">
+                            <div class="analytics-value">${analytics.totalNumbersExtracted || 0}</div>
+                            <div class="analytics-label">Numbers Extracted</div>
+                            <div class="analytics-description">Total phone numbers found in all rows</div>
+                        </div>
+                        
+                        <div class="analytics-item success">
+                            <div class="analytics-value">${analytics.uniqueValidNumbers || summary.validRecords}</div>
+                            <div class="analytics-label">Unique Valid Numbers</div>
+                            <div class="analytics-description">Distinct valid phone numbers</div>
+                        </div>
+                        
+                        <div class="analytics-item warning">
+                            <div class="analytics-value">${analytics.recordsWithMultipleNumbers || 0}</div>
+                            <div class="analytics-label">Multi-Number Rows</div>
+                            <div class="analytics-description">Rows containing multiple numbers</div>
+                        </div>
+                        
+                        <div class="analytics-item">
+                            <div class="analytics-value">${(analytics.averageNumbersPerRecord || 0).toFixed(2)}</div>
+                            <div class="analytics-label">Avg Numbers/Row</div>
+                            <div class="analytics-description">Average numbers per record</div>
+                        </div>
+                        
+                        ${analytics.duplicateNumbers > 0 ? `
+                        <div class="analytics-item warning">
+                            <div class="analytics-value">${analytics.duplicateNumbers}</div>
+                            <div class="analytics-label">Duplicate Numbers</div>
+                            <div class="analytics-description">Numbers appearing multiple times</div>
+                        </div>
+                        ` : ''}
+                    </div>
+                </div>
+                ` : ''}
+                
+                <p style="color: #666; margin-bottom: 15px;">
+                    📋 Phone column detected: <strong>${summary.phoneColumnDetected}</strong>
+                    ${hasMultipleNumbers ? '<br>✨ Multiple numbers per row were detected and split into separate entries' : ''}
+                </p>
+                <button class="download-btn" onclick="downloadFile('${downloadId}')">
+                    📥 Download Processed Files (ZIP)
+                </button>
+            `;
+        }
+
+        function showError(message) {
+            result.className = 'result show error';
+            result.innerHTML = `
+                <h3>❌ Error</h3>
+                <p class="error-message">${message}</p>
+            `;
+        }
+
+        function downloadFile(downloadId) {
+            window.location.href = `/api/download/${downloadId}`;
+        }
+
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return Math.round(bytes / Math.pow(k, i) * 100) / 100 + ' ' + sizes[i];
+        }
+    </script>
+</body>
+</html>

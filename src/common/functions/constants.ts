@@ -1,0 +1,189 @@
+/**
+ * Phone Number Constants
+ * Defines all constants related to phone number validation and processing
+ */
+
+/**
+ * Comprehensive list of phone number field names
+ * Covers various naming conventions used in different systems
+ */
+export const PHONE_NUMBER_FIELD_NAMES = [
+  'phone',
+  'phone number',
+  'phone_number',
+  'phonenumber',
+  'mobile',
+  'mobile number',
+  'mobile_number',
+  'mobilenumber',
+  'contact',
+  'contact number',
+  'contact_number',
+  'contactnumber',
+  'telephone',
+  'telephone number',
+  'telephone_number',
+  'tel',
+  'tel number',
+  'tel_number',
+  'cell',
+  'cell number',
+  'cell_number',
+  'cellphone',
+  'cell phone',
+  'cell_phone',
+  'cellphone number',
+  'cellphone_number',
+  'user phone',
+  'user_phone',
+  'user mobile',
+  'user_mobile',
+  'user contact',
+  'user contact number',
+  'user_contact_number',
+  'primary phone',
+  'primary_phone',
+  'primary mobile',
+  'primary_mobile',
+  'secondary phone',
+  'secondary_phone',
+  'secondary mobile',
+  'secondary_mobile',
+  'alternate phone',
+  'alternate_phone',
+  'alternate mobile',
+  'alternate_mobile',
+  'alt phone',
+  'alt_phone',
+  'alt mobile',
+  'alt_mobile',
+  'emergency phone',
+  'emergency_phone',
+  'emergency contact',
+  'emergency contact number',
+  'emergency_contact_number',
+  'registered phone',
+  'registered_phone',
+  'registered mobile',
+  'registered_mobile',
+  'verified phone',
+  'verified_phone',
+  'verified mobile',
+  'verified_mobile',
+  'login phone',
+  'login_phone',
+  'login mobile',
+  'login_mobile',
+  'otp phone',
+  'otp_phone',
+  'otp mobile',
+  'otp_mobile',
+  'customer phone',
+  'customer_phone',
+  'customer mobile',
+  'customer_mobile',
+  'client phone',
+  'client_phone',
+  'client mobile',
+  'client_mobile',
+  'business phone',
+  'business_phone',
+  'business mobile',
+  'business_mobile',
+  'office phone',
+  'office_phone',
+  'office number',
+  'office_number',
+  'work phone',
+  'work_phone',
+  'work mobile',
+  'work_mobile',
+  'home phone',
+  'home_phone',
+  'home number',
+  'home_number',
+  'personal phone',
+  'personal_phone',
+  'personal mobile',
+  'personal_mobile',
+  'whatsapp',
+  'whatsapp number',
+  'whatsapp_number',
+  'whatsapp mobile',
+  'whatsapp_mobile',
+  'contact mobile',
+  'contact_mobile',
+  'phone no',
+  'phone no.',
+  'phone_no',
+  'mobile no',
+  'mobile no.',
+  'mobile_no',
+  'contact no',
+  'contact no.',
+  'contact_no',
+  'telephone no',
+  'telephone_no',
+  'tel no',
+  'tel_no',
+  'number',
+  'mobile contact',
+  'mobile_contact',
+  'phone contact',
+  'phone_contact',
+  'call number',
+  'call_number',
+];
+
+/**
+ * Column name aliases for common fields
+ */
+export const COLUMN_ALIASES = {
+  name: ['name', 'full name', 'fullname', 'customer name', 'person'],
+  phone: PHONE_NUMBER_FIELD_NAMES,
+  address: ['address', 'location', 'city', 'place', 'area', 'full address', 'street'],
+};
+
+/**
+ * Supported file extensions
+ */
+export const SUPPORTED_FILE_EXTENSIONS = ['csv', 'xlsx', 'xls'];
+
+/**
+ * File size limits (in bytes)
+ */
+export const FILE_SIZE_LIMITS = {
+  MAX_FILE_SIZE: 10 * 1024 * 1024, // 10MB
+  MIN_FILE_SIZE: 1, // 1 byte
+};
+
+/**
+ * Indian phone number validation patterns
+ */
+export const PHONE_PATTERNS = {
+  INDIAN_MOBILE: /^[6-9]\d{9}$/,
+  WITH_COUNTRY_CODE: /^(?:\+91|91|0)?[6-9]\d{9}$/,
+  EXTRACT_DIGITS: /\d+/g,
+};
+
+/**
+ * Phone number length constants
+ */
+export const PHONE_LENGTH = {
+  INDIAN_MOBILE: 10,
+  WITH_COUNTRY_CODE: 12,
+  MIN_LENGTH: 10,
+  MAX_LENGTH: 15,
+};
+
+/**
+ * Default configuration values
+ */
+export const DEFAULT_CONFIG = {
+  OUTPUT_DIR: './output',
+  UPLOAD_DIR: './uploads',
+  TEMP_DIR: './temp',
+  LOG_LEVEL: 'log',
+  ENABLE_LOGGING: true,
+  THROW_ON_ERROR: false,
+};
