@@ -150,6 +150,46 @@ Migration guide available in docs/MIGRATION.md"
 
 ## 📋 Usage Guide
 
+### ⚠️ Important: Semantic Release Should Run in CI Only
+
+**DO NOT run `pnpm release` locally!** Semantic-release is designed to run in CI/CD environments where proper credentials are configured.
+
+### Local Testing (Recommended)
+
+Use the preview script to see what version would be released:
+
+```bash
+# Preview what version would be released
+pnpm run release:preview
+```
+
+**Output example:**
+
+```
+🔍 Semantic Release Preview
+
+📋 Analyzing commits since last release...
+Last release: v1.0.0
+
+Found 8 commits:
+
+📊 Commit Analysis:
+✨ Features (3):
+  - feat: add batch processing
+  - feat: add WhatsApp format
+
+🐛 Fixes (2):
+  - fix: memory leak
+  - fix: CSV parsing
+
+🎯 Release Prediction:
+   Current version: 1.0.0
+   Version bump:    MINOR
+   Next version:    1.1.0
+
+✅ When merged to main, this will create release 1.1.0
+```
+
 ### Production Release
 
 ```bash
@@ -378,24 +418,34 @@ gh release list        # Should show new release
 
 ```json
 {
-  "release": "semantic-release",
-  "release:dry": "semantic-release --dry-run",
-  "release:local": "semantic-release --no-ci"
+  "release": "semantic-release", // ❌ Don't run locally
+  "release:dry": "semantic-release --dry-run", // ❌ Don't run locally (needs tokens)
+  "release:local": "...", // ❌ Don't run locally (needs tokens)
+  "release:preview": "node scripts/release-preview.js" // ✅ Use this locally
 }
 ```
 
 ### Usage
 
 ```bash
-# Normal release (in CI)
-pnpm run release
+# ✅ RECOMMENDED: Preview release locally (no tokens needed)
+pnpm run release:preview
 
-# Test what would be released
-pnpm run release:dry
-
-# Release locally (not recommended for production)
-pnpm run release:local
+# ❌ DON'T USE: These require GitHub tokens
+pnpm run release       # Production release (CI only)
+pnpm run release:dry   # Dry run (still needs tokens)
+pnpm run release:local # Local release (still needs tokens)
 ```
+
+### Why Can't I Run Semantic-Release Locally?
+
+Semantic-release requires:
+
+1. **GitHub Token** - To create releases, comment on issues/PRs
+2. **NPM Token** - To publish packages
+3. **CI Environment** - For proper git credentials and permissions
+
+The preview script (`release:preview`) gives you the same information without needing any tokens!
 
 ---
 
