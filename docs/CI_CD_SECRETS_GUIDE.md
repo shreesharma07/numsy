@@ -262,6 +262,34 @@ npm token create --type automation
 # Visit failed workflow and click "Re-run jobs"
 ```
 
+### Issue: "NPM cannot be republished until 24 hours have passed"
+
+**Cause:** NPM has a 24-hour cooldown after unpublishing a version
+
+**Solution:**
+
+```bash
+# Quick fix using automated script
+pnpm run npm:fix-cooldown
+
+# Or manually bump version
+npm version patch --no-git-tag-version
+git add package.json pnpm-lock.yaml
+git commit -m "chore: bump version to bypass cooldown [skip ci]"
+git push origin main
+
+# Then trigger a new release
+git commit --allow-empty -m "feat: enable automated releases"
+git push origin main
+
+# Check NPM status anytime
+pnpm run npm:check
+```
+
+**See:** [docs/NPM_PUBLISH_ERROR_FIX.md](./NPM_PUBLISH_ERROR_FIX.md) for complete guide.
+
+**Note:** The workflow now automatically detects this error and provides guidance without failing.
+
 ### Issue: "Snyk security step failed"
 
 **Cause:** SNYK_TOKEN not set (optional secret)
