@@ -1,10 +1,10 @@
-# 📱 Numsy - A light-weight number processor
+# 📱 Numsy - A light-weight 🔢 Numsy
 
 [![npm version](https://badge.fury.io/js/numsy.svg)](https://badge.fury.io/js/numsy)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![pnpm](https://img.shields.io/badge/maintained%20with-pnpm-cc00ff.svg)](https://pnpm.io/)
 
-A TypeScript-based phone number processor with CSV/Excel parsing capabilities built with NestJS. This application validates and sanitizes Indian phone numbers, providing a clean way to process bulk contact data.
+A TypeScript-based phone 🔢 Numsy with CSV/Excel parsing capabilities built with NestJS. This application validates and sanitizes Indian phone numbers, providing a clean way to process bulk contact data.
 
 ## 🚀 Features
 

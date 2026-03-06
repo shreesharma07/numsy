@@ -1,6 +1,6 @@
 # 📦 NPM Publishing Guide
 
-## Complete Guide to Publishing Number Processor to NPM
+## Complete Guide to Publishing 🔢 Numsy to NPM
 
 This guide walks you through publishing the `@numsy` package to NPM using pnpm.
 
@@ -56,7 +56,7 @@ Edit `package.json`:
 
 ```json
 {
-  "name": "@numsy",  // Or "@your-username/number-processor"
+  "name": "@numsy", // Or "@your-username/number-processor"
   "version": "1.0.0",
   "author": "Your Name <your.email@example.com>",
   "repository": {
@@ -298,6 +298,7 @@ Create `CHANGELOG.md`:
 ## [1.0.0] - 2026-03-06
 
 ### Added
+
 - Initial release
 - Phone number validation for Indian numbers
 - CSV and Excel file parsing

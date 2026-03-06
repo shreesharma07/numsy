@@ -342,7 +342,7 @@ export class FileProcessor {
 
       const content = `
 ═══════════════════════════════════════════════════════════════
-           NUMBER PROCESSOR - ANALYTICS REPORT
+           🔢 Numsy - ANALYTICS REPORT
 ═══════════════════════════════════════════════════════════════
 
 PROCESSING SUMMARY

@@ -1,6 +1,6 @@
-# Contributing to Number Processor
+# Contributing to 🔢 Numsy
 
-Thank you for your interest in contributing to Number Processor! We welcome contributions from the community.
+Thank you for your interest in contributing to 🔢 Numsy! We welcome contributions from the community.
 
 ## Code of Conduct
 
@@ -11,6 +11,7 @@ By participating in this project, you agree to maintain a respectful and inclusi
 ### Reporting Bugs
 
 If you find a bug, please create an issue with:
+
 - A clear, descriptive title
 - Steps to reproduce the issue
 - Expected behavior
@@ -21,6 +22,7 @@ If you find a bug, please create an issue with:
 ### Suggesting Enhancements
 
 Enhancement suggestions are welcome! Please provide:
+
 - A clear description of the enhancement
 - Why this enhancement would be useful
 - Any implementation ideas you have
@@ -28,11 +30,13 @@ Enhancement suggestions are welcome! Please provide:
 ### Pull Requests
 
 1. **Fork the repository**
+
    ```bash
    git clone https://github.com/yourusername/number-processor.git
    ```
 
 2. **Create a feature branch**
+
    ```bash
    git checkout -b feature/your-feature-name
    ```
@@ -44,6 +48,7 @@ Enhancement suggestions are welcome! Please provide:
    - Write tests for new functionality
 
 4. **Test your changes**
+
    ```bash
    npm run test
    npm run test:e2e
@@ -51,10 +56,11 @@ Enhancement suggestions are welcome! Please provide:
    ```
 
 5. **Commit your changes**
+
    ```bash
    git commit -m "feat: add amazing feature"
    ```
-   
+
    Use conventional commit messages:
    - `feat:` for new features
    - `fix:` for bug fixes
@@ -65,6 +71,7 @@ Enhancement suggestions are welcome! Please provide:
    - `chore:` for maintenance tasks
 
 6. **Push to your fork**
+
    ```bash
    git push origin feature/your-feature-name
    ```
@@ -77,16 +84,19 @@ Enhancement suggestions are welcome! Please provide:
 ## Development Setup
 
 1. Install dependencies:
+
    ```bash
    npm install
    ```
 
 2. Start development server:
+
    ```bash
    npm run start:dev
    ```
 
 3. Run tests:
+
    ```bash
    npm test
    ```
@@ -115,6 +125,7 @@ Enhancement suggestions are welcome! Please provide:
 - Add inline comments for complex logic
 
 Example:
+
 ```typescript
 /**
  * Validates and sanitizes a phone number

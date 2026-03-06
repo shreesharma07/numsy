@@ -1,5 +1,5 @@
 /**
- * Common interfaces for the Number Processor package
+ * Common interfaces for the 🔢 Numsy package
  * Centralizes all type definitions for better maintainability
  */
 

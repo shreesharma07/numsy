@@ -1,6 +1,6 @@
 /**
  * Numsy - Main Class
- * The primary interface for the number processor package
+ * The primary interface for the 🔢 Numsy package
  * Provides a unified API for phone number processing
  */
 

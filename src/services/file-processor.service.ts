@@ -362,11 +362,11 @@ export class FileProcessorService {
     // Build analytics content
     let content = `
 ========================================================================
-                    NUMBER PROCESSOR - ANALYTICS REPORT
+                    🔢 Numsy - ANALYTICS REPORT
 ========================================================================
 
 Generated: ${timestamp}
-Processor: Number Processor v1.0.0
+Processor: 🔢 Numsy v1.0.0
 File Format: CSV/Excel
 
 ========================================================================
@@ -536,7 +536,7 @@ with all other field values preserved.
                          END OF REPORT
 ========================================================================
 
-Thank you for using Number Processor!
+Thank you for using 🔢 Numsy!
 
 `;
 

@@ -1,4 +1,4 @@
-# Numsy - Professional Phone Number Processor
+# 🔢 Numsy - A light-weight number processor
 
 <div align="center">
 
@@ -24,7 +24,7 @@
 
 </div>
 
-A professional, production-ready TypeScript library for Indian phone number validation, sanitization, and CSV/Excel file processing. Built with class-based architecture, comprehensive error handling, and extensive logging capabilities.
+**Numsy** is a light-weight TypeScript library for Indian phone number validation, sanitization, and CSV/Excel file processing. Built with class-based architecture, comprehensive error handling, and extensive logging capabilities.
 
 ## ✨ Features
 
