@@ -6,9 +6,6 @@
 *.zip
 *.tsbuildinfo
 
-# pnpm
-pnpm-lock.yaml
-
 # Logs
 logs
 *.log
