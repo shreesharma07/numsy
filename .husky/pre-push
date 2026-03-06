@@ -1,4 +1,32 @@
 #!/usr/bin/env sh
 . "$(dirname -- "$0")/_/husky.sh"
 
+echo "🔍 Running pre-push validation..."
+echo ""
+
+# Check conventional commit format
+echo "📝 Checking commit messages..."
+pnpm commitlint --from=origin/$(git rev-parse --abbrev-ref HEAD) --to=HEAD
+
+# Run lint check
+echo ""
+echo "🧹 Running lint check..."
+pnpm run lint:check
+
+# Run type check
+echo ""
+echo "🔍 Running type check..."
+pnpm run type-check
+
+# Run tests
+echo ""
+echo "🧪 Running tests..."
 pnpm test
+
+# Run build to ensure it works
+echo ""
+echo "🔨 Running build check..."
+pnpm run build
+
+echo ""
+echo "✅ All pre-push checks passed! Pushing to remote..."

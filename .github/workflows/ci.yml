@@ -1,10 +1,16 @@
-name: CI Pipeline
+# NOTE: This workflow is now consolidated into main.yml
+# This file is kept for reference only
+# To use the new unified workflow, see .github/workflows/main.yml
+
+name: CI Pipeline (Legacy - Use main.yml)
 
 on:
-  push:
-    branches: [main, develop, feature/*, bugfix/*, hotfix/*, release/*]
-  pull_request:
-    branches: [main, develop]
+  workflow_dispatch:
+    inputs:
+      force:
+        description: 'Force run old CI (not recommended)'
+        required: false
+        default: 'false'
 
 jobs:
   quality:

@@ -1,9 +1,10 @@
-name: Manual Release (Legacy)
+# NOTE: Manual releases are now handled through main.yml semantic-release job
+# This workflow is kept for reference only
+# For manual releases, use: https://github.com/shreesharma07/numsy/actions/workflows/semantic-release.yml
+
+name: Manual Release (Legacy - Use main.yml)
 
 on:
-  push:
-    tags:
-      - 'v*'
   workflow_dispatch:
 
 jobs:

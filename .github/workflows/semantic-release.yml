@@ -1,11 +1,16 @@
-name: Release
+# NOTE: This workflow is now integrated into main.yml
+# This file is kept for reference only and should not be triggered
+# To disable, we use workflow_dispatch only
+
+name: Semantic Release (Legacy - Use main.yml)
 
 on:
-  push:
-    branches:
-      - main
-      - develop
-      - release/*
+  workflow_dispatch:
+    inputs:
+      confirm:
+        description: 'Type "CONFIRM" to run manual release (not recommended)'
+        required: true
+        default: 'NO'
 
 permissions:
   contents: write
@@ -15,9 +20,9 @@ permissions:
 
 jobs:
   release:
-    name: Semantic Release
+    name: Manual Semantic Release
     runs-on: ubuntu-latest
-    if: "!contains(github.event.head_commit.message, '[skip ci]')"
+    if: github.event.inputs.confirm == 'CONFIRM'
 
     steps:
       - name: Checkout code
@@ -30,26 +35,13 @@ jobs:
         uses: pnpm/action-setup@v2
         with:
           version: 8
-          run_install: false
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '20'
           registry-url: 'https://registry.npmjs.org'
-
-      - name: Get pnpm store directory
-        shell: bash
-        run: |
-          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
-
-      - name: Setup pnpm cache
-        uses: actions/cache@v3
-        with:
-          path: ${{ env.STORE_PATH }}
-          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
-          restore-keys: |
-            ${{ runner.os }}-pnpm-store-
+          cache: 'pnpm'
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
@@ -70,14 +62,7 @@ jobs:
           GIT_COMMITTER_EMAIL: semantic-release-bot@numsy.dev
         run: npx semantic-release
 
-  notify:
-    name: Post-Release Notifications
-    runs-on: ubuntu-latest
-    needs: release
-    if: success()
-
-    steps:
-      - name: Notify success
+      - name: Release Summary
         run: |
-          echo "✅ Release completed successfully!"
-          echo "Check https://github.com/${{ github.repository }}/releases for details"
+          echo "## ✅ Manual Release Complete" >> $GITHUB_STEP_SUMMARY
+          echo "View releases: https://github.com/${{ github.repository }}/releases" >> $GITHUB_STEP_SUMMARY
