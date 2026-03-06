@@ -1,8 +1,28 @@
 # Numsy - Professional Phone Number Processor
 
-[![NPM Version](https://img.shields.io/npm/v/numsy.svg)](https://www.npmjs.com/package/numsy)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5.3-blue.svg)](https://www.typescriptlang.org/)
+<div align="center">
+
+[![NPM Version](https://img.shields.io/npm/v/numsy.svg?style=flat-square)](https://www.npmjs.com/package/numsy)
+[![NPM Downloads](https://img.shields.io/npm/dm/numsy.svg?style=flat-square)](https://www.npmjs.com/package/numsy)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-square)](https://opensource.org/licenses/MIT)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.3-blue.svg?style=flat-square&logo=typescript)](https://www.typescriptlang.org/)
+[![Node Version](https://img.shields.io/node/v/numsy.svg?style=flat-square)](https://nodejs.org)
+
+[![CI Pipeline](https://img.shields.io/github/actions/workflow/status/shreesharma07/numsy/ci.yml?style=flat-square&label=CI&logo=github)](https://github.com/shreesharma07/numsy/actions)
+[![Security](https://img.shields.io/github/actions/workflow/status/shreesharma07/numsy/security.yml?style=flat-square&label=Security&logo=github)](https://github.com/shreesharma07/numsy/actions)
+[![codecov](https://img.shields.io/codecov/c/github/shreesharma07/numsy?style=flat-square&logo=codecov)](https://codecov.io/gh/shreesharma07/numsy)
+[![Known Vulnerabilities](https://snyk.io/test/github/shreesharma07/numsy/badge.svg?style=flat-square)](https://snyk.io/test/github/shreesharma07/numsy)
+
+[![Maintained](https://img.shields.io/badge/Maintained%3F-yes-green.svg?style=flat-square)](https://github.com/shreesharma07/numsy/graphs/commit-activity)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](http://makeapullrequest.com)
+[![Conventional Commits](https://img.shields.io/badge/Conventional%20Commits-1.0.0-yellow.svg?style=flat-square)](https://conventionalcommits.org)
+[![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg?style=flat-square)](https://github.com/prettier/prettier)
+[![Package Manager](https://img.shields.io/badge/pnpm-8.15.0-F69220?style=flat-square&logo=pnpm)](https://pnpm.io/)
+
+[![GitHub stars](https://img.shields.io/github/stars/shreesharma07/numsy?style=social)](https://github.com/shreesharma07/numsy/stargazers)
+[![GitHub forks](https://img.shields.io/github/forks/shreesharma07/numsy?style=social)](https://github.com/shreesharma07/numsy/network/members)
+
+</div>
 
 A professional, production-ready TypeScript library for Indian phone number validation, sanitization, and CSV/Excel file processing. Built with class-based architecture, comprehensive error handling, and extensive logging capabilities.
 
@@ -134,17 +154,17 @@ import { Parser, PhoneValidator, FileProcessor } from 'numsy';
 // Use Parser separately
 const parser = new Parser({
   normalizeColumns: true,
-  detectPhoneColumn: true
+  detectPhoneColumn: true,
 });
 
 // Use PhoneValidator separately
 const validator = new PhoneValidator({
-  enableLogging: false
+  enableLogging: false,
 });
 
 // Use FileProcessor separately
 const processor = new FileProcessor({
-  outputDir: './output'
+  outputDir: './output',
 });
 ```
 
@@ -154,9 +174,9 @@ const processor = new FileProcessor({
 import Numsy from 'numsy';
 
 const numsy = new Numsy({
-  enableLogging: true,           // Enable console logging
-  logLevel: 'debug',             // Log level: 'log' | 'error' | 'warn' | 'debug' | 'verbose'
-  throwOnError: false            // Throw errors vs return error objects
+  enableLogging: true, // Enable console logging
+  logLevel: 'debug', // Log level: 'log' | 'error' | 'warn' | 'debug' | 'verbose'
+  throwOnError: false, // Throw errors vs return error objects
 });
 
 // Update options at runtime
@@ -215,7 +235,7 @@ import {
   isNonEmptyString,
   isValidNumber,
   LoggerHelper,
-  AppError
+  AppError,
 } from 'numsy';
 ```
 
@@ -321,13 +341,13 @@ import {
   MultipleNumbersResult,
   ProcessingResult,
   FileParseResult,
-  ParsedDataRow
+  ParsedDataRow,
 } from 'numsy';
 
 const options: NumsyOptions = {
   enableLogging: true,
   logLevel: 'debug',
-  throwOnError: false
+  throwOnError: false,
 };
 
 const numsy = new Numsy(options);

@@ -1,0 +1,43 @@
+# .snyk configuration file
+
+# Snyk (<https://snyk.io>) policy file
+
+version: v1.25.0
+
+# Ignore specific vulnerabilities
+
+ignore: {}
+
+# Patch specific vulnerabilities
+
+patch: {}
+
+# Exclude paths from scanning
+
+exclude:
+
+- test/**
+- docs/**
+- coverage/**
+- dist/**
+- node_modules/**
+- '**/*.spec.ts'
+- '**/*.test.ts'
+
+# Language settings
+
+language-settings:
+  javascript:
+    # Skip development dependencies in production
+    ignoreDevDependencies: true
+
+# Fail thresholds
+
+failThreshold:
+  high: 0
+  medium: 0
+  low: 10
+
+# Organization (update with your Snyk org slug)
+
+# org: your-org-name

@@ -6,3 +6,4 @@
 export * from './interfaces';
 export * from './functions';
 export * from './helpers';
+export * from './types/enums';

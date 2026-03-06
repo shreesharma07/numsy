@@ -1,4 +1,4 @@
-# 📱 Number Processor
+# 📱 Numsy - A light-weight number processor
 
 [![npm version](https://badge.fury.io/js/numsy.svg)](https://badge.fury.io/js/numsy)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
@@ -183,9 +183,9 @@ GET /api/download/:id
 
 Downloads a ZIP file containing:
 
-1. **valid_numbers_*.csv** - All valid phone numbers with associated data
-2. **invalid_numbers_*.csv** - All invalid phone numbers with validation reasons
-3. **analytics_*.txt** - Comprehensive analytics report
+1. **valid*numbers*\*.csv** - All valid phone numbers with associated data
+2. **invalid*numbers*\*.csv** - All invalid phone numbers with validation reasons
+3. **analytics\_\*.txt** - Comprehensive analytics report
 
 ### Analytics Report Contents
 
