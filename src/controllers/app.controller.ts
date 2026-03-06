@@ -147,11 +147,22 @@ export class AppController {
    */
   @Get('download/:id')
   async downloadFile(@Param('id') id: string, @Res() res: Response): Promise<void> {
-    const tempDirResolved = path.resolve(this.tempDir);
-    const zipFilePath = path.resolve(path.join(this.tempDir, `${id}.zip`));
+    // Sanitize the ID parameter to prevent path traversal attacks
+    // Only allow alphanumeric characters, hyphens, and underscores
+    const sanitizedId = id.replace(/[^a-zA-Z0-9_-]/g, '');
 
-    if (!zipFilePath.startsWith(tempDirResolved + path.sep)) {
-      throw new HttpException('File not found or already downloaded', HttpStatus.NOT_FOUND);
+    if (!sanitizedId || sanitizedId !== id) {
+      throw new HttpException('Invalid download ID', HttpStatus.BAD_REQUEST);
+    }
+
+    // Use basename to prevent directory traversal
+    const safeFilename = path.basename(`${sanitizedId}.zip`);
+    const tempDirResolved = path.resolve(this.tempDir);
+    const zipFilePath = path.resolve(path.join(this.tempDir, safeFilename));
+
+    // Ensure the resolved path is within the temp directory
+    if (!zipFilePath.startsWith(tempDirResolved + path.sep) && zipFilePath !== tempDirResolved) {
+      throw new HttpException('Invalid file path', HttpStatus.BAD_REQUEST);
     }
 
     if (!fs.existsSync(zipFilePath)) {
@@ -182,15 +193,25 @@ export class AppController {
         // Clean up files after download completes
         setTimeout(async () => {
           try {
-            // Find associated CSV files
-            const validFilePath = path.join(this.tempDir, `valid_numbers_${id.split('_')[1]}.csv`);
-            const invalidFilePath = path.join(
-              this.tempDir,
-              `invalid_numbers_${id.split('_')[1]}.csv`,
-            );
+            // Extract timestamp safely from the sanitized ID
+            const idParts = sanitizedId.split('_');
+            const timestamp = idParts.length > 1 ? idParts[1] : '';
 
-            await this.fileProcessor.cleanupFiles([zipFilePath, validFilePath, invalidFilePath]);
-            this.logger.log(`Cleaned up files for download ID: ${id}`);
+            if (timestamp && /^\d+$/.test(timestamp)) {
+              // Construct safe file paths using basename
+              const validFilename = path.basename(`valid_numbers_${timestamp}.csv`);
+              const invalidFilename = path.basename(`invalid_numbers_${timestamp}.csv`);
+
+              const validFilePath = path.join(this.tempDir, validFilename);
+              const invalidFilePath = path.join(this.tempDir, invalidFilename);
+
+              await this.fileProcessor.cleanupFiles([zipFilePath, validFilePath, invalidFilePath]);
+              this.logger.log(`Cleaned up files for download ID: ${sanitizedId}`);
+            } else {
+              // Only cleanup the zip file if we can't safely determine CSV filenames
+              await this.fileProcessor.cleanupFiles([zipFilePath]);
+              this.logger.log(`Cleaned up zip file for download ID: ${sanitizedId}`);
+            }
           } catch (cleanupError: unknown) {
             this.logger.error(`Cleanup error: ${(cleanupError as Error)?.message}`);
           }
@@ -217,8 +238,19 @@ export class AppController {
       for (const dir of directories) {
         if (fs.existsSync(dir)) {
           const files = fs.readdirSync(dir);
+          const dirResolved = path.resolve(dir);
+
           for (const file of files) {
-            const filePath = path.join(dir, file);
+            // Use basename to prevent directory traversal
+            const safeFilename = path.basename(file);
+            const filePath = path.resolve(path.join(dir, safeFilename));
+
+            // Ensure the file is within the intended directory
+            if (!filePath.startsWith(dirResolved + path.sep) && filePath !== dirResolved) {
+              this.logger.warn(`Skipping file outside directory: ${file}`);
+              continue;
+            }
+
             const stats = fs.statSync(filePath);
 
             // Delete files older than 1 hour
