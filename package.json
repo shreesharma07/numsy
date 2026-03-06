@@ -88,7 +88,10 @@
     "security:check": "pnpm audit:check && pnpm snyk:test",
     "precommit": "lint-staged",
     "validate": "pnpm run lint:check && pnpm run type-check && pnpm test",
-    "ci": "pnpm run validate && pnpm run build"
+    "ci": "pnpm run validate && pnpm run build",
+    "release": "semantic-release",
+    "release:dry": "semantic-release --dry-run",
+    "release:local": "semantic-release --no-ci"
   },
   "dependencies": {
     "@nestjs/common": "^10.3.0",
@@ -109,6 +112,14 @@
     "@commitlint/cli": "^18.6.1",
     "@commitlint/config-conventional": "^18.6.3",
     "@nestjs/cli": "^10.3.0",
+    "@semantic-release/changelog": "^6.0.3",
+    "@semantic-release/commit-analyzer": "^11.1.0",
+    "@semantic-release/git": "^10.0.1",
+    "@semantic-release/github": "^9.2.6",
+    "@semantic-release/npm": "^11.0.2",
+    "@semantic-release/release-notes-generator": "^12.1.0",
+    "conventional-changelog-conventionalcommits": "^7.0.2",
+    "semantic-release": "^23.0.0",
     "@nestjs/schematics": "^10.1.0",
     "@nestjs/testing": "^10.3.0",
     "@swc/cli": "^0.1.63",

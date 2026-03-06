@@ -1,9 +1,10 @@
-name: Release to NPM
+name: Manual Release (Legacy)
 
 on:
   push:
     tags:
       - 'v*'
+  workflow_dispatch:
 
 jobs:
   validate:

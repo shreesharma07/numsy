@@ -1,49 +1,106 @@
 # Changelog
 
-All notable changes to this project will be documented in this file.
-
-The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
-and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
-
-## [Unreleased]
-
-### Added
-- Initial project setup
+All notable changes to this project will be documented in this file. See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
 ## [1.0.0] - 2026-03-06
 
-### Added
-- Phone number validation for Indian mobile numbers (10-digit)
-- CSV file parsing support
-- Excel file parsing support (.xlsx, .xls)
+### ✨ Features
+
+#### Core Package
+
+- Complete refactoring into professional npm package "numsy"
+- Class-based architecture with Numsy, Parser, PhoneValidator, FileProcessor
+- Modular structure with common folder (interfaces, functions, helpers)
+- Multiple import styles (default, named, path-based exports)
+
+#### Phone Number Processing
+
+- Phone number validation for Indian mobile numbers (10-digit starting with 6-9)
 - Smart phone column detection algorithm
 - Automatic phone number sanitization (remove spaces, hyphens, country codes)
-- Web interface with drag-and-drop functionality
+- Batch validation support
+- Multiple number extraction from text
+
+#### File Processing
+
+- CSV file parsing support with automatic encoding detection
+- Excel file parsing (.xlsx, .xls) support
 - ZIP file generation for processed results
 - Separate valid and invalid number categorization
-- Automatic file cleanup after download
-- RESTful API endpoints for file processing
-- Comprehensive validation rules:
-  - Numbers must start with 6, 7, 8, or 9
-  - Must be exactly 10 digits
-  - Rejects invalid patterns
-- Support for fields: name, phone, address
 - Real-time processing status display
-- Statistics summary (total/valid/invalid counts)
-- Unit tests for phone validator service
+
+#### Developer Experience
+
+- SWC integration for fast compilation (~100ms for 24 files)
+- Nodemon support for auto-reload development
+- CLI server with dynamic port assignment (--port, --page options)
+- Enhanced type system with comprehensive enums and utility types
+
+### 🔒 Security
+
+- Snyk integration for automated vulnerability scanning
+- CodeQL static code analysis in CI/CD
+- Pre-commit hooks for automated security checks
+- Dependency audits automated in CI pipeline
+- Branch protection enforced on main and develop branches
+- Security policy and vulnerability reporting process
+
+### 🚀 CI/CD
+
+- Comprehensive CI pipeline (lint, test, build, security scan)
+- Security monitoring with daily automated scans
+- **Semantic release** for automated versioning and changelog generation
+- Multi-platform testing (Ubuntu, Windows × Node 18, 20)
+- Code coverage reporting with Codecov integration
+- Automated NPM publishing on release
+
+### 📚 Documentation
+
+- Git Flow guide with complete branching strategy
+- Release management guide with semantic-release
+- Setup guide with comprehensive environment setup
+- Security policy with vulnerability reporting
+- Structured pull request template
+- Code of Conduct for community guidelines
+- API documentation with usage examples
+
+### 🛠️ Development Tools
+
+- Husky pre-commit, pre-push, and commit-msg hooks
+- Lint-staged for efficient staged file linting
+- Commitlint for conventional commit validation
+- Prettier for code formatting
+- ESLint with TypeScript rules
+- Semantic-release for automated releases
+
+### 🐛 Bug Fixes
+
+- Fixed TypeScript nullable type issues in phone validator
+- Resolved optional chaining errors in file parser
+- Added `*.tsbuildinfo` to .gitignore for build cache cleanup
+
+### ⚡ Performance
+
+- SWC compiler provides 20x faster builds compared to tsc
+- Test parallelization with multi-worker execution
+- Smart caching with pnpm store and GitHub Actions
+
+### 📦 Package Configuration
+
+- NPM-ready with proper exports and .npmignore
+- Full TypeScript declarations included
+- CommonJS and ESM format support
+- Repository URL: <https://github.com/shreesharma07/numsy>
+
+### Testing
+
+- Unit tests for all core services
 - E2E tests for API endpoints
-- Comprehensive documentation (README, QUICKSTART, etc.)
-- MIT License
+- Jest v29.7.0 test framework
+- 42 passing tests with >80% coverage target
 
-### Technical Stack
-- NestJS framework v10.3.0
-- TypeScript v5.3.3
-- Node.js >=16.0.0
-- pnpm package manager
-- csv-parser for CSV processing
-- xlsx for Excel processing
-- archiver for ZIP creation
-- multer for file uploads
+---
 
-[Unreleased]: https://github.com/your-username/number-processor/compare/v1.0.0...HEAD
-[1.0.0]: https://github.com/your-username/number-processor/releases/tag/v1.0.0
+## Pre-1.0.0
+
+Initial development phase before standardized releases. All features were developed and stabilized for the 1.0.0 release.
