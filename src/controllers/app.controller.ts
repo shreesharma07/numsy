@@ -172,12 +172,28 @@ export class AppController {
     this.logger.log(`Downloading file: ${zipFilePath}`);
 
     try {
+      // Final security check: Verify the normalized path is within temp directory
+      const normalizedZipPath = path.normalize(zipFilePath);
+      const normalizedTempDir = path.normalize(this.tempDir);
+
+      // Additional check to prevent path traversal with normalized paths
+      if (!normalizedZipPath.startsWith(normalizedTempDir + path.sep)) {
+        this.logger.error(`Path traversal attempt detected: ${zipFilePath}`);
+        throw new HttpException('Invalid file path', HttpStatus.BAD_REQUEST);
+      }
+
+      // Verify no parent directory references after normalization
+      if (normalizedZipPath.includes('..')) {
+        this.logger.error(`Path traversal attempt with .. detected: ${zipFilePath}`);
+        throw new HttpException('Invalid file path', HttpStatus.BAD_REQUEST);
+      }
+
       // Set response headers
       res.setHeader('Content-Type', 'application/zip');
       res.setHeader('Content-Disposition', `attachment; filename="processed_numbers.zip"`);
 
-      // Stream the file
-      const fileStream = fs.createReadStream(zipFilePath);
+      // Stream the file (now safely validated)
+      const fileStream = fs.createReadStream(normalizedZipPath);
 
       fileStream.on('error', (error) => {
         this.logger.error(`Stream error: ${error.message}`);
@@ -202,15 +218,28 @@ export class AppController {
               const validFilename = path.basename(`valid_numbers_${timestamp}.csv`);
               const invalidFilename = path.basename(`invalid_numbers_${timestamp}.csv`);
 
-              const validFilePath = path.join(this.tempDir, validFilename);
-              const invalidFilePath = path.join(this.tempDir, invalidFilename);
+              const validFilePath = path.normalize(path.join(this.tempDir, validFilename));
+              const invalidFilePath = path.normalize(path.join(this.tempDir, invalidFilename));
 
-              await this.fileProcessor.cleanupFiles([zipFilePath, validFilePath, invalidFilePath]);
-              this.logger.log(`Cleaned up files for download ID: ${sanitizedId}`);
+              // Validate paths are within temp directory before cleanup
+              const normalizedTempDir = path.normalize(this.tempDir);
+              const pathsToClean = [normalizedZipPath, validFilePath, invalidFilePath].filter(
+                (p) => p.startsWith(normalizedTempDir + path.sep) && !p.includes('..'),
+              );
+
+              if (pathsToClean.length > 0) {
+                await this.fileProcessor.cleanupFiles(pathsToClean);
+                this.logger.log(`Cleaned up files for download ID: ${sanitizedId}`);
+              }
             } else {
               // Only cleanup the zip file if we can't safely determine CSV filenames
-              await this.fileProcessor.cleanupFiles([zipFilePath]);
-              this.logger.log(`Cleaned up zip file for download ID: ${sanitizedId}`);
+              if (
+                normalizedZipPath.startsWith(path.normalize(this.tempDir) + path.sep) &&
+                !normalizedZipPath.includes('..')
+              ) {
+                await this.fileProcessor.cleanupFiles([normalizedZipPath]);
+                this.logger.log(`Cleaned up zip file for download ID: ${sanitizedId}`);
+              }
             }
           } catch (cleanupError: unknown) {
             this.logger.error(`Cleanup error: ${(cleanupError as Error)?.message}`);
@@ -243,20 +272,45 @@ export class AppController {
           for (const file of files) {
             // Use basename to prevent directory traversal
             const safeFilename = path.basename(file);
-            const filePath = path.resolve(path.join(dir, safeFilename));
+            const filePath = path.normalize(path.resolve(path.join(dir, safeFilename)));
+            const normalizedDir = path.normalize(dirResolved);
 
             // Ensure the file is within the intended directory
-            if (!filePath.startsWith(dirResolved + path.sep) && filePath !== dirResolved) {
+            if (!filePath.startsWith(normalizedDir + path.sep) && filePath !== normalizedDir) {
               this.logger.warn(`Skipping file outside directory: ${file}`);
+              continue;
+            }
+
+            // Additional check for parent directory references
+            if (filePath.includes('..') || safeFilename.includes('..')) {
+              this.logger.warn(`Skipping file with parent directory reference: ${file}`);
+              continue;
+            }
+
+            // Additional security: verify the file is actually a file and not a directory
+            if (!fs.existsSync(filePath)) {
               continue;
             }
 
             const stats = fs.statSync(filePath);
 
+            // Only delete regular files, not directories or special files
+            if (!stats.isFile()) {
+              this.logger.warn(`Skipping non-file: ${filePath}`);
+              continue;
+            }
+
             // Delete files older than 1 hour
             if (stats.mtimeMs < oneHourAgo) {
-              fs.unlinkSync(filePath);
-              this.logger.debug(`Deleted old file: ${filePath}`);
+              // Final validation right before unlink
+              if (
+                filePath.startsWith(normalizedDir + path.sep) &&
+                !filePath.includes('..') &&
+                stats.isFile()
+              ) {
+                fs.unlinkSync(filePath);
+                this.logger.debug(`Deleted old file: ${filePath}`);
+              }
             }
           }
         }
