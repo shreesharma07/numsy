@@ -89,13 +89,21 @@ export class FileProcessor {
       // Generate output file paths using original filename
       const originalFileName = path.basename(filePath, path.extname(filePath));
       const timestamp = Date.now();
+
+      // ZIP file name without timestamp
+      const zipFileName = `${originalFileName}_numsy_report`;
+
+      // Individual files with timestamp for uniqueness
       const baseFileName = `${originalFileName}_numsy_report_${timestamp}`;
 
-      const validFilePath = path.join(outputDirectory, `${baseFileName}_valid.csv`);
-      const invalidFilePath = path.join(outputDirectory, `${baseFileName}_invalid.csv`);
-      const uniqueNumbersFilePath = path.join(outputDirectory, `${baseFileName}_unique.csv`);
+      const validFilePath = path.join(outputDirectory, `${baseFileName}_valid_phone_report.csv`);
+      const invalidFilePath = path.join(outputDirectory, `${baseFileName}_invalid_report.csv`);
+      const uniqueNumbersFilePath = path.join(
+        outputDirectory,
+        `${originalFileName}_unique_numsy_nos.csv`,
+      );
       const analyticsFilePath = path.join(outputDirectory, `${baseFileName}_analytics.txt`);
-      const zipFilePath = path.join(outputDirectory, `${baseFileName}.zip`);
+      const zipFilePath = path.join(outputDirectory, `${zipFileName}.zip`);
 
       // Write CSV files
       await this.parser.writeProcessedFiles(validRows, invalidRows, validFilePath, invalidFilePath);
@@ -115,7 +123,12 @@ export class FileProcessor {
 
       // Create ZIP file
       await this.createZipFile(
-        [validFilePath, invalidFilePath, uniqueNumbersFilePath, analyticsFilePath],
+        [
+          { path: validFilePath, name: 'valid_phone_report.csv' },
+          { path: invalidFilePath, name: 'invalid_report.csv' },
+          { path: uniqueNumbersFilePath, name: `${originalFileName}_unique_numsy_nos.csv` },
+          { path: analyticsFilePath, name: 'analytics.txt' },
+        ],
         zipFilePath,
       );
 
@@ -389,7 +402,10 @@ Generated on: ${new Date().toISOString()}
   /**
    * Creates a ZIP file containing all output files
    */
-  private async createZipFile(filePaths: string[], zipPath: string): Promise<void> {
+  private async createZipFile(
+    files: Array<{ path: string; name: string }>,
+    zipPath: string,
+  ): Promise<void> {
     return new Promise((resolve, reject) => {
       try {
         const output = fs.createWriteStream(zipPath);
@@ -407,10 +423,9 @@ Generated on: ${new Date().toISOString()}
 
         archive.pipe(output);
 
-        for (const filePath of filePaths) {
-          if (fs.existsSync(filePath)) {
-            const fileName = path.basename(filePath);
-            archive.file(filePath, { name: fileName });
+        for (const file of files) {
+          if (fs.existsSync(file.path)) {
+            archive.file(file.path, { name: file.name });
           }
         }
 
