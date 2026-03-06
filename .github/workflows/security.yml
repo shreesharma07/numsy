@@ -1,6 +1,8 @@
 name: Security Monitoring
 
 on:
+  push:
+    branches: [main, develop, release/*]
   schedule:
     # Run daily at 00:00 UTC
     - cron: '0 0 * * *'

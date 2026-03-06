@@ -2,7 +2,7 @@ name: CI Pipeline
 
 on:
   push:
-    branches: [develop, feature/*, bugfix/*, hotfix/*]
+    branches: [main, develop, feature/*, bugfix/*, hotfix/*, release/*]
   pull_request:
     branches: [main, develop]
 
