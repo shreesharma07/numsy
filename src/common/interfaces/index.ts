@@ -50,9 +50,11 @@ export interface ProcessingResult {
   validRecords: number;
   invalidRecords: number;
   phoneColumn: string;
+  nameColumn?: string;
   zipFilePath: string;
   validFilePath: string;
   invalidFilePath: string;
+  uniqueNumbersFilePath: string;
   analyticsFilePath: string;
   analytics: ProcessingAnalytics;
 }

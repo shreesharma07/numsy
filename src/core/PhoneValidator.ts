@@ -8,10 +8,11 @@ import { LoggerHelper, AppError, isNonEmptyString, isValidArray } from '../commo
 import {
   sanitizePhoneNumber,
   validatePhoneNumber,
-  extractPhoneNumbers,
   isValidIndianMobile,
   hasMultiplePhoneNumbers,
   formatPhoneWithCountryCode,
+  finalRegexValidation,
+  extractAndValidatePhoneNumbers,
 } from '../common/functions';
 import { NumsyOptions } from '../common/interfaces';
 
@@ -40,21 +41,47 @@ export class PhoneValidator {
   }
 
   /**
-   * Validates a single phone number
+   * Validates a single phone number with final regex check
    */
   validate(phone: string): PhoneValidationResult {
     try {
-      const result = validatePhoneNumber(phone);
+      // First perform basic validation
+      const basicValidation = validatePhoneNumber(phone);
 
-      if (this.options.enableLogging) {
-        if (result.isValid) {
-          this.logger.debug(`Valid phone: ${result.sanitized}`);
-        } else {
-          this.logger.debug(`Invalid phone: ${phone} - ${result.reason}`);
+      // If basic validation passes, perform final regex validation
+      if (basicValidation.isValid) {
+        const finalValidation = finalRegexValidation(basicValidation.sanitized);
+
+        if (!finalValidation.isValid) {
+          // Final validation failed
+          if (this.options.enableLogging) {
+            this.logger.debug(`Final validation failed: ${phone} - ${finalValidation.reason}`);
+          }
+          return {
+            original: phone,
+            sanitized: finalValidation.sanitized,
+            isValid: false,
+            reason: finalValidation.reason,
+          };
         }
+
+        // All validations passed
+        if (this.options.enableLogging) {
+          this.logger.debug(`Valid phone: ${finalValidation.sanitized}`);
+        }
+        return {
+          original: phone,
+          sanitized: finalValidation.sanitized,
+          isValid: true,
+          reason: undefined,
+        };
       }
 
-      return result;
+      // Basic validation failed
+      if (this.options.enableLogging) {
+        this.logger.debug(`Invalid phone: ${phone} - ${basicValidation.reason}`);
+      }
+      return basicValidation;
     } catch (error) {
       this.logger.error('Error validating phone number', String(error));
       if (this.options.throwOnError) {
@@ -94,7 +121,7 @@ export class PhoneValidator {
   }
 
   /**
-   * Extracts multiple phone numbers from a string
+   * Extracts multiple phone numbers from a string with comprehensive validation
    */
   extractMultiple(text: string): MultipleNumbersResult {
     const result: MultipleNumbersResult = {
@@ -109,20 +136,15 @@ export class PhoneValidator {
         return result;
       }
 
-      const extracted = extractPhoneNumbers(text);
-      result.extractedNumbers = extracted;
+      // Use the enhanced extraction function with final regex validation
+      const extractionResult = extractAndValidatePhoneNumbers(text);
 
-      for (const number of extracted) {
-        const validation = this.validate(number);
-        if (validation.isValid) {
-          result.validNumbers.push(validation.sanitized);
-        } else {
-          result.invalidNumbers.push(number);
-        }
-      }
+      result.extractedNumbers = extractionResult.allExtracted;
+      result.validNumbers = extractionResult.validNumbers;
+      result.invalidNumbers = extractionResult.invalidNumbers.map((item) => item.number);
 
       this.logger.debug(
-        `Extracted ${result.extractedNumbers.length} numbers (${result.validNumbers.length} valid)`,
+        `Extracted ${result.extractedNumbers.length} numbers (${result.validNumbers.length} valid, ${result.invalidNumbers.length} invalid)`,
       );
 
       return result;

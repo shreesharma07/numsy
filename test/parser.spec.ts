@@ -91,6 +91,21 @@ describe('Parser', () => {
       expect(column).toBe('phone');
     });
 
+    it('should detect phone column with variations', () => {
+      const variations = [
+        { customer_phone: '9876543210' },
+        { 'mobile number': '8123456789' },
+        { contact: '7987654321' },
+        { whatsapp: '6765432109' },
+      ];
+
+      variations.forEach((data) => {
+        const column = parser.detectPhoneColumn([data]);
+        expect(column).toBeDefined();
+        expect(column).not.toBeNull();
+      });
+    });
+
     it('should return null for empty data', () => {
       const column = parser.detectPhoneColumn([]);
 

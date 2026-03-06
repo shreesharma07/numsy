@@ -21,18 +21,12 @@
     "esModuleInterop": true,
     "resolveJsonModule": true,
     "isolatedModules": true,
+    "types": ["node"],
     "paths": {
       "@common/*": ["src/common/*"],
       "@core/*": ["src/core/*"]
     }
   },
   "include": ["src/**/*"],
-  "exclude": [
-    "node_modules",
-    "dist",
-    "test",
-    "**/*.spec.ts",
-    "**/*.test.ts",
-    "docs"
-  ]
+  "exclude": ["node_modules", "dist", "test", "**/*.spec.ts", "**/*.test.ts", "docs"]
 }

@@ -42,6 +42,13 @@ describe('Numsy Integration Tests', () => {
       expect(result.sanitized).toBe('9876543210');
     });
 
+    it('should reject dummy numbers with final regex validation', () => {
+      const result = numsy.validate('9999999999');
+
+      expect(result.isValid).toBe(false);
+      expect(result.reason).toBeDefined();
+    });
+
     it('should sanitize phone numbers', () => {
       const sanitized = numsy.sanitize('+91-987-654-3210');
 
@@ -64,6 +71,14 @@ describe('Numsy Integration Tests', () => {
 
       expect(result.extractedNumbers).toHaveLength(2);
       expect(result.validNumbers).toHaveLength(2);
+    });
+
+    it('should filter out invalid patterns when extracting', () => {
+      const result = numsy.extractMultiple('Valid: 9876543210, 8123456789. Dummy: 1111111111');
+
+      expect(result.validNumbers).toContain('9876543210');
+      expect(result.validNumbers).toContain('8123456789');
+      expect(result.validNumbers).not.toContain('1111111111');
     });
 
     it('should validate batch of numbers', () => {

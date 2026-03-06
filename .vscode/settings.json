@@ -12,5 +12,8 @@
     "**/dist": true,
     "**/temp": true
   },
-  "markdown": false
+  "markdown": false,
+  "typescript.tsdk": "node_modules/typescript/lib",
+  "typescript.preferences.includePackageJsonAutoImports": "on",
+  "typescript.enablePromptUseWorkspaceTsdk": true
 }

@@ -6,6 +6,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import archiver from 'archiver';
+import { createObjectCsvWriter } from 'csv-writer';
 import {
   ProcessingResult,
   ProcessedRow,
@@ -16,6 +17,7 @@ import {
 import { LoggerHelper, AppError, ensureDirectory } from '../common/helpers';
 import { Parser } from './Parser';
 import { PhoneValidator } from './PhoneValidator';
+import { findMatchingField, COLUMN_ALIASES } from '../common/functions';
 
 /**
  * FileProcessor class for processing files with phone number validation
@@ -72,21 +74,34 @@ export class FileProcessor {
 
       this.logger.log(`Using phone column: "${phoneColumn}"`);
 
-      // Process each row
-      const { validRows, invalidRows, analytics, allExtractedData } = this.processRows(
-        parseResult.data,
-        phoneColumn,
-      );
+      // Detect name column (if present)
+      const nameColumn = this.detectNameColumn(parseResult.data);
+      if (nameColumn) {
+        this.logger.log(`Detected name column: "${nameColumn}"`);
+      } else {
+        this.logger.log('No name column detected');
+      }
 
-      // Generate output file paths
+      // Process each row
+      const { validRows, invalidRows, analytics, allExtractedData, uniqueValidNumbers } =
+        this.processRows(parseResult.data, phoneColumn, nameColumn);
+
+      // Generate output file paths using original filename
+      const originalFileName = path.basename(filePath, path.extname(filePath));
       const timestamp = Date.now();
-      const validFilePath = path.join(outputDirectory, `valid_numbers_${timestamp}.csv`);
-      const invalidFilePath = path.join(outputDirectory, `invalid_numbers_${timestamp}.csv`);
-      const analyticsFilePath = path.join(outputDirectory, `analytics_${timestamp}.txt`);
-      const zipFilePath = path.join(outputDirectory, `processed_${timestamp}.zip`);
+      const baseFileName = `${originalFileName}_numsy_report_${timestamp}`;
+
+      const validFilePath = path.join(outputDirectory, `${baseFileName}_valid.csv`);
+      const invalidFilePath = path.join(outputDirectory, `${baseFileName}_invalid.csv`);
+      const uniqueNumbersFilePath = path.join(outputDirectory, `${baseFileName}_unique.csv`);
+      const analyticsFilePath = path.join(outputDirectory, `${baseFileName}_analytics.txt`);
+      const zipFilePath = path.join(outputDirectory, `${baseFileName}.zip`);
 
       // Write CSV files
       await this.parser.writeProcessedFiles(validRows, invalidRows, validFilePath, invalidFilePath);
+
+      // Write unique numbers file
+      await this.writeUniqueNumbersFile(uniqueValidNumbers, uniqueNumbersFilePath, nameColumn);
 
       // Generate analytics file
       await this.generateAnalyticsFile(
@@ -95,25 +110,31 @@ export class FileProcessor {
         allExtractedData,
         parseResult.totalRows,
         phoneColumn,
+        nameColumn,
       );
 
       // Create ZIP file
-      await this.createZipFile([validFilePath, invalidFilePath, analyticsFilePath], zipFilePath);
+      await this.createZipFile(
+        [validFilePath, invalidFilePath, uniqueNumbersFilePath, analyticsFilePath],
+        zipFilePath,
+      );
 
       const result: ProcessingResult = {
         totalRecords: parseResult.totalRows,
         validRecords: validRows.length,
         invalidRecords: invalidRows.length,
         phoneColumn,
+        nameColumn: nameColumn || undefined,
         zipFilePath,
         validFilePath,
         invalidFilePath,
+        uniqueNumbersFilePath,
         analyticsFilePath,
         analytics,
       };
 
       this.logger.log(
-        `Processing complete: ${result.validRecords} valid, ${result.invalidRecords} invalid`,
+        `Processing complete: ${result.validRecords} valid, ${result.invalidRecords} invalid, ${analytics.uniqueValidNumbers} unique`,
       );
 
       return result;
@@ -132,22 +153,26 @@ export class FileProcessor {
   private processRows(
     data: ParsedDataRow[],
     phoneColumn: string,
+    nameColumn?: string | null,
   ): {
     validRows: ProcessedRow[];
     invalidRows: ProcessedRow[];
     analytics: ProcessingAnalytics;
     allExtractedData: ProcessedRow[];
+    uniqueValidNumbers: Map<string, { name?: string; phone: string }>;
   } {
     const validRows: ProcessedRow[] = [];
     const invalidRows: ProcessedRow[] = [];
     const allExtractedData: ProcessedRow[] = [];
     const allValidNumbers: string[] = [];
+    const uniqueValidNumbers = new Map<string, { name?: string; phone: string }>();
     let recordsWithMultipleNumbers = 0;
     let totalNumbersExtracted = 0;
 
     try {
       for (const row of data) {
         const phoneValue = row[phoneColumn];
+        const nameValue = nameColumn ? row[nameColumn] : undefined;
 
         if (!phoneValue) {
           const invalidRow: ProcessedRow = {
@@ -168,10 +193,13 @@ export class FileProcessor {
 
         if (extractedCount > 1) {
           recordsWithMultipleNumbers++;
+          this.logger.debug(
+            `Row contains ${extractedCount} numbers: ${multipleResult.extractedNumbers.join(', ')}`,
+          );
         }
 
         if (multipleResult.validNumbers.length > 0) {
-          // Create a row for each valid number
+          // Create a row for each valid number extracted
           for (const validNumber of multipleResult.validNumbers) {
             const validRow: ProcessedRow = {
               ...row,
@@ -182,9 +210,23 @@ export class FileProcessor {
               numbersExtracted: extractedCount,
               allExtractedNumbers: multipleResult.extractedNumbers.join(', '),
             };
+
+            // Add name to the row if detected
+            if (nameColumn && nameValue) {
+              validRow.name = String(nameValue);
+            }
+
             validRows.push(validRow);
             allExtractedData.push(validRow);
             allValidNumbers.push(validNumber);
+
+            // Track unique numbers with their associated names
+            if (!uniqueValidNumbers.has(validNumber)) {
+              uniqueValidNumbers.set(validNumber, {
+                phone: validNumber,
+                name: nameValue ? String(nameValue) : undefined,
+              });
+            }
           }
         } else {
           // No valid numbers found
@@ -197,13 +239,18 @@ export class FileProcessor {
             sanitizedPhone: validation.sanitized,
             numbersExtracted: extractedCount,
           };
+
+          if (nameColumn && nameValue) {
+            invalidRow.name = String(nameValue);
+          }
+
           invalidRows.push(invalidRow);
         }
       }
 
       // Calculate analytics
-      const uniqueValidNumbers = new Set(allValidNumbers);
-      const duplicateNumbers = allValidNumbers.length - uniqueValidNumbers.size;
+      const uniqueCount = uniqueValidNumbers.size;
+      const duplicateNumbers = allValidNumbers.length - uniqueCount;
 
       const analytics: ProcessingAnalytics = {
         totalNumbersExtracted,
@@ -212,13 +259,70 @@ export class FileProcessor {
         recordsWithMultipleNumbers,
         averageNumbersPerRecord: totalNumbersExtracted / data.length || 0,
         duplicateNumbers,
-        uniqueValidNumbers: uniqueValidNumbers.size,
+        uniqueValidNumbers: uniqueCount,
       };
 
-      return { validRows, invalidRows, analytics, allExtractedData };
+      this.logger.log(
+        `Processed ${data.length} rows: ${allValidNumbers.length} valid (${uniqueCount} unique), ${invalidRows.length} invalid`,
+      );
+
+      return { validRows, invalidRows, analytics, allExtractedData, uniqueValidNumbers };
     } catch (error) {
       this.logger.error('Error processing rows', String(error));
       throw new AppError('Failed to process data rows', 'PROCESSING_ERROR');
+    }
+  }
+
+  /**
+   * Detects name column from data using multiple variations
+   */
+  private detectNameColumn(data: ParsedDataRow[]): string | null {
+    try {
+      if (!data || data.length === 0) {
+        return null;
+      }
+
+      const firstRow = data[0];
+      const nameField = findMatchingField(firstRow, COLUMN_ALIASES.name);
+
+      return nameField;
+    } catch (error) {
+      this.logger.error('Error detecting name column', String(error));
+      return null;
+    }
+  }
+
+  /**
+   * Writes unique numbers to a CSV file
+   */
+  private async writeUniqueNumbersFile(
+    uniqueNumbers: Map<string, { name?: string; phone: string }>,
+    filePath: string,
+    nameColumnDetected: string | null | undefined,
+  ): Promise<void> {
+    try {
+      const uniqueArray = Array.from(uniqueNumbers.values());
+
+      const headers: Array<{ id: string; title: string }> = [
+        { id: 'phone', title: 'Phone Number' },
+      ];
+
+      if (nameColumnDetected) {
+        headers.unshift({ id: 'name', title: 'Name' });
+      }
+
+      const csvWriter = createObjectCsvWriter({
+        path: filePath,
+        header: headers,
+      });
+
+      await csvWriter.writeRecords(uniqueArray);
+      this.logger.log(
+        `Unique numbers file created: ${filePath} (${uniqueNumbers.size} unique numbers)`,
+      );
+    } catch (error) {
+      this.logger.error('Error writing unique numbers file', String(error));
+      throw new AppError('Failed to write unique numbers file', 'WRITE_ERROR');
     }
   }
 
@@ -231,8 +335,11 @@ export class FileProcessor {
     allExtractedData: ProcessedRow[],
     totalRecords: number,
     phoneColumn: string,
+    nameColumn?: string | null,
   ): Promise<void> {
     try {
+      const nameInfo = nameColumn ? `\nName Column Used           : ${nameColumn}` : '';
+
       const content = `
 ═══════════════════════════════════════════════════════════════
            NUMBER PROCESSOR - ANALYTICS REPORT
@@ -241,7 +348,7 @@ export class FileProcessor {
 PROCESSING SUMMARY
 ─────────────────────────────────────────────────────────────
 Total Records Processed     : ${totalRecords}
-Phone Column Used          : ${phoneColumn}
+Phone Column Used          : ${phoneColumn}${nameInfo}
 Total Numbers Extracted    : ${analytics.totalNumbersExtracted}
 
 VALIDATION RESULTS
@@ -256,6 +363,15 @@ DETAILED STATISTICS
 Records with Multiple Nums : ${analytics.recordsWithMultipleNumbers}
 Average Numbers per Record : ${analytics.averageNumbersPerRecord.toFixed(2)}
 Success Rate              : ${((analytics.totalValidNumbers / totalRecords) * 100).toFixed(2)}%
+Deduplication Rate        : ${((analytics.duplicateNumbers / analytics.totalValidNumbers) * 100).toFixed(2)}%
+
+VALIDATION FEATURES
+─────────────────────────────────────────────────────────────
+✓ Multiple number extraction per row
+✓ Comprehensive final regex validation
+✓ Pattern-based filtering (dummy numbers, sequential, etc.)
+✓ Automatic name column detection
+✓ Unique number deduplication
 
 ═══════════════════════════════════════════════════════════════
 Generated on: ${new Date().toISOString()}

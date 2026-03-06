@@ -22,6 +22,25 @@ describe('PhoneValidator', () => {
       expect(result.reason).toBeUndefined();
     });
 
+    it('should reject dummy/test numbers with final regex validation', () => {
+      const dummyNumbers = ['1111111111', '2222222222', '9999999999', '0000000000'];
+
+      dummyNumbers.forEach((number) => {
+        const result: PhoneValidationResult = validator.validate(number);
+        expect(result.isValid).toBe(false);
+        expect(result.reason).toBeDefined();
+      });
+    });
+
+    it('should reject sequential patterns', () => {
+      // 9876543210 is actually valid, others should fail
+      const result1 = validator.validate('0123456789');
+      expect(result1.isValid).toBe(false);
+
+      const result2 = validator.validate('1234567890');
+      expect(result2.isValid).toBe(false);
+    });
+
     it('should validate numbers with country code', () => {
       const result: PhoneValidationResult = validator.validate('+919876543210');
 
@@ -101,6 +120,27 @@ describe('PhoneValidator', () => {
       expect(result.validNumbers).toHaveLength(2);
       expect(result.validNumbers).toContain('9876543210');
       expect(result.validNumbers).toContain('8123456789');
+    });
+
+    it('should extract and validate multiple numbers with final regex check', () => {
+      const result = validator.extractMultiple(
+        'Valid: 9876543210, 8123456789. Invalid: 1111111111, 9999999999',
+      );
+
+      expect(result.validNumbers.length).toBeGreaterThan(0);
+      expect(result.validNumbers).toContain('9876543210');
+      expect(result.validNumbers).toContain('8123456789');
+      // Dummy numbers should be filtered out
+      expect(result.validNumbers).not.toContain('1111111111');
+      expect(result.validNumbers).not.toContain('9999999999');
+    });
+
+    it('should return unique numbers only', () => {
+      const result = validator.extractMultiple('9876543210, 9876543210, 8123456789, 9876543210');
+
+      // Should deduplicate
+      const uniqueCount = new Set(result.validNumbers).size;
+      expect(uniqueCount).toBe(2);
     });
 
     it('should handle text with no numbers', () => {
