@@ -536,7 +536,6 @@ with all other field values preserved.
                          END OF REPORT
 ========================================================================
 
-For questions or support, visit: https://github.com/razorpod/number-processor
 Thank you for using Number Processor!
 
 `;

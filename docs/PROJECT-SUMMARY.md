@@ -7,7 +7,7 @@ All requirements have been successfully implemented!
 ## 📁 Project Structure
 
 ```text
-d:\Razorpod Applications\Number-Processor\
+Number-Processor/
 │
 ├── 📂 src/                              # Source code directory
 │   ├── 📂 controllers/

@@ -42,7 +42,7 @@ Your project has been successfully converted to use **pnpm** and is now ready fo
 ### Install Dependencies
 
 ```bash
-cd "d:\Razorpod Applications\Number-Processor"
+cd Number-Processor
 pnpm install
 ```
 
@@ -302,8 +302,8 @@ https://unpkg.com/@numsy/
 Add these to your README.md:
 
 ```markdown
-[![npm version](https://badge.fury.io/js/%40razorpod%2Fnumber-processor.svg)](https://badge.fury.io/js/%40razorpod%2Fnumber-processor)
-[![npm downloads](https://img.shields.io/npm/dm/@numsy.svg)](https://npmjs.com/package/@numsy)
+[![npm version](https://badge.fury.io/js/numsy.svg)](https://badge.fury.io/js/numsy)
+[![npm downloads](https://img.shields.io/npm/dm/numsy.svg)](https://npmjs.com/package/numsy)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![pnpm](https://img.shields.io/badge/maintained%20with-pnpm-cc00ff.svg)](https://pnpm.io/)
 ```
@@ -333,7 +333,7 @@ pnpm test && pnpm run build
 
 ```bash
 pnpm pack
-# Creates: razorpod-number-processor-1.0.0.tgz
+# Creates: numsy-1.0.0.tgz
 # Test install in another project
 ```
 

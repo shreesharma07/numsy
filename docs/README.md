@@ -1,6 +1,6 @@
 # 📱 Number Processor
 
-[![npm version](https://badge.fury.io/js/%40razorpod%2Fnumber-processor.svg)](https://badge.fury.io/js/%40razorpod%2Fnumber-processor)
+[![npm version](https://badge.fury.io/js/numsy.svg)](https://badge.fury.io/js/numsy)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![pnpm](https://img.shields.io/badge/maintained%20with-pnpm-cc00ff.svg)](https://pnpm.io/)
 

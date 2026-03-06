@@ -19,7 +19,7 @@ Edit `package.json` and change:
 ### 2. Install Dependencies
 
 ```bash
-cd "d:\Razorpod Applications\Number-Processor"
+cd Number-Processor
 pnpm install
 ```
 

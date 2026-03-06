@@ -74,7 +74,7 @@ Edit `package.json`:
 ### Step 2: Install Dependencies
 
 ```bash
-cd "d:\Razorpod Applications\Number-Processor"
+cd Number-Processor
 pnpm install
 ```
 
@@ -109,14 +109,14 @@ Test your package locally before publishing:
 # Pack the package (creates a .tgz file)
 pnpm pack
 
-# This creates: razorpod-number-processor-1.0.0.tgzm,mv 
+# This creates: numsy-1.0.0.tgz
 ```
 
 You can test install it in another project:
 
 ```bash
 cd /path/to/test-project
-pnpm add /path/to/razorpod-number-processor-1.0.0.tgz
+pnpm add /path/to/numsy-1.0.0.tgz
 ```
 
 ### Step 6: Verify Package Contents
@@ -409,7 +409,7 @@ pnpm pack --dry-run
 - Add NPM badge to README:
 
   ```markdown
-  [![npm version](https://badge.fury.io/js/%40razorpod%2Fnumber-processor.svg)](https://www.npmjs.com/package/@numsy)
+  [![npm version](https://badge.fury.io/js/numsy.svg)](https://www.npmjs.com/package/numsy)
   ```
 
 - Share on Twitter/LinkedIn
@@ -489,7 +489,7 @@ If you encounter issues:
 **Ready to publish? Run these commands:**
 
 ```bash
-cd "d:\Razorpod Applications\Number-Processor"
+cd Number-Processor
 pnpm install
 pnpm run lint
 pnpm test
