@@ -150,7 +150,7 @@ export const PHONE_CONSTANTS = {
  * File processing constants
  */
 export const FILE_CONSTANTS = {
-  MAX_FILE_SIZE: 10 * 1024 * 1024, // 10MB
+  MAX_FILE_SIZE: 50 * 1024 * 1024, // 50MB
   SUPPORTED_EXTENSIONS: ['.csv', '.xlsx', '.xls'],
   DEFAULT_ENCODING: 'utf-8',
 } as const;
@@ -159,7 +159,7 @@ export const FILE_CONSTANTS = {
  * Default port configuration
  */
 export const PORT_CONSTANTS = {
-  DEFAULT: 68679,
+  DEFAULT: 3000,
   MIN: 1024,
   MAX: 65535,
 } as const;

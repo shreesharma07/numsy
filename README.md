@@ -150,7 +150,7 @@ pnpm run serve -- --page
 
 | Option            | Alias           | Description                      | Default |
 | ----------------- | --------------- | -------------------------------- | ------- |
-| `--port <number>` | `-p`            | Specify port number (1024-65535) | 68679   |
+| `--port <number>` | `-p`            | Specify port number (1024-65535) | 3000    |
 | `--page`          | `-s`, `--serve` | Serve the HTML utility page      | false   |
 | `--help`          | `-h`            | Display help message             | -       |
 
@@ -179,9 +179,9 @@ NODE_ENV=production npx @numsy/numsy-serve
 
 Once the server is running, you can access:
 
-- **Health Check**: `http://localhost:68679/api/health`
-- **API Base**: `http://localhost:68679/api`
-- **Utility Page** (with `--page` flag): `http://localhost:68679`
+- **Health Check**: `http://localhost:3000/api/health`
+- **API Base**: `http://localhost:3000/api`
+- **Utility Page** (with `--page` flag): `http://localhost:3000`
 
 ### Example Server Output
 
@@ -190,10 +190,10 @@ Once the server is running, you can access:
 ║ ✅ Server Started Successfully ║
 ╚═══════════════════════════════════════════════════════════════╝
 
-🚀 Server running on: http://localhost:68679
-📡 API endpoint: http://localhost:68679/api
-💚 Health check: http://localhost:68679/api/health
-🌐 Utility page: http://localhost:68679
+🚀 Server running on: http://localhost:3000
+📡 API endpoint: http://localhost:3000/api
+💚 Health check: http://localhost:3000/api/health
+🌐 Utility page: http://localhost:3000
 
 📝 Environment: development
 ⚡ Process ID: 12345

@@ -102,7 +102,7 @@ function displayHelp(): void {
 Usage: numsy-serve [options]
 
 Options:
-  -p, --port <number>     Specify port number (default: 68679)
+  -p, --port <number>     Specify port number (default: 3000)
   -s, --page, --serve     Serve the HTML utility page
   -h, --help              Display this help message
 
@@ -136,7 +136,7 @@ async function bootstrap(): Promise<void> {
     }
 
     // * // Determine preferred port //
-    const preferredPort = options.port || parseInt(process.env.PORT || '68679') || 68679;
+    const preferredPort = options.port || parseInt(process.env.PORT || '3000') || 3000;
 
     // * // Log the preferred port and start looking for an available port. This will help users understand which port the server is trying to use and why it might switch to a different one if the preferred port is in use. //
     logger.log(`Looking for available port starting from ${preferredPort}...`);

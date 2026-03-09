@@ -274,7 +274,7 @@ export const SUPPORTED_FILE_EXTENSIONS = ['csv', 'xlsx', 'xls'];
  * File size limits (in bytes)
  */
 export const FILE_SIZE_LIMITS = {
-  MAX_FILE_SIZE: 10 * 1024 * 1024, // 10MB
+  MAX_FILE_SIZE: 50 * 1024 * 1024, // 50MB
   MIN_FILE_SIZE: 1, // 1 byte
 };
 
