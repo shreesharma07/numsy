@@ -37,3 +37,8 @@ lerna-debug.log*
 !.vscode/tasks.json
 !.vscode/launch.json
 !.vscode/extensions.json
+
+# Other
+codecov
+codecov.SHA256SUM
+codecov.SHA256SUM.sig
