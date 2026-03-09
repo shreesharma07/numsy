@@ -169,7 +169,7 @@ Numsy has been transformed into a production-ready, enterprise-grade npm package
 **Usage Examples:**
 
 ```bash
-# Default port (68679) with auto-detection
+# Default port (3000) with auto-detection
 pnpm run serve
 
 # Custom port
@@ -187,15 +187,15 @@ pnpm run serve --help
 
 **CLI Output:**
 
-```
+```text
 ╔═══════════════════════════════════════════════════════════════╗
 ║                  ✅ Server Started Successfully                ║
 ╚═══════════════════════════════════════════════════════════════╝
 
-🚀 Server running on:      http://localhost:68679
-📡 API endpoint:           http://localhost:68679/api
-💚 Health check:           http://localhost:68679/api/health
-🌐 Utility page:          http://localhost:68679
+🚀 Server running on:      http://localhost:3000
+📡 API endpoint:           http://localhost:3000/api
+💚 Health check:           http://localhost:3000/api/health
+🌐 Utility page:          http://localhost:3000
 
 📝 Environment:            development
 ⚡ Process ID:             12345
@@ -293,12 +293,12 @@ export const PHONE_CONSTANTS = {
 } as const;
 
 export const FILE_CONSTANTS = {
-  MAX_FILE_SIZE: 10 * 1024 * 1024, // 10MB
+  MAX_FILE_SIZE: 50 * 1024 * 1024, // 50MB
   SUPPORTED_EXTENSIONS: ['.csv', '.xlsx', '.xls'],
 } as const;
 
 export const PORT_CONSTANTS = {
-  DEFAULT: 68679,
+  DEFAULT: 3000,
   MIN: 1024,
   MAX: 65535,
 } as const;
@@ -381,7 +381,7 @@ export const PORT_CONSTANTS = {
 
 #### Commit Convention
 
-```
+```text
 feat: Add new feature
 fix: Bug fix
 docs: Documentation
@@ -620,14 +620,14 @@ gh pr create --base develop
 - [ ] Enable CodeQL scanning
 - [ ] Enable secret scanning
 
-### Snyk Setup
+### Snyk Setup Guide
 
-- [ ] Create Snyk account
-- [ ] Connect GitHub repository
-- [ ] Configure monitoring
-- [ ] Set up notifications
+- [x] Create Snyk account
+- [x] Connect GitHub repository
+- [x] Configure monitoring
+- [x] Set up notifications
 
-### Team Setup
+### Team Setup Guide
 
 - [ ] Review Git Flow guide
 - [ ] Review contributing guidelines

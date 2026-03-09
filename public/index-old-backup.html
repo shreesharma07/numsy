@@ -1,0 +1,1451 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description"
+        content="Validate and sanitize Indian phone numbers from CSV and Excel files with advanced analytics" />
+    <meta name="color-scheme" content="light dark" />
+    <title>Numsy - Indian Phone Number Validator & Sanitizer</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="shortcut icon"
+        href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🔢</text></svg>" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet" />
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --primary-light: #a5b4fc;
+            --secondary: #8b5cf6;
+            --accent: #06b6d4;
+            --success: #10b981;
+            --success-dark: #059669;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --info: #3b82f6;
+
+            /* Light mode colors */
+            --bg-body: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --bg-panel: rgba(255, 255, 255, 0.95);
+            --text-primary: #0f172a;
+            --text-secondary: #475569;
+            --text-tertiary: #94a3b8;
+            --border-color: rgba(148, 163, 184, 0.2);
+            --divider: rgba(148, 163, 184, 0.15);
+            --panel-shadow: 0 20px 60px -15px rgba(0, 0, 0, 0.15);
+            --panel-shadow-hover: 0 25px 70px -15px rgba(0, 0, 0, 0.2);
+            --transition-smooth: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            --transition-bounce: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        /* Dark mode colors */
+        [data-theme="dark"] {
+            --bg-body: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
+            --bg-panel: rgba(15, 23, 42, 0.95);
+            --text-primary: #f1f5f9;
+            --text-secondary: #cbd5e1;
+            --text-tertiary: #64748b;
+            --border-color: rgba(148, 163, 184, 0.15);
+            --divider: rgba(148, 163, 184, 0.1);
+            --panel-shadow: 0 20px 60px -15px rgba(0, 0, 0, 0.5);
+            --panel-shadow-hover: 0 25px 70px -15px rgba(0, 0, 0, 0.6);
+        }
+
+        /* Auto detect system preference */
+        @media (prefers-color-scheme: dark) {
+            :root:not([data-theme="light"]) {
+                --bg-body: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
+                --bg-panel: rgba(15, 23, 42, 0.95);
+                --text-primary: #f1f5f9;
+                --text-secondary: #cbd5e1;
+                --text-tertiary: #64748b;
+                --border-color: rgba(148, 163, 184, 0.15);
+                --divider: rgba(148, 163, 184, 0.1);
+                --panel-shadow: 0 20px 60px -15px rgba(0, 0, 0, 0.5);
+                --panel-shadow-hover: 0 25px 70px -15px rgba(0, 0, 0, 0.6);
+            }
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: var(--bg-gradient);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            position: relative;
+            overflow-x: hidden;
+            transition: background 0.5s ease;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255, 255, 255, var(--pattern-opacity)) 1px, transparent 1px);
+            background-size: 50px 50px;
+            animation: backgroundScroll 30s linear infinite;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        @keyframes backgroundScroll {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Theme Toggle Button */
+        .theme-toggle {
+            position: fixed;
+            top: 24px;
+            right: 24px;
+            background: var(--card-bg);
+            backdrop-filter: blur(10px);
+            border: 2px solid var(--border-color);
+            border-radius: 50px;
+            padding: 12px 20px;
+            cursor: pointer;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: var(--shadow-sm);
+            transition: var(--transition);
+            font-size: 20px;
+        }
+
+        .theme-toggle:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(99, 102, 241, 0.3);
+        }
+
+        .theme-toggle span {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-secondary);
+        }
+
+        .container {
+            background: var(--bg-container);
+            backdrop-filter: blur(20px);
+            border-radius: 28px;
+            box-shadow: var(--shadow-lg);
+            max-width: 1100px;
+            width: 100%;
+            padding: 48px;
+            position: relative;
+            z-index: 1;
+            animation: slideUp 0.6s ease-out;
+            border: 2px solid var(--border-color);
+            transition: var(--transition);
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 48px;
+            position: relative;
+        }
+
+        .header::before {
+            content: '📱';
+            font-size: 80px;
+            display: block;
+            margin-bottom: 20px;
+            animation: bounce 2s ease-in-out infinite;
+            filter: drop-shadow(0 4px 12px rgba(99, 102, 241, 0.3));
+        }
+
+        @keyframes bounce {
+
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-12px);
+            }
+        }
+
+        .header h1 {
+            font-family: 'Poppins', sans-serif;
+            color: var(--text-primary);
+            font-size: 48px;
+            font-weight: 900;
+            margin-bottom: 16px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: -1px;
+            text-shadow: 0 2px 10px rgba(99, 102, 241, 0.2);
+        }
+
+        .header p {
+            color: var(--text-secondary);
+            font-size: 17px;
+            font-weight: 500;
+            line-height: 1.6;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .badge {
+            display: inline-block;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 8px 20px;
+            border-radius: 24px;
+            font-size: 13px;
+            font-weight: 700;
+            margin-top: 16px;
+            box-shadow: 0 4px 16px rgba(99, 102, 241, 0.4);
+            letter-spacing: 0.5px;
+        }
+
+        .drop-zone {
+            border: 3px dashed var(--primary-light);
+            border-radius: 20px;
+            padding: 80px 32px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            background: var(--drop-zone-bg);
+            margin-bottom: 32px;
+            position: relative;
+            overflow: hidden;
+            min-height: 320px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .drop-zone.compact {
+            padding: 40px 24px;
+            min-height: 200px;
+        }
+
+        .drop-zone::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(45deg, var(--primary), var(--secondary), var(--primary));
+            border-radius: 20px;
+            opacity: 0;
+            transition: var(--transition);
+            z-index: -1;
+            background-size: 200% 200%;
+            animation: gradientShift 3s ease infinite;
+        }
+
+        @keyframes gradientShift {
+            0% {
+                background-position: 0% 50%;
+            }
+
+            50% {
+                background-position: 100% 50%;
+            }
+
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+
+        .drop-zone:hover {
+            border-color: var(--secondary);
+            background: var(--drop-zone-bg-hover);
+            transform: translateY(-3px);
+            box-shadow: 0 16px 32px rgba(99, 102, 241, 0.25);
+        }
+
+        .drop-zone:hover::before {
+            opacity: 0.15;
+        }
+
+        .drop-zone.dragover {
+            border-color: var(--secondary);
+            background: var(--drop-zone-bg-hover);
+            transform: scale(1.02);
+            box-shadow: 0 20px 40px rgba(99, 102, 241, 0.35);
+        }
+
+        .drop-zone.dragover::before {
+            opacity: 0.25;
+        }
+
+        .drop-zone-icon {
+            font-size: 96px;
+            margin-bottom: 24px;
+            animation: float 3s ease-in-out infinite;
+            transition: font-size 0.5s ease;
+        }
+
+        .drop-zone.compact .drop-zone-icon {
+            font-size: 64px;
+            margin-bottom: 16px;
+        }
+
+        @keyframes float {
+
+            0%,
+            100% {
+                transform: translateY(0px);
+            }
+
+            50% {
+                transform: translateY(-12px);
+            }
+        }
+
+        .drop-zone-text {
+            color: var(--text-primary);
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 12px;
+            transition: font-size 0.5s ease;
+        }
+
+        .drop-zone.compact .drop-zone-text {
+            font-size: 18px;
+        }
+
+        .drop-zone-hint {
+            color: var(--text-tertiary);
+            font-size: 15px;
+            font-weight: 500;
+            transition: font-size 0.5s ease;
+        }
+
+        .drop-zone.compact .drop-zone-hint {
+            font-size: 13px;
+        }
+
+        .file-input {
+            display: none;
+        }
+
+        .selected-file {
+            background: var(--result-bg);
+            border-radius: 18px;
+            padding: 24px;
+            margin-bottom: 28px;
+            display: none;
+            align-items: center;
+            justify-content: space-between;
+            border: 2px solid var(--border-color);
+            animation: slideIn 0.4s ease-out;
+            box-shadow: var(--shadow-sm);
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .selected-file.show {
+            display: flex;
+        }
+
+        .file-info {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .file-icon {
+            font-size: 40px;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.1);
+            }
+        }
+
+        .file-details h3 {
+            color: var(--text-primary);
+            font-size: 17px;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .file-details p {
+            color: var(--text-secondary);
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .remove-file {
+            background: linear-gradient(135deg, var(--danger), #dc2626);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            padding: 10px 20px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: var(--transition);
+            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+        }
+
+        .remove-file:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(239, 68, 68, 0.4);
+        }
+
+        .remove-file:active {
+            transform: translateY(0);
+        }
+
+        .upload-btn {
+            width: 100%;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            border: none;
+            border-radius: 14px;
+            padding: 18px 24px;
+            font-size: 18px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: var(--transition);
+            display: none;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 8px 20px rgba(99, 102, 241, 0.4);
+        }
+
+        .upload-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transition: left 0.5s;
+        }
+
+        .upload-btn:hover::before {
+            left: 100%;
+        }
+
+        .upload-btn.show {
+            display: block;
+        }
+
+        .upload-btn:hover:not(:disabled) {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 28px rgba(99, 102, 241, 0.5);
+        }
+
+        .upload-btn:active:not(:disabled) {
+            transform: translateY(-1px);
+        }
+
+        .upload-btn:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 12px;
+            background: var(--card-bg);
+            border-radius: 12px;
+            margin: 28px 0;
+            overflow: hidden;
+            display: none;
+            box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.15);
+            border: 1px solid var(--border-color);
+        }
+
+        .progress-bar.show {
+            display: block;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--secondary), var(--primary));
+            background-size: 200% 100%;
+            width: 0%;
+            transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            animation: shimmer 2s ease-in-out infinite;
+            box-shadow: 0 0 10px rgba(99, 102, 241, 0.5);
+        }
+
+        @keyframes shimmer {
+            0% {
+                background-position: 200% 0;
+            }
+
+            100% {
+                background-position: -200% 0;
+            }
+        }
+
+        .result {
+            background: var(--result-bg);
+            border-radius: 20px;
+            padding: 32px;
+            margin-top: 28px;
+            display: none;
+            animation: fadeInUp 0.5s ease-out;
+            border: 2px solid var(--border-color);
+            box-shadow: var(--shadow-sm);
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .result.show {
+            display: block;
+        }
+
+        .result.success {
+            background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+            border: 2px solid var(--success);
+            box-shadow: 0 8px 24px rgba(16, 185, 129, 0.2);
+        }
+
+        .result.error {
+            background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+            border: 2px solid var(--danger);
+            box-shadow: 0 8px 24px rgba(239, 68, 68, 0.2);
+        }
+
+        .result h3 {
+            color: var(--text-primary);
+            margin-bottom: 24px;
+            font-size: 26px;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .stat-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            padding: 24px;
+            text-align: center;
+            box-shadow: var(--shadow-sm);
+            transition: var(--transition);
+            border: 2px solid var(--border-color);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+        }
+
+        .stat-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .stat-value {
+            font-size: 32px;
+            font-weight: 800;
+            color: var(--primary);
+            margin-bottom: 8px;
+            line-height: 1;
+        }
+
+        .stat-value.success {
+            color: var(--success);
+        }
+
+        .stat-value.warning {
+            color: var(--warning);
+        }
+
+        .stat-value.danger {
+            color: var(--danger);
+        }
+
+        .stat-label {
+            font-size: 13px;
+            color: var(--text-secondary);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+        }
+
+        .analytics-section {
+            background: var(--card-bg);
+            backdrop-filter: blur(10px);
+            border-radius: 18px;
+            padding: 28px;
+            margin: 28px 0;
+            border: 2px solid var(--border-color);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .analytics-section h4 {
+            color: var(--text-primary);
+            margin-bottom: 24px;
+            font-size: 22px;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .analytics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 16px;
+        }
+
+        .analytics-item {
+            background: var(--bg-container);
+            border-radius: 14px;
+            padding: 20px;
+            border-left: 5px solid var(--primary);
+            transition: var(--transition);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .analytics-item:hover {
+            transform: translateX(4px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .analytics-item.success {
+            border-left-color: var(--success);
+        }
+
+        .analytics-item.warning {
+            border-left-color: var(--warning);
+        }
+
+        .analytics-item.info {
+            border-left-color: var(--info);
+        }
+
+        .analytics-value {
+            font-size: 30px;
+            font-weight: 800;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+            line-height: 1;
+        }
+
+        .analytics-label {
+            font-size: 14px;
+            color: var(--text-secondary);
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .analytics-description {
+            font-size: 12px;
+            color: var(--text-tertiary);
+            line-height: 1.5;
+        }
+
+        .download-btn {
+            width: 100%;
+            background: linear-gradient(135deg, var(--success), var(--success-dark));
+            color: white;
+            border: none;
+            border-radius: 14px;
+            padding: 16px 24px;
+            font-size: 17px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: var(--transition);
+            box-shadow: 0 6px 16px rgba(16, 185, 129, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .download-btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            transform: translate(-50%, -50%);
+            transition:
+                width 0.6s,
+                height 0.6s;
+        }
+
+        .download-btn:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        .download-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 24px rgba(16, 185, 129, 0.4);
+        }
+
+        .download-btn:active {
+            transform: translateY(-1px);
+        }
+
+        .error-message {
+            color: #991b1b;
+            font-size: 16px;
+            line-height: 1.7;
+            font-weight: 500;
+        }
+
+        .info-box {
+            background: var(--info-box-bg);
+            border: 2px solid var(--warning);
+            border-radius: 16px;
+            padding: 24px;
+            margin-top: 32px;
+            box-shadow: 0 6px 16px rgba(245, 158, 11, 0.25);
+        }
+
+        .info-box h4 {
+            color: var(--info-box-text);
+            margin-bottom: 14px;
+            font-size: 18px;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .info-box ul {
+            list-style-position: inside;
+            color: var(--info-box-text);
+            font-size: 14px;
+            line-height: 2.2;
+            font-weight: 500;
+        }
+
+        .info-box ul li {
+            padding-left: 4px;
+        }
+
+        .info-box strong {
+            color: var(--info-box-text);
+            font-weight: 800;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        .spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin-left: 10px;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .container {
+                padding: 32px 24px;
+            }
+
+            .header h1 {
+                font-size: 28px;
+            }
+
+            .header::before {
+                font-size: 56px;
+            }
+
+            .drop-zone {
+                padding: 48px 20px;
+            }
+
+            .drop-zone-icon {
+                font-size: 56px;
+            }
+
+            .stats {
+                grid-template-columns: 1fr;
+            }
+
+            .analytics-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .stat-value {
+                font-size: 28px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            body {
+                padding: 12px;
+            }
+
+            .container {
+                padding: 24px 16px;
+            }
+
+            .header h1 {
+                font-size: 24px;
+            }
+
+            .selected-file {
+                flex-direction: column;
+                gap: 16px;
+            }
+
+            .file-info {
+                width: 100%;
+            }
+
+            .remove-file {
+                width: 100%;
+            }
+        }
+
+        /* Accessibility */
+        .visually-hidden {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border-width: 0;
+        }
+
+        /* Focus styles for accessibility */
+        button:focus-visible,
+        .drop-zone:focus-visible {
+            outline: 3px solid var(--primary);
+            outline-offset: 2px;
+        }
+
+        /* Dark mode support (if needed) */
+        @media (prefers-reduced-motion: reduce) {
+
+            *,
+            *::before,
+            *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Theme Toggle Button -->
+    <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
+        <span class="theme-icon">🌙</span>
+        <span class="theme-text">Dark</span>
+    </button>
+
+    <div class="container">
+        <header class="header">
+            <h1>Numsy</h1>
+            <p>Advanced Indian phone number validation and sanitization with smart analytics</p>
+            <span class="badge">✨ AI-Powered Processing</span>
+        </header>
+
+        <div class="drop-zone" id="dropZone" role="button" tabindex="0" aria-label="Upload file area">
+            <div class="drop-zone-icon">📂</div>
+            <div class="drop-zone-text">Drag & Drop your file here</div>
+            <div class="drop-zone-hint">or click to browse • CSV, XLSX, XLS • Max 50MB</div>
+        </div>
+
+        <input type="file" id="fileInput" class="file-input" accept=".csv,.xlsx,.xls" aria-label="File input" />
+
+        <div class="selected-file" id="selectedFile" role="status" aria-live="polite">
+            <div class="file-info">
+                <div class="file-icon" aria-hidden="true">📄</div>
+                <div class="file-details">
+                    <h3 id="fileName">No file selected</h3>
+                    <p id="fileSize">0 KB</p>
+                </div>
+            </div>
+            <button class="remove-file" id="removeFile" aria-label="Remove selected file">
+                ✕ Remove
+            </button>
+        </div>
+
+        <button class="upload-btn" id="uploadBtn" aria-label="Process uploaded file">
+            🚀 Process File
+        </button>
+
+        <div class="progress-bar" id="progressBar" role="progressbar" aria-valuenow="0" aria-valuemin="0"
+            aria-valuemax="100">
+            <div class="progress-fill" id="progressFill"></div>
+        </div>
+
+        <div class="result" id="result" role="region" aria-live="polite"></div>
+
+        <div class="info-box">
+            <h4>📋 Supported Data Fields</h4>
+            <ul>
+                <li><strong>Name:</strong> Customer name or person identifier</li>
+                <li><strong>Phone:</strong> 10-digit Indian mobile numbers (6/7/8/9 prefix)</li>
+                <li><strong>Address:</strong> Location or address details</li>
+                <li><strong>Custom Fields:</strong> Any additional columns are preserved</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        // Theme Management
+        const themeToggle = document.getElementById('themeToggle');
+        const themeIcon = document.querySelector('.theme-icon');
+        const themeText = document.querySelector('.theme-text');
+        const htmlElement = document.documentElement;
+
+        // Check for saved theme preference or default to system preference
+        const savedTheme = localStorage.getItem('theme');
+        const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+        if (savedTheme) {
+            htmlElement.setAttribute('data-theme', savedTheme);
+            updateThemeToggle(savedTheme);
+        } else if (systemPrefersDark) {
+            htmlElement.setAttribute('data-theme', 'dark');
+            updateThemeToggle('dark');
+        }
+
+        // Theme toggle handler
+        themeToggle.addEventListener('click', () => {
+            const currentTheme = htmlElement.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+
+            htmlElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            updateThemeToggle(newTheme);
+        });
+
+        function updateThemeToggle(theme) {
+            if (theme === 'dark') {
+                themeIcon.textContent = '☀️';
+                themeText.textContent = 'Light';
+            } else {
+                themeIcon.textContent = '🌙';
+                themeText.textContent = 'Dark';
+            }
+        }
+
+        // Listen for system theme changes
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+            if (!localStorage.getItem('theme')) {
+                const newTheme = e.matches ? 'dark' : 'light';
+                htmlElement.setAttribute('data-theme', newTheme);
+                updateThemeToggle(newTheme);
+            }
+        });
+
+        // Console welcome message
+        console.log('%c🔢 Numsy - Phone Number Validator', 'font-size: 24px; font-weight: bold; color: #6366f1;');
+        console.log('%c✨ Advanced Indian phone number validation and sanitization', 'font-size: 14px; color: #8b5cf6;');
+        console.log('%c━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━', 'color: #6366f1;');
+        console.log('%cFeatures:', 'font-size: 16px; font-weight: bold; color: #10b981;');
+        console.log('  • 10-digit Indian mobile validation (6/7/8/9 prefix)');
+        console.log('  • CSV, XLSX, XLS file support');
+        console.log('  • Advanced analytics and deduplication');
+        console.log('  • Multi-number extraction per row');
+        console.log('  • Dark/Light theme with system preference');
+        console.log('%c━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━', 'color: #6366f1;');
+
+        // Element references
+        const dropZone = document.getElementById('dropZone');
+        const fileInput = document.getElementById('fileInput');
+        const selectedFile = document.getElementById('selectedFile');
+        const fileName = document.getElementById('fileName');
+        const fileSize = document.getElementById('fileSize');
+        const removeFile = document.getElementById('removeFile');
+        const uploadBtn = document.getElementById('uploadBtn');
+        const progressBar = document.getElementById('progressBar');
+        const progressFill = document.getElementById('progressFill');
+        const result = document.getElementById('result');
+
+        let selectedFileObj = null;
+
+        // Accessibility: Handle Enter and Space keys on drop zone
+        dropZone.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                fileInput.click();
+            }
+        });
+
+        // Click to browse
+        dropZone.addEventListener('click', () => fileInput.click());
+
+        // Drag and drop events
+        dropZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            dropZone.classList.add('dragover');
+        });
+
+        dropZone.addEventListener('dragleave', () => {
+            dropZone.classList.remove('dragover');
+        });
+
+        dropZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropZone.classList.remove('dragover');
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                handleFileSelection(files[0]);
+            }
+        });
+
+        // File input change
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) {
+                handleFileSelection(e.target.files[0]);
+            }
+        });
+
+        // Remove file
+        removeFile.addEventListener('click', () => {
+            resetFileSelection();
+        });
+
+        // Upload button
+        uploadBtn.addEventListener('click', uploadFile);
+
+        // Accessibility: Handle Enter key on upload button
+        uploadBtn.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                uploadFile();
+            }
+        });
+
+        function resetFileSelection() {
+            selectedFileObj = null;
+            fileInput.value = '';
+            selectedFile.classList.remove('show');
+            uploadBtn.classList.remove('show');
+            result.classList.remove('show');
+            progressBar.classList.remove('show');
+            progressFill.style.width = '0%';
+            dropZone.classList.remove('compact');
+        }
+
+        function handleFileSelection(file) {
+            const validExtensions = ['csv', 'xlsx', 'xls'];
+            const fileExtension = file.name.split('.').pop().toLowerCase();
+
+            if (!validExtensions.includes(fileExtension)) {
+                showToast('Please select a valid file (CSV, XLSX, or XLS)', 'error');
+                return;
+            }
+
+            if (file.size > 50 * 1024 * 1024) {
+                showToast('File size must be less than 50MB', 'error');
+                return;
+            }
+
+            selectedFileObj = file;
+            fileName.textContent = file.name;
+            fileSize.textContent = formatFileSize(file.size);
+            selectedFile.classList.add('show');
+            uploadBtn.classList.add('show');
+            result.classList.remove('show');
+            dropZone.classList.add('compact');
+
+            showToast(`File "${file.name}" selected successfully`, 'success');
+        }
+
+        async function uploadFile() {
+            if (!selectedFileObj) {
+                showToast('Please select a file first', 'error');
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('file', selectedFileObj);
+
+            uploadBtn.disabled = true;
+            uploadBtn.innerHTML = '⏳ Processing<span class="spinner"></span>';
+            progressBar.classList.add('show');
+            progressFill.style.width = '0%';
+            result.classList.remove('show');
+
+            // Update progress bar ARIA attributes
+            progressBar.setAttribute('aria-valuenow', '0');
+
+            // Simulate progress with better timing
+            let progress = 0;
+            const progressInterval = setInterval(() => {
+                progress += 3;
+                if (progress <= 90) {
+                    progressFill.style.width = progress + '%';
+                    progressBar.setAttribute('aria-valuenow', progress);
+                }
+            }, 150);
+
+            try {
+                const response = await fetch('/api/upload', {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                    },
+                });
+
+                clearInterval(progressInterval);
+                progressFill.style.width = '100%';
+                progressBar.setAttribute('aria-valuenow', '100');
+
+                const data = await response.json();
+
+                if (response.ok && data.success) {
+                    showSuccess(data);
+                    showToast('File processed successfully!', 'success');
+                } else {
+                    const errorMsg = data.message || data.error || 'Failed to process file';
+                    showError(errorMsg);
+                    showToast(errorMsg, 'error');
+                }
+            } catch (error) {
+                clearInterval(progressInterval);
+                const errorMsg = 'Network error: Unable to connect to server. Please try again.';
+                showError(errorMsg);
+                showToast(errorMsg, 'error');
+                console.error('Upload error:', error);
+            } finally {
+                uploadBtn.disabled = false;
+                uploadBtn.innerHTML = '🚀 Process File';
+                setTimeout(() => {
+                    progressBar.classList.remove('show');
+                    progressFill.style.width = '0%';
+                    progressBar.setAttribute('aria-valuenow', '0');
+                }, 1000);
+            }
+        }
+
+        // Toast notification system
+        function showToast(message, type = 'info') {
+            const existingToast = document.querySelector('.toast');
+            if (existingToast) {
+                existingToast.remove();
+            }
+
+            const toast = document.createElement('div');
+            toast.className = `toast toast-${type}`;
+            toast.textContent = message;
+            toast.setAttribute('role', 'alert');
+            toast.setAttribute('aria-live', 'polite');
+
+            const toastStyles = `
+                position: fixed;
+                top: 24px;
+                right: 24px;
+                padding: 16px 24px;
+                border-radius: 12px;
+                color: white;
+                font-weight: 600;
+                font-size: 14px;
+                z-index: 10000;
+                animation: slideInRight 0.3s ease-out;
+                box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+                max-width: 400px;
+            `;
+
+            toast.style.cssText = toastStyles;
+
+            if (type === 'success') {
+                toast.style.background = 'linear-gradient(135deg, #10b981, #059669)';
+            } else if (type === 'error') {
+                toast.style.background = 'linear-gradient(135deg, #ef4444, #dc2626)';
+            } else {
+                toast.style.background = 'linear-gradient(135deg, #3b82f6, #2563eb)';
+            }
+
+            document.body.appendChild(toast);
+
+            setTimeout(() => {
+                toast.style.animation = 'slideOutRight 0.3s ease-out';
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        // Add CSS for toast animations
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideInRight {
+                from {
+                    transform: translateX(400px);
+                    opacity: 0;
+                }
+                to {
+                    transform: translateX(0);
+                    opacity: 1;
+                }
+            }
+            @keyframes slideOutRight {
+                from {
+                    transform: translateX(0);
+                    opacity: 1;
+                }
+                to {
+                    transform: translateX(400px);
+                    opacity: 0;
+                }
+            }
+        `;
+        document.head.appendChild(style);
+
+        // HTML escape function to prevent XSS attacks
+        function escapeHtml(unsafe) {
+            if (unsafe === null || unsafe === undefined) return '';
+            return String(unsafe)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        }
+
+        // Sanitize and validate numeric values
+        function sanitizeNumber(value) {
+            const num = Number(value);
+            return (!isNaN(num) && isFinite(num) && num >= 0) ? num : 0;
+        }
+
+        function showSuccess(data) {
+            const { summary, downloadId } = data;
+
+            if (!summary || !downloadId) {
+                showError('Invalid response from server');
+                return;
+            }
+
+            const analytics = summary.analytics || {};
+
+            // Sanitize all numeric values
+            const totalRecords = sanitizeNumber(summary.totalRecords);
+            const validRecords = sanitizeNumber(summary.validRecords);
+            const invalidRecords = sanitizeNumber(summary.invalidRecords);
+            const totalNumbersExtracted = sanitizeNumber(analytics.totalNumbersExtracted);
+            const uniqueValidNumbers = sanitizeNumber(analytics.uniqueValidNumbers || validRecords);
+            const recordsWithMultipleNumbers = sanitizeNumber(analytics.recordsWithMultipleNumbers);
+            const averageNumbersPerRecord = sanitizeNumber(analytics.averageNumbersPerRecord);
+            const duplicateNumbers = sanitizeNumber(analytics.duplicateNumbers);
+
+            // Escape text values
+            const phoneColumnDetected = escapeHtml(summary.phoneColumnDetected || 'phone');
+            const safeDownloadId = escapeHtml(downloadId);
+
+            const hasMultipleNumbers = totalNumbersExtracted > validRecords;
+            const successRate = totalRecords > 0 ? ((validRecords / totalRecords) * 100).toFixed(1) : 0;
+
+            result.className = 'result show success';
+            result.innerHTML = `
+                <h3><span style="font-size: 28px;">✅</span> Processing Complete!</h3>
+                
+                <div class="stats">
+                    <div class="stat-card">
+                        <div class="stat-value">${totalRecords.toLocaleString()}</div>
+                        <div class="stat-label">Total Records</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value success">${validRecords.toLocaleString()}</div>
+                        <div class="stat-label">Valid Numbers</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value ${invalidRecords > 0 ? 'danger' : ''}">${invalidRecords.toLocaleString()}</div>
+                        <div class="stat-label">Invalid Numbers</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value ${successRate >= 80 ? 'success' : successRate >= 50 ? 'warning' : 'danger'}">${successRate}%</div>
+                        <div class="stat-label">Success Rate</div>
+                    </div>
+                </div>
+
+                ${hasMultipleNumbers
+                    ? `
+                <div class="analytics-section">
+                    <h4>📊 Enhanced Analytics</h4>
+                    <div class="analytics-grid">
+                        <div class="analytics-item info">
+                            <div class="analytics-value">${totalNumbersExtracted.toLocaleString()}</div>
+                            <div class="analytics-label">Numbers Extracted</div>
+                            <div class="analytics-description">Total phone numbers found across all rows</div>
+                        </div>
+                        
+                        <div class="analytics-item success">
+                            <div class="analytics-value">${uniqueValidNumbers.toLocaleString()}</div>
+                            <div class="analytics-label">Unique Valid Numbers</div>
+                            <div class="analytics-description">Distinct validated phone numbers</div>
+                        </div>
+                        
+                        ${recordsWithMultipleNumbers > 0
+                        ? `
+                        <div class="analytics-item warning">
+                            <div class="analytics-value">${recordsWithMultipleNumbers.toLocaleString()}</div>
+                            <div class="analytics-label">Multi-Number Rows</div>
+                            <div class="analytics-description">Rows containing multiple phone numbers</div>
+                        </div>
+                        `
+                        : ''
+                    }
+                        
+                        <div class="analytics-item">
+                            <div class="analytics-value">${averageNumbersPerRecord.toFixed(2)}</div>
+                            <div class="analytics-label">Avg Numbers/Row</div>
+                            <div class="analytics-description">Average phone numbers per record</div>
+                        </div>
+                        
+                        ${duplicateNumbers > 0
+                        ? `
+                        <div class="analytics-item warning">
+                            <div class="analytics-value">${duplicateNumbers.toLocaleString()}</div>
+                            <div class="analytics-label">Duplicate Numbers</div>
+                            <div class="analytics-description">Phone numbers appearing multiple times</div>
+                        </div>
+                        `
+                        : ''
+                    }
+                    </div>
+                </div>
+                `
+                    : ''
+                }
+                
+                <p style="color: #4b5563; margin: 20px 0 24px 0; font-size: 15px; line-height: 1.7;">
+                    <strong>📋 Phone column detected:</strong> <code style="background: rgba(99, 102, 241, 0.1); padding: 4px 8px; border-radius: 6px; font-size: 14px;">${phoneColumnDetected}</code>
+                    ${hasMultipleNumbers ? '<br><strong>✨ Smart extraction:</strong> Multiple numbers per row were detected and split into separate entries' : ''}
+                </p>
+                
+                <button class="download-btn" onclick="downloadFile('${safeDownloadId}')" aria-label="Download processed files">
+                    📥 Download Processed Files (ZIP)
+                </button>
+            `;
+        }
+
+        function showError(message) {
+            if (!message) message = 'An unexpected error occurred';
+
+            result.className = 'result show error';
+            result.innerHTML = '<h3><span style="font-size: 28px;">❌</span> Processing Failed</h3><p class="error-message"></p>';
+            result.querySelector('.error-message').textContent = String(message);
+        }
+
+        function downloadFile(downloadId) {
+            // Validate downloadId to prevent XSS and path traversal
+            const safeId = String(downloadId).replace(/[^a-zA-Z0-9_-]/g, '');
+            if (safeId && safeId === downloadId && safeId.length > 0) {
+                showToast('Downloading files...', 'info');
+                window.location.href = `/api/download/${encodeURIComponent(safeId)}`;
+            } else {
+                showError('Invalid download ID. Please try processing the file again.');
+                showToast('Invalid download ID', 'error');
+            }
+        }
+
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return Math.round((bytes / Math.pow(k, i)) * 100) / 100 + ' ' + sizes[i];
+        }
+    </script>
+</body>
+
+</html>

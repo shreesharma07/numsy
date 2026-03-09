@@ -62,7 +62,7 @@ Create a `.env` file in the root:
 
 ```bash
 # Server configuration
-PORT=68679
+PORT=3000
 NODE_ENV=development
 
 # Logging
@@ -475,7 +475,7 @@ COPY package*.json ./
 RUN npm install --production
 COPY dist ./dist
 COPY public ./public
-EXPOSE 68679
+EXPOSE 3000
 CMD ["node", "dist/cli/server.js"]
 ```
 
@@ -487,7 +487,7 @@ CMD ["node", "dist/cli/server.js"]
 
 ```bash
 # Check server health
-curl http://localhost:68679/api/health
+curl http://localhost:3000/api/health
 
 # Check package version
 npm view numsy version
