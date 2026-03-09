@@ -20,9 +20,9 @@ This directory contains the CI/CD workflow for the Numsy project.
 
 - ✅ **Code Quality**: Linting, formatting, type checking via `pnpm run validate`
 - 🔒 **Security Scans**:
-  - pnpm audit
-  - Snyk vulnerability scanning (--all-projects for workspace support)
-  - CodeQL security analysis
+  - [x] pnpm audit
+  - [x] Snyk vulnerability scanning (--all-projects for workspace support)
+  - [x] CodeQL security analysis
 - 🧪 **Tests**: Jest unit tests with coverage reporting
 - 📊 **Coverage**: Uploads to Codecov
 - 📦 **Build**: Compiles TypeScript, creates artifacts, checks package size
