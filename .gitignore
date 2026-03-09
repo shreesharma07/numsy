@@ -45,3 +45,6 @@ codecov.SHA256SUM.sig
 codecov.exe.SHA256SUM
 checksum.txt
 codecov.exe
+
+
+.env

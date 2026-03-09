@@ -50,6 +50,9 @@ jobs:
       - name: Type check
         run: pnpm run type-check
 
+      - name: Validate
+        run: pnpm run validate
+
   # ==================== SECURITY CHECKS ====================
   security:
     name: Security Scan
@@ -73,7 +76,7 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Run pnpm audit
-        run: pnpm audit --audit-level=moderate
+        run: pnpm run audit:check
         continue-on-error: true
 
       - name: Run Snyk Security Scan
@@ -97,12 +100,15 @@ jobs:
         uses: github/codeql-action/init@v3
         with:
           languages: javascript-typescript
+          queries: security-and-quality
 
       - name: Autobuild
         uses: github/codeql-action/autobuild@v3
 
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v3
+        with:
+          category: '/language:javascript-typescript'
 
   # ==================== TESTS ====================
   test:

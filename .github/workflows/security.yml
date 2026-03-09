@@ -57,15 +57,16 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Initialize CodeQL
-        uses: github/codeql-action/init@v2
+        uses: github/codeql-action/init@v3
         with:
-          languages: javascript
+          languages: javascript-typescript
+          queries: security-extended
 
       - name: Autobuild
-        uses: github/codeql-action/autobuild@v2
+        uses: github/codeql-action/autobuild@v3
 
       - name: Perform CodeQL Analysis
-        uses: github/codeql-action/analyze@v2
+        uses: github/codeql-action/analyze@v3
 
   audit:
     name: NPM Audit
@@ -81,7 +82,7 @@ jobs:
           version: 8
 
       - name: Run pnpm audit
-        run: pnpm audit --audit-level=moderate
+        run: pnpm run audit:check
 
       - name: Create issue if vulnerabilities found
         if: failure()
