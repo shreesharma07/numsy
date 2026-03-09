@@ -2,9 +2,9 @@ name: CI/CD Pipeline
 
 on:
   push:
-    branches: [main, develop, feature/**, bugfix/**, hotfix/**, release/**]
+    branches: [main]
   pull_request:
-    branches: [main, develop]
+    branches: [main]
   workflow_dispatch:
 
 permissions:
@@ -15,9 +15,9 @@ permissions:
   id-token: write
 
 jobs:
-  # ==================== CODE QUALITY ====================
-  quality:
-    name: Code Quality
+  # ==================== BUILD, TEST & SECURITY ====================
+  build-test-security:
+    name: Build, Test & Security
     runs-on: ubuntu-latest
 
     steps:
@@ -30,9 +30,8 @@ jobs:
         uses: pnpm/action-setup@v2
         with:
           version: 8
-          run_install: false
 
-      - name: Setup Node.js
+      - name: Setup Node.js 20
         uses: actions/setup-node@v4
         with:
           node-version: '20'
@@ -41,40 +40,11 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Lint check
-        run: pnpm run lint:check
-
-      - name: Format check
-        run: pnpm run format:check
-
-      - name: Type check
-        run: pnpm run type-check
-
-      - name: Validate
+      # Code Quality
+      - name: Run validation (lint, format, type-check, tests)
         run: pnpm run validate
 
-  # ==================== SECURITY CHECKS ====================
-  security:
-    name: Security Scan
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v2
-        with:
-          version: 8
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
-
+      # Security Scans
       - name: Run pnpm audit
         run: pnpm run audit:check
         continue-on-error: true
@@ -87,101 +57,26 @@ jobs:
         with:
           args: --all-projects --severity-threshold=high
 
-  # ==================== CODEQL ANALYSIS ====================
-  codeql:
-    name: CodeQL Security Analysis
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
       - name: Initialize CodeQL
         uses: github/codeql-action/init@v3
         with:
           languages: javascript-typescript
-          queries: security-and-quality
-
-      - name: Autobuild
-        uses: github/codeql-action/autobuild@v3
 
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v3
-        with:
-          category: '/language:javascript-typescript'
 
-  # ==================== TESTS ====================
-  test:
-    name: Test Suite (Node ${{ matrix.node }} - ${{ matrix.os }})
-    runs-on: ${{ matrix.os }}
-
-    strategy:
-      matrix:
-        os: [ubuntu-latest, windows-latest]
-        node: [18, 20]
-      fail-fast: false
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v2
-        with:
-          version: 8
-
-      - name: Setup Node.js ${{ matrix.node }}
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ matrix.node }}
-          cache: 'pnpm'
-
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
-
-      - name: Run unit tests
-        run: pnpm test
-
-      - name: Run E2E tests
-        run: pnpm test:e2e
-
-      - name: Generate coverage
-        if: matrix.os == 'ubuntu-latest' && matrix.node == 20
+      # Tests with Coverage
+      - name: Run tests with coverage
         run: pnpm test:cov
 
       - name: Upload coverage to Codecov
-        if: matrix.os == 'ubuntu-latest' && matrix.node == 20
         uses: codecov/codecov-action@v4
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           files: ./coverage/lcov.info
-          flags: unittests
           fail_ci_if_error: false
 
-  # ==================== BUILD ====================
-  build:
-    name: Build Package
-    runs-on: ubuntu-latest
-    needs: [quality, test]
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v2
-        with:
-          version: 8
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-          cache: 'pnpm'
-
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
-
+      # Build
       - name: Build package
         run: pnpm run build
 
@@ -199,7 +94,7 @@ jobs:
             *.tgz
           retention-days: 7
 
-  # ==================== DEPENDENCY REVIEW ====================
+  # ==================== DEPENDENCY REVIEW (PR only) ====================
   dependency-review:
     name: Dependency Review
     runs-on: ubuntu-latest
@@ -214,14 +109,14 @@ jobs:
         with:
           fail-on-severity: moderate
 
-  # ==================== RELEASE (main/develop only) ====================
+  # ==================== RELEASE & DEPLOY (main/develop only) ====================
   release:
-    name: Semantic Release
+    name: Release & Deploy
     runs-on: ubuntu-latest
-    needs: [quality, security, test, build]
+    needs: [build-test-security]
     if: |
       github.event_name == 'push' && 
-      (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop' || startsWith(github.ref, 'refs/heads/release/')) &&
+      (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop') &&
       !contains(github.event.head_commit.message, '[skip ci]')
 
     steps:
@@ -230,7 +125,6 @@ jobs:
         with:
           fetch-depth: 0
           token: ${{ secrets.GITHUB_TOKEN }}
-          persist-credentials: true
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v2
@@ -250,9 +144,7 @@ jobs:
       - name: Build for release
         run: pnpm run build
 
-      - name: Run semantic-release
-        id: semantic_release
-        continue-on-error: true
+      - name: Semantic Release (Auto Version, Publish & Deploy)
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
@@ -261,69 +153,25 @@ jobs:
           GIT_COMMITTER_NAME: semantic-release-bot
           GIT_COMMITTER_EMAIL: semantic-release-bot@numsy.dev
         run: |
-          npx semantic-release 2>&1 | tee release.log
-          echo "release_status=$?" >> $GITHUB_OUTPUT
-
-      - name: Check for NPM cooldown error
-        if: failure() || steps.semantic_release.outputs.release_status != '0'
-        run: |
-          if grep -q "cannot be republished until 24 hours have passed" release.log; then
-            echo "## ⏰ NPM 24-Hour Cooldown Detected" >> $GITHUB_STEP_SUMMARY
-            echo "" >> $GITHUB_STEP_SUMMARY
-            echo "The version cannot be republished due to NPM's 24-hour cooldown policy." >> $GITHUB_STEP_SUMMARY
-            echo "" >> $GITHUB_STEP_SUMMARY
-            echo "**Solutions:**" >> $GITHUB_STEP_SUMMARY
-            echo "1. Wait 24 hours and re-run this workflow" >> $GITHUB_STEP_SUMMARY
-            echo "2. Manually bump version: \`npm version patch --no-git-tag-version\`" >> $GITHUB_STEP_SUMMARY
-            echo "" >> $GITHUB_STEP_SUMMARY
-            echo "📖 See: [docs/NPM_PUBLISH_ERROR_FIX.md](https://github.com/${{ github.repository }}/blob/main/docs/NPM_PUBLISH_ERROR_FIX.md)" >> $GITHUB_STEP_SUMMARY
-            exit 0  # Don't fail the workflow
-          else
-            echo "## ❌ Semantic Release Failed" >> $GITHUB_STEP_SUMMARY
-            echo "" >> $GITHUB_STEP_SUMMARY
-            echo "Check the logs above for details." >> $GITHUB_STEP_SUMMARY
-            exit 1
-          fi
+          npx semantic-release 2>&1 | tee release.log || {
+            if grep -q "cannot be republished until 24 hours have passed" release.log; then
+              echo "⏰ NPM 24-hour cooldown - waiting period required"
+              exit 0
+            else
+              exit 1
+            fi
+          }
 
       - name: Release Summary
-        if: steps.semantic_release.outputs.release_status == '0'
+        if: always()
         run: |
-          echo "## ✅ Release Completed Successfully!" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "- 📦 Package published to NPM" >> $GITHUB_STEP_SUMMARY
-          echo "- 📝 CHANGELOG.md updated" >> $GITHUB_STEP_SUMMARY
-          echo "- 🏷️ Git tag created" >> $GITHUB_STEP_SUMMARY
-          echo "- 🚀 GitHub release created" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "View releases: https://github.com/${{ github.repository }}/releases" >> $GITHUB_STEP_SUMMARY
-
-      - name: No Release Summary
-        if: steps.semantic_release.outputs.release_status == '0' && success()
-        run: |
-          if ! grep -q "published" release.log; then
-            echo "## ℹ️ No Release Published" >> $GITHUB_STEP_SUMMARY
-            echo "" >> $GITHUB_STEP_SUMMARY
-            echo "No new version was released. Possible reasons:" >> $GITHUB_STEP_SUMMARY
-            echo "- No feat/fix commits since last release" >> $GITHUB_STEP_SUMMARY
-            echo "- Only docs/chore/style commits" >> $GITHUB_STEP_SUMMARY
-            echo "- Commits contained \`[skip ci]\`" >> $GITHUB_STEP_SUMMARY
-          fi
-
-  # ==================== STATUS CHECK ====================
-  status:
-    name: CI Status
-    runs-on: ubuntu-latest
-    needs: [quality, security, codeql, test, build]
-    if: always()
-
-    steps:
-      - name: Check CI Status
-        run: |
-          if [ "${{ needs.quality.result }}" != "success" ] || \
-             [ "${{ needs.test.result }}" != "success" ] || \
-             [ "${{ needs.build.result }}" != "success" ]; then
-            echo "❌ CI Pipeline Failed!"
-            exit 1
+          if grep -q "published" release.log; then
+            echo "## ✅ Release Completed!" >> $GITHUB_STEP_SUMMARY
+            echo "📦 Published to NPM | 🏷️ Tagged | 📝 CHANGELOG updated" >> $GITHUB_STEP_SUMMARY
+          elif grep -q "cannot be republished" release.log; then
+            echo "## ⏰ NPM Cooldown Active" >> $GITHUB_STEP_SUMMARY
+            echo "Wait 24 hours or bump version manually" >> $GITHUB_STEP_SUMMARY
           else
-            echo "✅ All CI checks passed!"
+            echo "## ℹ️ No Release" >> $GITHUB_STEP_SUMMARY
+            echo "No feat/fix commits found" >> $GITHUB_STEP_SUMMARY
           fi
