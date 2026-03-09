@@ -1,6 +1,6 @@
-# _Numsy_ - _A light-weight number processor_
-
 <div align="center">
+
+# _Numsy_ - _A light-weight number processor_
 
 [![NPM Version](https://img.shields.io/npm/v/@numsy/numsy.svg?style=flat-square)](https://www.npmjs.com/package/@numsy/numsy)
 [![NPM Downloads](https://img.shields.io/npm/dm/@numsy/numsy.svg?style=flat-square)](https://www.npmjs.com/package/@numsy/numsy)
@@ -13,7 +13,6 @@
 [![Known Vulnerabilities](https://snyk.io/test/github/shreesharma07/numsy/badge.svg?style=flat-square)](https://snyk.io/test/github/shreesharma07/numsy)
 [![Maintained](https://img.shields.io/badge/Maintained%3F-yes-green.svg?style=flat-square)](https://github.com/shreesharma07/numsy/graphs/commit-activity)
 [![PRs Welcome](https://img.shields.io/badge/PRs-Welcome-brightgreen.svg?style=flat-square)](http://makeapullrequest.com)
-[![Conventional Commits](https://img.shields.io/badge/Conventional%20Commits-1.0.0-yellow.svg?style=flat-square)](https://conventionalcommits.org)
 [![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg?style=flat-square)](https://github.com/prettier/prettier)
 [![Package Manager](https://img.shields.io/badge/pnpm-8.15.0-F69220?style=flat-square&logo=pnpm)](https://pnpm.io/)
 
