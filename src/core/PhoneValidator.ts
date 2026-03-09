@@ -129,6 +129,9 @@ export class PhoneValidator {
       extractedNumbers: [],
       validNumbers: [],
       invalidNumbers: [],
+      validCount: 0,
+      invalidCount: 0,
+      totalFound: 0,
     };
 
     try {
@@ -140,11 +143,28 @@ export class PhoneValidator {
       const extractionResult = extractAndValidatePhoneNumbers(text);
 
       result.extractedNumbers = extractionResult.allExtracted;
-      result.validNumbers = extractionResult.validNumbers;
-      result.invalidNumbers = extractionResult.invalidNumbers.map((item) => item.number);
+
+      // Convert valid numbers to PhoneValidationResult format
+      result.validNumbers = extractionResult.validNumbers.map((num) => ({
+        original: text,
+        sanitized: num,
+        isValid: true,
+      }));
+
+      // Convert invalid numbers to PhoneValidationResult format
+      result.invalidNumbers = extractionResult.invalidNumbers.map((item) => ({
+        original: text,
+        sanitized: item.number,
+        isValid: false,
+        reason: item.reason,
+      }));
+
+      result.validCount = result.validNumbers.length;
+      result.invalidCount = result.invalidNumbers.length;
+      result.totalFound = result.extractedNumbers.length;
 
       this.logger.debug(
-        `Extracted ${result.extractedNumbers.length} numbers (${result.validNumbers.length} valid, ${result.invalidNumbers.length} invalid)`,
+        `Extracted ${result.totalFound} numbers (${result.validCount} valid, ${result.invalidCount} invalid)`,
       );
 
       return result;

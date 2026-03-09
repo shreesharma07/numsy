@@ -8,6 +8,12 @@ import * as path from 'path';
 import { LoggerHelper } from './logger.helper';
 import { AppError } from './error.helper';
 
+// Import utilities from util.functions for internal use
+// Note: getFileExtension, formatFileSize, and generateUniqueFilename
+// are exported from util.functions.ts and should be imported from there
+// This file now only contains file helper functions not in util.functions
+import { getFileExtension } from '../functions/util.functions';
+
 const logger = new LoggerHelper('FileHelper');
 
 /**
@@ -53,19 +59,6 @@ export function deleteFile(filePath: string): void {
 }
 
 /**
- * Gets file extension from file path
- */
-export function getFileExtension(filePath: string): string {
-  try {
-    const extension = path.extname(filePath).toLowerCase().replace('.', '');
-    return extension;
-  } catch (error) {
-    logger.error(`Error getting file extension: ${filePath}`, String(error));
-    return '';
-  }
-}
-
-/**
  * Validates file extension against allowed extensions
  */
 export function validateFileExtension(filePath: string, allowedExtensions: string[]): boolean {
@@ -94,38 +87,6 @@ export function getFileSize(filePath: string): number {
   } catch (error) {
     logger.error(`Error getting file size: ${filePath}`, String(error));
     return 0;
-  }
-}
-
-/**
- * Formats file size to human-readable format
- */
-export function formatFileSize(bytes: number): string {
-  try {
-    if (bytes === 0) return '0 Bytes';
-
-    const k = 1024;
-    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-    const i = Math.floor(Math.log(bytes) / Math.log(k));
-
-    return `${parseFloat((bytes / Math.pow(k, i)).toFixed(2))} ${sizes[i]}`;
-  } catch (error) {
-    logger.error('Error formatting file size', String(error));
-    return '0 Bytes';
-  }
-}
-
-/**
- * Generates a unique filename with timestamp
- */
-export function generateUniqueFilename(prefix: string, extension: string): string {
-  try {
-    const timestamp = Date.now();
-    const randomStr = Math.random().toString(36).substring(7);
-    return `${prefix}_${timestamp}_${randomStr}.${extension}`;
-  } catch (error) {
-    logger.error('Error generating unique filename', String(error));
-    return `${prefix}_${Date.now()}.${extension}`;
   }
 }
 

@@ -3,7 +3,8 @@ import * as fs from 'fs';
 import * as path from 'path';
 import archiver from 'archiver';
 import { PhoneValidatorService } from './phone-validator.service';
-import { FileParserService, ParsedDataRow } from './file-parser.service';
+import { FileParserService } from './file-parser.service';
+import { ParsedDataRow } from '../common/interfaces';
 
 function isPathInsideDir(baseDir: string, targetPath: string): boolean {
   const normalizedBase = path.resolve(baseDir) + path.sep;
@@ -44,6 +45,7 @@ interface ProcessedRow extends ParsedDataRow {
   sanitizedPhone?: string;
   numbersExtracted?: number;
   allExtractedNumbers?: string;
+  [key: string]: any; // Allow dynamic field access
 }
 
 /**
@@ -63,9 +65,14 @@ export class FileProcessorService {
    * Processes an uploaded file
    * @param filePath - Path to the uploaded file
    * @param outputDir - Directory to save processed files
+   * @param originalFilename - Original name of the uploaded file (optional)
    * @returns Promise with processing result
    */
-  async processFile(filePath: string, outputDir: string): Promise<ProcessingResult> {
+  async processFile(
+    filePath: string,
+    outputDir: string,
+    originalFilename?: string,
+  ): Promise<ProcessingResult> {
     this.logger.log(`Starting file processing: ${filePath}`);
 
     // Normalize and validate input file path
@@ -143,10 +150,24 @@ export class FileProcessorService {
 
     // Generate output file paths
     const timestamp = Date.now();
-    const validFilePath = path.join(normalizedOutputDir, `valid_numbers_${timestamp}.csv`);
-    const invalidFilePath = path.join(normalizedOutputDir, `invalid_numbers_${timestamp}.csv`);
-    const analyticsFilePath = path.join(normalizedOutputDir, `analytics_${timestamp}.txt`);
-    const zipFilePath = path.join(normalizedOutputDir, `processed_${timestamp}.zip`);
+
+    // Extract base name from original filename if provided
+    let baseFileName = 'processed';
+    if (originalFilename) {
+      const parsedName = path.parse(originalFilename);
+      baseFileName = parsedName.name; // filename without extension
+    }
+
+    const validFilePath = path.join(normalizedOutputDir, `${baseFileName}_valid_${timestamp}.csv`);
+    const invalidFilePath = path.join(
+      normalizedOutputDir,
+      `${baseFileName}_invalid_${timestamp}.csv`,
+    );
+    const analyticsFilePath = path.join(
+      normalizedOutputDir,
+      `${baseFileName}_analytics_${timestamp}.txt`,
+    );
+    const zipFilePath = path.join(normalizedOutputDir, `${baseFileName}_${timestamp}.zip`);
 
     // Write CSV files
     await this.fileParser.writeProcessedFiles(

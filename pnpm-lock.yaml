@@ -53,6 +53,9 @@ importers:
       express:
         specifier: ^4.18.2
         version: 4.22.1
+      moment-timezone:
+        specifier: ^0.5.45
+        version: 0.5.48
       multer:
         specifier: '>=2.1.1'
         version: 2.1.1
@@ -111,6 +114,9 @@ importers:
       '@types/jest':
         specifier: ^29.5.11
         version: 29.5.14
+      '@types/moment-timezone':
+        specifier: ^0.5.30
+        version: 0.5.30
       '@types/multer':
         specifier: ^1.4.11
         version: 1.4.13
@@ -118,8 +124,8 @@ importers:
         specifier: ^20.11.5
         version: 20.19.37
       '@types/supertest':
-        specifier: ^6.0.2
-        version: 6.0.3
+        specifier: ^7.2.0
+        version: 7.2.0
       '@typescript-eslint/eslint-plugin':
         specifier: ^6.19.0
         version: 6.21.0(@typescript-eslint/parser@6.21.0)(eslint@8.57.1)(typescript@5.9.3)
@@ -133,7 +139,7 @@ importers:
         specifier: ^7.0.2
         version: 7.0.2
       eslint:
-        specifier: ^8.56.0
+        specifier: ^8.57.1
         version: 8.57.1
       eslint-config-prettier:
         specifier: ^9.1.0
@@ -169,8 +175,8 @@ importers:
         specifier: ^0.5.21
         version: 0.5.21
       supertest:
-        specifier: ^6.3.4
-        version: 6.3.4
+        specifier: ^7.2.2
+        version: 7.2.2
       ts-jest:
         specifier: ^29.1.1
         version: 29.4.6(@babel/core@7.29.0)(jest@29.7.0)(typescript@5.9.3)
@@ -3476,6 +3482,16 @@ packages:
       }
     dev: true
 
+  /@types/moment-timezone@0.5.30:
+    resolution:
+      {
+        integrity: sha512-aDVfCsjYnAQaV/E9Qc24C5Njx1CoDjXsEgkxtp9NyXDpYu4CCbmclb6QhWloS9UTU/8YROUEEdEkWI0D7DxnKg==,
+      }
+    deprecated: This is a stub types definition. moment-timezone provides its own type definitions, so you do not need this installed.
+    dependencies:
+      moment-timezone: 0.5.48
+    dev: true
+
   /@types/multer@1.4.13:
     resolution:
       {
@@ -3596,10 +3612,10 @@ packages:
       form-data: 4.0.5
     dev: true
 
-  /@types/supertest@6.0.3:
+  /@types/supertest@7.2.0:
     resolution:
       {
-        integrity: sha512-8WzXq62EXFhJ7QsH3Ocb/iKQ/Ty9ZVWnVzoTKc9tyyFRRF3a74Tk2+TLFgaFFw364Ere+npzHKEJ6ga2LzIL7w==,
+        integrity: sha512-uh2Lv57xvggst6lCqNdFAmDSvoMG7M/HDtX4iUCquxQ5EGPtaPM5PL5Hmi7LCvOG8db7YaCPNJEeoI8s/WzIQw==,
       }
     dependencies:
       '@types/methods': 1.1.4
@@ -5647,6 +5663,14 @@ packages:
         integrity: sha512-NXdYc3dLr47pBkpUCHtKSwIOQXLVn8dZEuywboCOJY/osA0wFSLlSawr3KN8qXJEyX66FcONTH8EIlVuK0yyFA==,
       }
 
+  /cookie-signature@1.2.2:
+    resolution:
+      {
+        integrity: sha512-D76uU73ulSXrD1UXF4KE2TMxVVwhsnCgfAyTg9k8P6KGZjlXKrOLe4dJQKI3Bxi5wjesZoFXJWElNWBjPZMbhg==,
+      }
+    engines: { node: '>=6.6.0' }
+    dev: true
+
   /cookie@0.7.2:
     resolution:
       {
@@ -7174,16 +7198,16 @@ packages:
       mime-types: 2.1.35
     dev: true
 
-  /formidable@2.1.5:
+  /formidable@3.5.4:
     resolution:
       {
-        integrity: sha512-Oz5Hwvwak/DCaXVVUtPn4oLMLLy1CdclLKO1LFgU7XzDpVMUU5UjlSLpGMocyQNNk8F6IJW9M/YdooSn2MRI+Q==,
+        integrity: sha512-YikH+7CUTOtP44ZTnUhR7Ic2UASBPOqmaRkRKxRbywPTe5VxF7RRCck4af9wutiZ/QKM5nME9Bie2fFaPz5Gug==,
       }
+    engines: { node: '>=14.0.0' }
     dependencies:
       '@paralleldrive/cuid2': 2.3.1
       dezalgo: 1.0.4
       once: 1.4.0
-      qs: 6.15.0
     dev: true
 
   /forwarded@0.2.0:
@@ -9856,6 +9880,20 @@ packages:
       minimist: 1.2.8
     dev: false
 
+  /moment-timezone@0.5.48:
+    resolution:
+      {
+        integrity: sha512-f22b8LV1gbTO2ms2j2z13MuPogNoh5UzxL3nzNAYKGraILnbGc9NEE6dyiiiLv46DGRb8A4kg8UKWLjPthxBHw==,
+      }
+    dependencies:
+      moment: 2.30.1
+
+  /moment@2.30.1:
+    resolution:
+      {
+        integrity: sha512-uEmtNhbDOrWPFS+hdjFCBfy9f2YoyzRpwcl+DqpC6taX21FzsTLQVbMV/W7PzNSX6x/bhC1zA3c2UQ5NzH6how==,
+      }
+
   /ms@2.0.0:
     resolution:
       {
@@ -12252,38 +12290,36 @@ packages:
       time-span: 5.1.0
     dev: true
 
-  /superagent@8.1.2:
+  /superagent@10.3.0:
     resolution:
       {
-        integrity: sha512-6WTxW1EB6yCxV5VFOIPQruWGHqc3yI7hEmZK6h+pyk69Lk/Ut7rLUY6W/ONF2MjBuGjvmMiIpsrVJ2vjrHlslA==,
+        integrity: sha512-B+4Ik7ROgVKrQsXTV0Jwp2u+PXYLSlqtDAhYnkkD+zn3yg8s/zjA2MeGayPoY/KICrbitwneDHrjSotxKL+0XQ==,
       }
-    engines: { node: '>=6.4.0 <13 || >=14' }
-    deprecated: Please upgrade to superagent v10.2.2+, see release notes at https://github.com/forwardemail/superagent/releases/tag/v10.2.2 - maintenance is supported by Forward Email @ https://forwardemail.net
+    engines: { node: '>=14.18.0' }
     dependencies:
       component-emitter: 1.3.1
       cookiejar: 2.1.4
       debug: 4.4.3(supports-color@5.5.0)
       fast-safe-stringify: 2.1.1
       form-data: 4.0.5
-      formidable: 2.1.5
+      formidable: 3.5.4
       methods: 1.1.2
       mime: 2.6.0
       qs: 6.15.0
-      semver: 7.7.4
     transitivePeerDependencies:
       - supports-color
     dev: true
 
-  /supertest@6.3.4:
+  /supertest@7.2.2:
     resolution:
       {
-        integrity: sha512-erY3HFDG0dPnhw4U+udPfrzXa4xhSG+n4rxfRuZWCUvjFWwKl+OxWf/7zk50s84/fAAs7vf5QAb9uRa0cCykxw==,
+        integrity: sha512-oK8WG9diS3DlhdUkcFn4tkNIiIbBx9lI2ClF8K+b2/m8Eyv47LSawxUzZQSNKUrVb2KsqeTDCcjAAVPYaSLVTA==,
       }
-    engines: { node: '>=6.4.0' }
-    deprecated: Please upgrade to supertest v7.1.3+, see release notes at https://github.com/forwardemail/supertest/releases/tag/v7.1.3 - maintenance is supported by Forward Email @ https://forwardemail.net
+    engines: { node: '>=14.18.0' }
     dependencies:
+      cookie-signature: 1.2.2
       methods: 1.1.2
-      superagent: 8.1.2
+      superagent: 10.3.0
     transitivePeerDependencies:
       - supports-color
     dev: true

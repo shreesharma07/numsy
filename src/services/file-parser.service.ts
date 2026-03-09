@@ -1,28 +1,16 @@
 import { Injectable, Logger } from '@nestjs/common';
 import * as fs from 'fs';
-import * as path from 'path';
 import csv from 'csv-parser';
 import * as ExcelJS from 'exceljs';
 import { createObjectCsvWriter } from 'csv-writer';
-
-/**
- * Interface for parsed data row
- */
-export interface ParsedDataRow {
-  name?: string;
-  phone?: string;
-  address?: string;
-  [key: string]: any;
-}
-
-/**
- * Interface for file parsing result
- */
-export interface FileParseResult {
-  data: ParsedDataRow[];
-  totalRows: number;
-  detectedColumns: string[];
-}
+import { ParsedDataRow, FileParseResult } from '../common/interfaces';
+import {
+  isPathAllowed,
+  getAllowedDirectories,
+  safeFileExists,
+  isFile,
+  getFileExtension,
+} from '../common/functions';
 
 /**
  * Service for parsing CSV and Excel files
@@ -38,35 +26,65 @@ export class FileParserService {
    * @returns Promise with parsed data
    */
   async parseFile(filePath: string): Promise<FileParseResult> {
-    // Validate input file path
-    const normalizedPath = path.normalize(path.resolve(filePath));
-    const allowedDirs = [
-      path.resolve(process.cwd(), 'uploads'),
-      path.resolve(process.cwd(), 'temp'),
-      path.resolve(process.cwd(), 'Temp'),
-    ];
+    const methodName = 'parseFile';
+    const startTime = Date.now();
 
-    const isPathValid = allowedDirs.some((allowedDir) => {
-      const normalizedAllowedDir = path.normalize(allowedDir);
-      return normalizedPath.startsWith(normalizedAllowedDir + path.sep);
-    });
+    try {
+      this.logger.log(`[${methodName}] Starting file parsing: ${filePath}`);
 
-    if (!isPathValid || normalizedPath.includes('..')) {
-      throw new Error(`Invalid file path for parsing: ${filePath}`);
-    }
+      // Validate input file path using centralized utility
+      const pathValidation = isPathAllowed(filePath, getAllowedDirectories('input'));
 
-    const extension = normalizedPath.split('.').pop()?.toLowerCase() || '';
+      if (!pathValidation.isValid) {
+        const errorMsg = `Invalid file path: ${pathValidation.error}`;
+        this.logger.error(`[${methodName}] ${errorMsg}`);
+        throw new Error(errorMsg);
+      }
 
-    this.logger.log(`Parsing file: ${normalizedPath} (type: ${extension})`);
+      const normalizedPath = pathValidation.normalizedPath;
 
-    switch (extension) {
-      case 'csv':
-        return this.parseCsv(normalizedPath);
-      case 'xlsx':
-      case 'xls':
-        return this.parseExcel(normalizedPath);
-      default:
-        throw new Error(`Unsupported file format: ${extension}`);
+      // Check if file exists
+      if (!safeFileExists(normalizedPath)) {
+        const errorMsg = `File not found: ${normalizedPath}`;
+        this.logger.error(`[${methodName}] ${errorMsg}`);
+        throw new Error(errorMsg);
+      }
+
+      // Verify it's a file, not a directory
+      if (!isFile(normalizedPath)) {
+        const errorMsg = `Path is not a file: ${normalizedPath}`;
+        this.logger.error(`[${methodName}] ${errorMsg}`);
+        throw new Error(errorMsg);
+      }
+
+      const extension = getFileExtension(normalizedPath);
+      this.logger.log(`[${methodName}] Detected file type: ${extension}`);
+
+      let result: FileParseResult;
+
+      switch (extension) {
+        case 'csv':
+          result = await this.parseCsv(normalizedPath);
+          break;
+        case 'xlsx':
+        case 'xls':
+          result = await this.parseExcel(normalizedPath);
+          break;
+        default:
+          throw new Error(`Unsupported file format: ${extension}`);
+      }
+
+      const duration = Date.now() - startTime;
+      this.logger.log(
+        `[${methodName}] File parsed successfully in ${duration}ms: ${result.totalRows} rows`,
+      );
+
+      return result;
+    } catch (error) {
+      const duration = Date.now() - startTime;
+      const errorMsg = error instanceof Error ? error.message : 'Unknown error during parsing';
+      this.logger.error(`[${methodName}] Failed after ${duration}ms: ${errorMsg}`);
+      throw error;
     }
   }
 
@@ -76,31 +94,52 @@ export class FileParserService {
    * @returns Promise with parsed data
    */
   private async parseCsv(filePath: string): Promise<FileParseResult> {
-    return new Promise((resolve, reject) => {
-      const data: ParsedDataRow[] = [];
-      let detectedColumns: string[] = [];
+    const methodName = 'parseCsv';
+    const startTime = Date.now();
 
-      fs.createReadStream(filePath)
-        .pipe(csv())
-        .on('headers', (headers: string[]) => {
-          detectedColumns = headers;
-          this.logger.debug(`Detected CSV columns: ${headers.join(', ')}`);
-        })
-        .on('data', (row) => {
-          data.push(row);
-        })
-        .on('end', () => {
-          this.logger.log(`CSV parsing complete: ${data.length} rows`);
-          resolve({
-            data,
-            totalRows: data.length,
-            detectedColumns,
+    return new Promise((resolve, reject) => {
+      try {
+        const data: ParsedDataRow[] = [];
+        let detectedColumns: string[] = [];
+
+        this.logger.debug(`[${methodName}] Starting CSV parsing: ${filePath}`);
+
+        fs.createReadStream(filePath)
+          .pipe(csv())
+          .on('headers', (headers: string[]) => {
+            detectedColumns = headers;
+            this.logger.debug(`[${methodName}] Detected columns: ${headers.join(', ')}`);
+          })
+          .on('data', (row) => {
+            try {
+              data.push(row);
+            } catch (error) {
+              this.logger.warn(`[${methodName}] Error processing row: ${error}`);
+            }
+          })
+          .on('end', () => {
+            const duration = Date.now() - startTime;
+            this.logger.log(
+              `[${methodName}] Parsing complete in ${duration}ms: ${data.length} rows`,
+            );
+            resolve({
+              data,
+              totalRows: data.length,
+              detectedColumns,
+            });
+          })
+          .on('error', (error) => {
+            const duration = Date.now() - startTime;
+            const errorMsg = error instanceof Error ? error.message : 'CSV parsing error';
+            this.logger.error(`[${methodName}] Failed after ${duration}ms: ${errorMsg}`);
+            reject(new Error(`CSV parsing failed: ${errorMsg}`));
           });
-        })
-        .on('error', (error) => {
-          this.logger.error(`CSV parsing error: ${error.message}`);
-          reject(error);
-        });
+      } catch (error) {
+        const duration = Date.now() - startTime;
+        const errorMsg = error instanceof Error ? error.message : 'Unexpected CSV error';
+        this.logger.error(`[${methodName}] Failed after ${duration}ms: ${errorMsg}`);
+        reject(error);
+      }
     });
   }
 
@@ -110,13 +149,20 @@ export class FileParserService {
    * @returns Promise with parsed data
    */
   private async parseExcel(filePath: string): Promise<FileParseResult> {
+    const methodName = 'parseExcel';
+    const startTime = Date.now();
+
     try {
+      this.logger.debug(`[${methodName}] Starting Excel parsing: ${filePath}`);
+
       const workbook = new ExcelJS.Workbook();
       await workbook.xlsx.readFile(filePath);
 
       const worksheet = workbook.worksheets[0];
 
-      if (!worksheet) throw new Error('No worksheet found in Excel file');
+      if (!worksheet) {
+        throw new Error('No worksheet found in Excel file');
+      }
 
       const data: ParsedDataRow[] = [];
       const detectedColumns: string[] = [];
@@ -124,43 +170,46 @@ export class FileParserService {
 
       // Process rows
       worksheet.eachRow((row, rowNumber) => {
-        if (rowNumber === 1) {
-          // First row is header
-          headerRow = row.values as any[];
-          // Remove the first empty element that ExcelJS adds
-          headerRow.shift();
-          detectedColumns.push(...headerRow.map((h) => String(h || '')));
-        } else {
-          // Data rows
-          const rowData: ParsedDataRow = {};
-          const values = row.values as any[];
-          // Remove the first empty element
-          values.shift();
+        try {
+          if (rowNumber === 1) {
+            // First row is header
+            headerRow = row.values as any[];
+            // Remove the first empty element that ExcelJS adds
+            headerRow.shift();
+            detectedColumns.push(...headerRow.map((h) => String(h || '')));
+            this.logger.debug(`[${methodName}] Detected columns: ${detectedColumns.join(', ')}`);
+          } else {
+            // Data rows
+            const rowData: ParsedDataRow = {};
+            const values = row.values as any[];
+            // Remove the first empty element
+            values.shift();
 
-          headerRow.forEach((header, index) => {
-            if (header) {
-              rowData[String(header)] = values[index] !== undefined ? values[index] : '';
-            }
-          });
-          data.push(rowData);
+            headerRow.forEach((header, index) => {
+              if (header) {
+                rowData[String(header)] = values[index] !== undefined ? values[index] : '';
+              }
+            });
+            data.push(rowData);
+          }
+        } catch (error) {
+          this.logger.warn(`[${methodName}] Error processing row ${rowNumber}: ${error}`);
         }
       });
 
-      this.logger.log(`Excel parsing complete: ${data.length} rows`);
-      this.logger.debug(`Detected Excel columns: ${detectedColumns.join(', ')}`);
+      const duration = Date.now() - startTime;
+      this.logger.log(`[${methodName}] Parsing complete in ${duration}ms: ${data.length} rows`);
 
       return {
         data,
         totalRows: data.length,
         detectedColumns,
       };
-    } catch (error: unknown) {
-      if (error instanceof Error) {
-        this.logger.error(`Excel parsing error: ${error.message}`);
-      } else {
-        this.logger.error('Excel parsing error: Unknown error');
-      }
-      throw error;
+    } catch (error) {
+      const duration = Date.now() - startTime;
+      const errorMsg = error instanceof Error ? error.message : 'Excel parsing error';
+      this.logger.error(`[${methodName}] Failed after ${duration}ms: ${errorMsg}`);
+      throw new Error(`Excel parsing failed: ${errorMsg}`);
     }
   }
 
@@ -256,37 +305,62 @@ export class FileParserService {
    * @param outputPath - Path to write the CSV file
    * @returns Promise that resolves when file is written
    */
+  /**
+   * Writes processed data to a CSV file
+   * @param data - Array of data rows to write
+   * @param outputPath - Path to write the CSV file
+   * @returns Promise that resolves when file is written
+   */
   async writeCsv(data: ParsedDataRow[], outputPath: string): Promise<void> {
-    if (!data || data.length === 0) {
-      throw new Error('No data to write');
+    const methodName = 'writeCsv';
+    const startTime = Date.now();
+
+    try {
+      this.logger.debug(`[${methodName}] Starting CSV write: ${outputPath}`);
+
+      // Validate data
+      if (!data || data.length === 0) {
+        throw new Error('No data to write');
+      }
+
+      // Validate output path using centralized utility
+      const pathValidation = isPathAllowed(outputPath, getAllowedDirectories('output'));
+
+      if (!pathValidation.isValid) {
+        throw new Error(`Invalid CSV output path: ${pathValidation.error}`);
+      }
+
+      const normalizedPath = pathValidation.normalizedPath;
+
+      // Get all unique headers from the data
+      const headers = Array.from(new Set(data.flatMap((row) => Object.keys(row)))).map(
+        (header) => ({
+          id: header,
+          title: header,
+        }),
+      );
+
+      this.logger.debug(
+        `[${methodName}] Writing ${data.length} rows with ${headers.length} columns`,
+      );
+
+      const csvWriter = createObjectCsvWriter({
+        path: normalizedPath,
+        header: headers,
+      });
+
+      await csvWriter.writeRecords(data);
+
+      const duration = Date.now() - startTime;
+      this.logger.log(
+        `[${methodName}] CSV file written successfully in ${duration}ms: ${normalizedPath} (${data.length} rows)`,
+      );
+    } catch (error) {
+      const duration = Date.now() - startTime;
+      const errorMsg = error instanceof Error ? error.message : 'CSV write error';
+      this.logger.error(`[${methodName}] Failed after ${duration}ms: ${errorMsg}`);
+      throw new Error(`CSV write failed: ${errorMsg}`);
     }
-
-    // Validate output path
-    const normalizedPath = path.normalize(path.resolve(outputPath));
-    const allowedDirs = [path.resolve(process.cwd(), 'temp'), path.resolve(process.cwd(), 'Temp')];
-
-    const isPathValid = allowedDirs.some((allowedDir) => {
-      const normalizedAllowedDir = path.normalize(allowedDir);
-      return normalizedPath.startsWith(normalizedAllowedDir + path.sep);
-    });
-
-    if (!isPathValid || normalizedPath.includes('..')) {
-      throw new Error(`Invalid CSV output path: ${outputPath}`);
-    }
-
-    // Get all unique headers from the data
-    const headers = Array.from(new Set(data.flatMap((row) => Object.keys(row)))).map((header) => ({
-      id: header,
-      title: header,
-    }));
-
-    const csvWriter = createObjectCsvWriter({
-      path: normalizedPath,
-      header: headers,
-    });
-
-    await csvWriter.writeRecords(data);
-    this.logger.log(`CSV file written: ${normalizedPath} (${data.length} rows)`);
   }
 
   /**

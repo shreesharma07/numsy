@@ -13,9 +13,9 @@ import {
   AppError,
   fileExists,
   ensureDirectory,
-  getFileExtension,
   validateFileExtension,
 } from '../common/helpers';
+import { getFileExtension } from '../common/functions';
 import {
   SUPPORTED_FILE_EXTENSIONS,
   normalizeDataRows,

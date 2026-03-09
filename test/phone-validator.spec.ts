@@ -118,8 +118,9 @@ describe('PhoneValidator', () => {
 
       expect(result.extractedNumbers).toHaveLength(2);
       expect(result.validNumbers).toHaveLength(2);
-      expect(result.validNumbers).toContain('9876543210');
-      expect(result.validNumbers).toContain('8123456789');
+      const sanitizedNumbers = result.validNumbers.map((v) => v.sanitized);
+      expect(sanitizedNumbers).toContain('9876543210');
+      expect(sanitizedNumbers).toContain('8123456789');
     });
 
     it('should extract and validate multiple numbers with final regex check', () => {
@@ -128,18 +129,20 @@ describe('PhoneValidator', () => {
       );
 
       expect(result.validNumbers.length).toBeGreaterThan(0);
-      expect(result.validNumbers).toContain('9876543210');
-      expect(result.validNumbers).toContain('8123456789');
+      const sanitizedNumbers = result.validNumbers.map((v) => v.sanitized);
+      expect(sanitizedNumbers).toContain('9876543210');
+      expect(sanitizedNumbers).toContain('8123456789');
       // Dummy numbers should be filtered out
-      expect(result.validNumbers).not.toContain('1111111111');
-      expect(result.validNumbers).not.toContain('9999999999');
+      expect(sanitizedNumbers).not.toContain('1111111111');
+      expect(sanitizedNumbers).not.toContain('9999999999');
     });
 
     it('should return unique numbers only', () => {
       const result = validator.extractMultiple('9876543210, 9876543210, 8123456789, 9876543210');
 
       // Should deduplicate
-      const uniqueCount = new Set(result.validNumbers).size;
+      const sanitizedNumbers = result.validNumbers.map((v) => v.sanitized);
+      const uniqueCount = new Set(sanitizedNumbers).size;
       expect(uniqueCount).toBe(2);
     });
 
@@ -154,7 +157,8 @@ describe('PhoneValidator', () => {
       const result = validator.extractMultiple('Valid: 9876543210, Invalid: 1234567890');
 
       expect(result.validNumbers).toHaveLength(1);
-      expect(result.validNumbers).toContain('9876543210');
+      const sanitizedNumbers = result.validNumbers.map((v) => v.sanitized);
+      expect(sanitizedNumbers).toContain('9876543210');
     });
   });
 

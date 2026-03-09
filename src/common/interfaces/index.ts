@@ -38,8 +38,11 @@ export interface PhoneValidationResult {
 export interface MultipleNumbersResult {
   originalValue: string;
   extractedNumbers: string[];
-  validNumbers: string[];
-  invalidNumbers: string[];
+  validNumbers: PhoneValidationResult[];
+  invalidNumbers: PhoneValidationResult[];
+  validCount: number;
+  invalidCount: number;
+  totalFound: number;
 }
 
 /**
@@ -54,7 +57,7 @@ export interface ProcessingResult {
   zipFilePath: string;
   validFilePath: string;
   invalidFilePath: string;
-  uniqueNumbersFilePath: string;
+  uniqueNumbersFilePath?: string;
   analyticsFilePath: string;
   analytics: ProcessingAnalytics;
 }
@@ -85,12 +88,43 @@ export interface ProcessedRow extends ParsedDataRow {
 }
 
 /**
+ * Interface for extracted data analytics
+ */
+export interface ExtractedDataAnalytics {
+  uniqueNumbers: Set<string>;
+  numberFrequency: Map<string, number>;
+  fieldDistribution: Map<string, number>;
+}
+
+/**
+ * Interface for file operation result
+ */
+export interface FileOperationResult {
+  success: boolean;
+  filePath?: string;
+  error?: string;
+  message?: string;
+}
+
+/**
+ * Interface for batch operation result
+ */
+export interface BatchOperationResult<T = any> {
+  total: number;
+  successful: number;
+  failed: number;
+  results: T[];
+  errors: Array<{ index: number; error: string }>;
+}
+
+/**
  * Interface for logger options
  */
 export interface LoggerOptions {
   context?: string;
   timestamp?: boolean;
   level?: 'log' | 'error' | 'warn' | 'debug' | 'verbose';
+  timezone?: string;
 }
 
 /**

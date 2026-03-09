@@ -122,7 +122,11 @@ export class AppController {
       }
 
       // Process the file
-      const result = await this.fileProcessor.processFile(normalizedFilePath, this.tempDir);
+      const result = await this.fileProcessor.processFile(
+        normalizedFilePath,
+        this.tempDir,
+        file.originalname,
+      );
 
       // Clean up uploaded file
       await this.fileProcessor.cleanupFiles([normalizedFilePath]);
@@ -218,7 +222,9 @@ export class AppController {
 
       // Set response headers
       res.setHeader('Content-Type', 'application/zip');
-      res.setHeader('Content-Disposition', `attachment; filename="processed_numbers.zip"`);
+      // Use the zip filename from the downloadId
+      const downloadFilename = `${sanitizedId}.zip`;
+      res.setHeader('Content-Disposition', `attachment; filename="${downloadFilename}"`);
 
       // Stream the file (now safely validated)
       const fileStream = fs.createReadStream(normalizedZipPath);
@@ -237,23 +243,31 @@ export class AppController {
         // Clean up files after download completes
         setTimeout(async () => {
           try {
-            // Extract timestamp safely from the sanitized ID
+            // Extract timestamp safely from the sanitized ID (last part after underscore)
             const idParts = sanitizedId.split('_');
-            const timestamp = idParts.length > 1 ? idParts[1] : '';
+            const timestamp = idParts[idParts.length - 1]; // Get the last part which is the timestamp
+
+            // Extract base filename (everything except the last timestamp part)
+            const baseFileName = idParts.slice(0, -1).join('_');
 
             if (timestamp && /^\d+$/.test(timestamp)) {
               // Construct safe file paths using basename
-              const validFilename = path.basename(`valid_numbers_${timestamp}.csv`);
-              const invalidFilename = path.basename(`invalid_numbers_${timestamp}.csv`);
+              const validFilename = path.basename(`${baseFileName}_valid_${timestamp}.csv`);
+              const invalidFilename = path.basename(`${baseFileName}_invalid_${timestamp}.csv`);
+              const analyticsFilename = path.basename(`${baseFileName}_analytics_${timestamp}.txt`);
 
               const validFilePath = path.normalize(path.join(this.tempDir, validFilename));
               const invalidFilePath = path.normalize(path.join(this.tempDir, invalidFilename));
+              const analyticsFilePath = path.normalize(path.join(this.tempDir, analyticsFilename));
 
               // Validate paths are within temp directory before cleanup
               const normalizedTempDir = path.normalize(this.tempDir);
-              const pathsToClean = [normalizedZipPath, validFilePath, invalidFilePath].filter(
-                (p) => p.startsWith(normalizedTempDir + path.sep) && !p.includes('..'),
-              );
+              const pathsToClean = [
+                normalizedZipPath,
+                validFilePath,
+                invalidFilePath,
+                analyticsFilePath,
+              ].filter((p) => p.startsWith(normalizedTempDir + path.sep) && !p.includes('..'));
 
               if (pathsToClean.length > 0) {
                 await this.fileProcessor.cleanupFiles(pathsToClean);

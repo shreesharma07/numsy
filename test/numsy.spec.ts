@@ -76,9 +76,10 @@ describe('Numsy Integration Tests', () => {
     it('should filter out invalid patterns when extracting', () => {
       const result = numsy.extractMultiple('Valid: 9876543210, 8123456789. Dummy: 1111111111');
 
-      expect(result.validNumbers).toContain('9876543210');
-      expect(result.validNumbers).toContain('8123456789');
-      expect(result.validNumbers).not.toContain('1111111111');
+      const sanitizedNumbers = result.validNumbers.map((v) => v.sanitized);
+      expect(sanitizedNumbers).toContain('9876543210');
+      expect(sanitizedNumbers).toContain('8123456789');
+      expect(sanitizedNumbers).not.toContain('1111111111');
     });
 
     it('should validate batch of numbers', () => {

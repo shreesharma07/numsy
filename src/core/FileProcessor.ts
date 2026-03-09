@@ -216,10 +216,10 @@ export class FileProcessor {
           for (const validNumber of multipleResult.validNumbers) {
             const validRow: ProcessedRow = {
               ...row,
-              [phoneColumn]: validNumber,
+              [phoneColumn]: validNumber.sanitized,
               validationStatus: 'VALID',
               originalPhone: String(phoneValue),
-              sanitizedPhone: validNumber,
+              sanitizedPhone: validNumber.sanitized,
               numbersExtracted: extractedCount,
               allExtractedNumbers: multipleResult.extractedNumbers.join(', '),
             };
@@ -231,12 +231,12 @@ export class FileProcessor {
 
             validRows.push(validRow);
             allExtractedData.push(validRow);
-            allValidNumbers.push(validNumber);
+            allValidNumbers.push(validNumber.sanitized);
 
             // Track unique numbers with their associated names
-            if (!uniqueValidNumbers.has(validNumber)) {
-              uniqueValidNumbers.set(validNumber, {
-                phone: validNumber,
+            if (!uniqueValidNumbers.has(validNumber.sanitized)) {
+              uniqueValidNumbers.set(validNumber.sanitized, {
+                phone: validNumber.sanitized,
                 name: nameValue ? String(nameValue) : undefined,
               });
             }
