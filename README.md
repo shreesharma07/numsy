@@ -1,4 +1,4 @@
-# *Numsy* - _A light-weight number processor_
+# _Numsy_ - _A light-weight number processor_
 
 <div align="center">
 
@@ -22,7 +22,7 @@
 
 </div>
 
-_**Numsy** is a light-weight TypeScript library for Indian phone number validation, sanitization, and CSV/Excel file processing. Built with class-based architecture, comprehensive error handling, and extensive logging capabilities._
+**\*Numsy** is a light-weight TypeScript library for Indian phone number validation, sanitization, and CSV/Excel file processing. Built with class-based architecture, comprehensive error handling, and extensive logging capabilities.\*
 
 ## ✨ Features
 
@@ -103,6 +103,103 @@ const numsy = new Numsy();
 const result = await numsy.processFile('./contacts.csv', './output');
 console.log(`Processed ${result.totalRecords} records`);
 console.log(`Valid: ${result.validRecords}, Invalid: ${result.invalidRecords}`);
+```
+
+## 🖥️ CLI Usage
+
+Numsy includes a built-in server with a web interface for processing phone numbers without writing code.
+
+### Starting the Server
+
+**After installing the package:**
+
+```bash
+# Using npx (recommended - no installation needed)
+npx @numsy/numsy-serve
+
+# Or install globally first
+npm install -g @numsy/numsy
+numsy-serve
+
+# With custom options
+npx @numsy/numsy-serve --port 3000
+npx @numsy/numsy-serve --page
+npx @numsy/numsy-serve -p 8080 --page
+
+# Display help
+npx @numsy/numsy-serve --help
+```
+
+**For local development (in this repository):**
+
+```bash
+# Using pnpm scripts
+pnpm run serve
+
+# Or using npm scripts
+npm run serve
+
+# Or directly with ts-node
+npx ts-node src/cli/server.ts
+
+# With options (requires -- separator)
+pnpm run serve -- --port 3000
+pnpm run serve -- --page
+```
+
+### CLI Options
+
+| Option            | Alias           | Description                      | Default |
+| ----------------- | --------------- | -------------------------------- | ------- |
+| `--port <number>` | `-p`            | Specify port number (1024-65535) | 68679   |
+| `--page`          | `-s`, `--serve` | Serve the HTML utility page      | false   |
+| `--help`          | `-h`            | Display help message             | -       |
+
+### Environment Variables
+
+You can also configure the server using environment variables:
+
+```bash
+# Set port via environment variable
+PORT=3000 npx @numsy/numsy-serve
+
+# Set environment mode
+NODE_ENV=production npx @numsy/numsy-serve
+```
+
+### Server Features
+
+- ✅ **Auto Port Detection** - Automatically finds an available port if default is in use
+- 🌐 **CORS Enabled** - Works with any frontend application
+- 🔌 **REST API** - Access validation endpoints programmatically
+- 💚 **Health Check** - Built-in health check endpoint
+- 🎯 **Global API Prefix** - All endpoints under `/api`
+- 🛡️ **Graceful Shutdown** - Handles SIGTERM and SIGINT signals
+
+### API Endpoints
+
+Once the server is running, you can access:
+
+- **Health Check**: `http://localhost:68679/api/health`
+- **API Base**: `http://localhost:68679/api`
+- **Utility Page** (with `--page` flag): `http://localhost:68679`
+
+### Example Server Output
+
+```markdown
+╔═══════════════════════════════════════════════════════════════╗
+║ ✅ Server Started Successfully ║
+╚═══════════════════════════════════════════════════════════════╝
+
+🚀 Server running on: http://localhost:68679
+📡 API endpoint: http://localhost:68679/api
+💚 Health check: http://localhost:68679/api/health
+🌐 Utility page: http://localhost:68679
+
+📝 Environment: development
+⚡ Process ID: 12345
+
+Press Ctrl+C to stop the server
 ```
 
 ## 💡 API Examples
@@ -241,18 +338,18 @@ import {
 
 Numsy follows a modern, class-based architecture:
 
-```
+```markdown
 src/
 ├── common/
-│   ├── interfaces/      # TypeScript interfaces
-│   ├── functions/       # Pure utility functions
-│   └── helpers/         # Helper classes (Logger, Error, File, Validation)
+│ ├── interfaces/ # TypeScript interfaces
+│ ├── functions/ # Pure utility functions
+│ └── helpers/ # Helper classes (Logger, Error, File, Validation)
 ├── core/
-│   ├── Numsy.ts         # Main class
-│   ├── Parser.ts        # File parser
-│   ├── PhoneValidator.ts # Phone validator
-│   └── FileProcessor.ts  # File processor
-└── index.ts             # Package entry point
+│ ├── Numsy.ts # Main class
+│ ├── Parser.ts # File parser
+│ ├── PhoneValidator.ts # Phone validator
+│ └── FileProcessor.ts # File processor
+└── index.ts # Package entry point
 ```
 
 ## 🔧 Development
@@ -362,7 +459,7 @@ MIT License - see [LICENSE](./LICENSE) file for details.
 
 ## 👨‍💻 Author
 
-**Shri Kumar Sharma**
+### Shri Kumar Sharma
 
 ## 🔗 Links
 

@@ -126,18 +126,22 @@ For more information, visit:
  */
 async function bootstrap(): Promise<void> {
   try {
+    // * // Parse command line arguments to get options for port and whether to serve the HTML utility page. This allows users to customize the server behavior directly from the command line when starting the server. //
     const options = parseCLIArgs();
 
+    // ! // Check if help flag is present and display help if it is. This allows users to easily access usage information without needing to refer to external documentation. //
     if (options.help) {
       displayHelp();
       process.exit(0);
     }
 
-    // Determine preferred port
+    // * // Determine preferred port //
     const preferredPort = options.port || parseInt(process.env.PORT || '68679') || 68679;
 
-    // Find available port
+    // * // Log the preferred port and start looking for an available port. This will help users understand which port the server is trying to use and why it might switch to a different one if the preferred port is in use. //
     logger.log(`Looking for available port starting from ${preferredPort}...`);
+
+    // * // This will check if the preferred port is available, and if not, it will increment the port number until it finds an available one. It will also log a warning if the preferred port is in use and a different port is being used instead. //
     const port = await findAvailablePort(preferredPort);
 
     if (port !== preferredPort) {
