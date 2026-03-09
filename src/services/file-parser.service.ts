@@ -1,7 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import * as fs from 'fs';
 import csv from 'csv-parser';
-import * as XLSX from 'xlsx';
+import * as ExcelJS from 'exceljs';
 import { createObjectCsvWriter } from 'csv-writer';
 
 /**
@@ -93,15 +93,40 @@ export class FileParserService {
    */
   private async parseExcel(filePath: string): Promise<FileParseResult> {
     try {
-      const workbook = XLSX.readFile(filePath);
-      const sheetName = workbook.SheetNames[0];
-      const worksheet = workbook.Sheets[sheetName];
+      const workbook = new ExcelJS.Workbook();
+      await workbook.xlsx.readFile(filePath);
 
-      // Convert worksheet to JSON
-      const data: ParsedDataRow[] = XLSX.utils.sheet_to_json(worksheet);
+      const worksheet = workbook.worksheets[0];
 
-      // Get column headers
-      const detectedColumns = data.length > 0 ? Object.keys(data[0]) : [];
+      if (!worksheet) throw new Error('No worksheet found in Excel file');
+
+      const data: ParsedDataRow[] = [];
+      const detectedColumns: string[] = [];
+      let headerRow: any[] = [];
+
+      // Process rows
+      worksheet.eachRow((row, rowNumber) => {
+        if (rowNumber === 1) {
+          // First row is header
+          headerRow = row.values as any[];
+          // Remove the first empty element that ExcelJS adds
+          headerRow.shift();
+          detectedColumns.push(...headerRow.map((h) => String(h || '')));
+        } else {
+          // Data rows
+          const rowData: ParsedDataRow = {};
+          const values = row.values as any[];
+          // Remove the first empty element
+          values.shift();
+
+          headerRow.forEach((header, index) => {
+            if (header) {
+              rowData[String(header)] = values[index] !== undefined ? values[index] : '';
+            }
+          });
+          data.push(rowData);
+        }
+      });
 
       this.logger.log(`Excel parsing complete: ${data.length} rows`);
       this.logger.debug(`Detected Excel columns: ${detectedColumns.join(', ')}`);
