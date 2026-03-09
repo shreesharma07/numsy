@@ -5,6 +5,7 @@ import { AppController } from './controllers/app.controller';
 import { PhoneValidatorService } from './services/phone-validator.service';
 import { FileParserService } from './services/file-parser.service';
 import { FileProcessorService } from './services/file-processor.service';
+import { FileCleanupService } from './services/file-cleanup.service';
 
 /**
  * Root application module
@@ -19,6 +20,6 @@ import { FileProcessorService } from './services/file-processor.service';
     }),
   ],
   controllers: [AppController],
-  providers: [PhoneValidatorService, FileParserService, FileProcessorService],
+  providers: [PhoneValidatorService, FileParserService, FileProcessorService, FileCleanupService],
 })
 export class AppModule {}

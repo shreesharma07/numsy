@@ -44,7 +44,25 @@ export class AppController {
   }
 
   /**
-   * Health check endpoint
+   * API documentation page
+   */
+  @Get()
+  getApiDocs(@Res() res: Response): void {
+    const apiDocsPath = path.join(process.cwd(), 'public', 'api-info.html');
+    res.sendFile(apiDocsPath);
+  }
+
+  /**
+   * Health check page
+   */
+  @Get('health-page')
+  getHealthPage(@Res() res: Response): void {
+    const healthPagePath = path.join(process.cwd(), 'public', 'health.html');
+    res.sendFile(healthPagePath);
+  }
+
+  /**
+   * Health check endpoint (JSON)
    */
   @Get('health')
   health(): { status: string; timestamp: string } {
@@ -179,12 +197,27 @@ export class AppController {
    */
   @Get('download/:id')
   async downloadFile(@Param('id') id: string, @Res() res: Response): Promise<void> {
-    // Sanitize the ID parameter to prevent path traversal attacks
-    // Only allow alphanumeric characters, hyphens, and underscores
-    const sanitizedId = id.replace(/[^a-zA-Z0-9_-]/g, '');
+    this.logger.log(`Download request for ID: ${id}`);
 
-    if (!sanitizedId || sanitizedId !== id) {
-      throw new HttpException('Invalid download ID', HttpStatus.BAD_REQUEST);
+    // Sanitize the ID parameter to prevent path traversal attacks
+    // Allow alphanumeric, hyphens, underscores, and spaces (for backward compatibility)
+    const sanitizedId = id.replace(/[^a-zA-Z0-9_\s-]/g, '').trim();
+
+    if (!sanitizedId) {
+      this.logger.error(`Invalid download ID after sanitization: ${id}`);
+      throw new HttpException(
+        'Invalid download ID: contains invalid characters',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+
+    // Check for path traversal patterns
+    if (sanitizedId.includes('..') || sanitizedId.includes('/') || sanitizedId.includes('\\')) {
+      this.logger.error(`Path traversal attempt in download ID: ${id}`);
+      throw new HttpException(
+        'Invalid download ID: path traversal detected',
+        HttpStatus.BAD_REQUEST,
+      );
     }
 
     // Use basename to prevent directory traversal
@@ -198,7 +231,21 @@ export class AppController {
     }
 
     if (!fs.existsSync(zipFilePath)) {
-      throw new HttpException('File not found or already downloaded', HttpStatus.NOT_FOUND);
+      this.logger.error(`File not found: ${zipFilePath} (sanitized ID: ${sanitizedId})`);
+      this.logger.log(`Looking in directory: ${this.tempDir}`);
+
+      // List available files for debugging
+      try {
+        const files = fs.readdirSync(this.tempDir).filter((f) => f.endsWith('.zip'));
+        this.logger.log(`Available ZIP files: ${files.join(', ')}`);
+      } catch (e) {
+        this.logger.error('Could not list temp directory');
+      }
+
+      throw new HttpException(
+        `File not found. Download ID: ${sanitizedId}. The file may have expired or been deleted.`,
+        HttpStatus.NOT_FOUND,
+      );
     }
 
     this.logger.log(`Downloading file: ${zipFilePath}`);

@@ -1,0 +1,405 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Numsy API Health Check" />
+    <meta name="color-scheme" content="light dark" />
+    <title>Numsy Health Check</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="shortcut icon"
+        href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>💚</text></svg>" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+        rel="stylesheet" />
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        :root {
+            --primary: #6366f1;
+            --success: #10b981;
+            --danger: #ef4444;
+            --bg-body: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --bg-panel: rgba(255, 255, 255, 0.85);
+            --text-primary: #0f172a;
+            --text-secondary: #475569;
+            --shadow: 0 20px 60px -15px rgba(0, 0, 0, 0.1);
+        }
+
+        [data-theme='dark'] {
+            --bg-body: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
+            --bg-panel: rgba(15, 23, 42, 0.85);
+            --text-primary: #f1f5f9;
+            --text-secondary: #cbd5e1;
+            --shadow: 0 20px 60px -15px rgba(0, 0, 0, 0.4);
+        }
+
+        @media (prefers-color-scheme: dark) {
+            :root:not([data-theme='light']) {
+                --bg-body: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
+                --bg-panel: rgba(15, 23, 42, 0.85);
+                --text-primary: #f1f5f9;
+                --text-secondary: #cbd5e1;
+                --shadow: 0 20px 60px -15px rgba(0, 0, 0, 0.4);
+            }
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Space Grotesk', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-body);
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+
+        .container {
+            max-width: 600px;
+            width: 100%;
+        }
+
+        .card {
+            background: var(--bg-panel);
+            backdrop-filter: blur(30px) saturate(150%);
+            border-radius: 24px;
+            padding: 3rem;
+            box-shadow: var(--shadow);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            text-align: center;
+        }
+
+        .status-icon {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 2rem;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        .status-icon.loading {
+            color: var(--primary);
+            animation: spin 1s linear infinite;
+        }
+
+        .status-icon.success {
+            color: var(--success);
+        }
+
+        .status-icon.error {
+            color: var(--danger);
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+
+            50% {
+                transform: scale(1.1);
+                opacity: 0.8;
+            }
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+        }
+
+        h1.loading {
+            color: var(--primary);
+        }
+
+        h1.success {
+            color: var(--success);
+        }
+
+        h1.error {
+            color: var(--danger);
+        }
+
+        .description {
+            color: var(--text-secondary);
+            font-size: 1.125rem;
+            margin-bottom: 2rem;
+        }
+
+        .info-grid {
+            display: grid;
+            gap: 1rem;
+            text-align: left;
+            background: rgba(99, 102, 241, 0.05);
+            padding: 1.5rem;
+            border-radius: 16px;
+            margin-bottom: 2rem;
+        }
+
+        .info-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.75rem;
+            border-bottom: 1px solid rgba(148, 163, 184, 0.1);
+        }
+
+        .info-item:last-child {
+            border-bottom: none;
+        }
+
+        .info-label {
+            font-weight: 600;
+            color: var(--text-secondary);
+        }
+
+        .info-value {
+            font-family: 'JetBrains Mono', monospace;
+            color: var(--text-primary);
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+        }
+
+        .btn {
+            padding: 0.875rem 1.75rem;
+            border-radius: 12px;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), #8b5cf6);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(99, 102, 241, 0.4);
+        }
+
+        .btn-secondary {
+            background: rgba(99, 102, 241, 0.1);
+            color: var(--primary);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(99, 102, 241, 0.2);
+        }
+
+        .theme-toggle {
+            position: fixed;
+            top: 1.5rem;
+            right: 1.5rem;
+            background: var(--bg-panel);
+            backdrop-filter: blur(30px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 50px;
+            padding: 0.75rem 1.25rem;
+            cursor: pointer;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            box-shadow: var(--shadow);
+            transition: all 0.3s;
+        }
+
+        .theme-toggle:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(99, 102, 241, 0.3);
+        }
+
+        @media (max-width: 768px) {
+            .card {
+                padding: 2rem;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            .btn-group {
+                flex-direction: column;
+            }
+
+            .theme-toggle span {
+                display: none;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <button class="theme-toggle" id="themeToggle">
+        <i data-lucide="moon"></i>
+        <span>Dark</span>
+    </button>
+
+    <div class="container">
+        <div class="card">
+            <i class="status-icon loading" data-lucide="activity" id="statusIcon"></i>
+            <h1 class="loading" id="statusTitle">Checking Health...</h1>
+            <p class="description" id="statusDescription">Connecting to Numsy API...</p>
+
+            <div class="info-grid" id="infoGrid" style="display: none;">
+                <div class="info-item">
+                    <span class="info-label">Status</span>
+                    <span class="info-value" id="statusValue">-</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Timestamp</span>
+                    <span class="info-value" id="timestampValue">-</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Response Time</span>
+                    <span class="info-value" id="responseTimeValue">-</span>
+                </div>
+            </div>
+
+            <div class="btn-group">
+                <a href="/" class="btn btn-primary">
+                    <i data-lucide="home"></i>
+                    Home
+                </a>
+                <button class="btn btn-secondary" onclick="checkHealth()">
+                    <i data-lucide="refresh-cw"></i>
+                    Refresh
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Initialize Lucide icons
+            if (typeof lucide !== 'undefined') {
+                lucide.createIcons();
+                console.log('Lucide icons initialized');
+            } else {
+                console.error('Lucide library not loaded');
+            }
+
+            // Theme Management
+            const themeToggle = document.getElementById('themeToggle');
+            const html = document.documentElement;
+            const savedTheme = localStorage.getItem('theme');
+            const systemDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+            if (savedTheme) {
+                html.setAttribute('data-theme', savedTheme);
+                updateThemeIcon(savedTheme);
+            } else if (systemDark) {
+                html.setAttribute('data-theme', 'dark');
+                updateThemeIcon('dark');
+            }
+
+            themeToggle.addEventListener('click', () => {
+                const current = html.getAttribute('data-theme');
+                const newTheme = current === 'dark' ? 'light' : 'dark';
+                html.setAttribute('data-theme', newTheme);
+                localStorage.setItem('theme', newTheme);
+                updateThemeIcon(newTheme);
+            });
+
+            function updateThemeIcon(theme) {
+                const icon = themeToggle.querySelector('i');
+                const text = themeToggle.querySelector('span');
+                icon.setAttribute('data-lucide', theme === 'dark' ? 'sun' : 'moon');
+                text.textContent = theme === 'dark' ? 'Light' : 'Dark';
+                if (typeof lucide !== 'undefined') {
+                    lucide.createIcons();
+                }
+            }
+
+            // Check health on load
+            console.log('Calling checkHealth on page load');
+            checkHealth();
+        });
+
+        async function checkHealth() {
+            console.log('checkHealth function called');
+            const statusIcon = document.getElementById('statusIcon');
+            const statusTitle = document.getElementById('statusTitle');
+            const statusDescription = document.getElementById('statusDescription');
+            const infoGrid = document.getElementById('infoGrid');
+            const statusValue = document.getElementById('statusValue');
+            const timestampValue = document.getElementById('timestampValue');
+            const responseTimeValue = document.getElementById('responseTimeValue');
+
+            console.log('Elements found:', { statusIcon, statusTitle, infoGrid });
+
+            // Reset to loading state
+            statusIcon.className = 'status-icon loading';
+            statusIcon.setAttribute('data-lucide', 'activity');
+            statusTitle.className = 'loading';
+            statusTitle.textContent = 'Checking Health...';
+            statusDescription.textContent = 'Connecting to Numsy API...';
+            infoGrid.style.display = 'none';
+            lucide.createIcons();
+
+            const startTime = Date.now();
+
+            try {
+                console.log('Fetching /api/health...');
+                const response = await fetch('/api/health');
+                const data = await response.json();
+                const responseTime = Date.now() - startTime;
+
+                console.log('Health check response:', { status: response.status, data });
+
+                if (response.ok && data.status === 'OK') {
+                    // Success state
+                    statusIcon.className = 'status-icon success';
+                    statusIcon.setAttribute('data-lucide', 'check-circle');
+                    statusTitle.className = 'success';
+                    statusTitle.textContent = 'All Systems Operational';
+                    statusDescription.textContent = 'Numsy API is running smoothly';
+
+                    statusValue.textContent = data.status;
+                    statusValue.style.color = 'var(--success)';
+                    timestampValue.textContent = new Date(data.timestamp).toLocaleString();
+                    responseTimeValue.textContent = `${responseTime}ms`;
+
+                    infoGrid.style.display = 'grid';
+                } else {
+                    throw new Error('Health check failed');
+                }
+            } catch (error) {
+                // Error state
+                statusIcon.className = 'status-icon error';
+                statusIcon.setAttribute('data-lucide', 'x-circle');
+                statusTitle.className = 'error';
+                statusTitle.textContent = 'Service Unavailable';
+                statusDescription.textContent = 'Unable to connect to Numsy API. Please try again later.';
+            }
+
+            lucide.createIcons();
+        }
+    </script>
+</body>
+
+</html>

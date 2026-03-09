@@ -1,0 +1,488 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Numsy API Documentation - Phone Number Validation API" />
+    <meta name="color-scheme" content="light dark" />
+    <title>Numsy API Documentation</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="shortcut icon"
+        href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📚</text></svg>" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap"
+        rel="stylesheet" />
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --primary-light: #a5b4fc;
+            --secondary: #8b5cf6;
+            --accent: #06b6d4;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --bg-body: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --bg-panel: rgba(255, 255, 255, 0.85);
+            --text-primary: #0f172a;
+            --text-secondary: #475569;
+            --text-tertiary: #94a3b8;
+            --border: rgba(148, 163, 184, 0.2);
+            --shadow: 0 20px 60px -15px rgba(0, 0, 0, 0.1), 0 0 0 1px rgba(255, 255, 255, 0.05);
+            --code-bg: rgba(15, 23, 42, 0.05);
+        }
+
+        [data-theme='dark'] {
+            --bg-body: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
+            --bg-panel: rgba(15, 23, 42, 0.85);
+            --text-primary: #f1f5f9;
+            --text-secondary: #cbd5e1;
+            --text-tertiary: #64748b;
+            --border: rgba(148, 163, 184, 0.15);
+            --shadow: 0 20px 60px -15px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.05);
+            --code-bg: rgba(255, 255, 255, 0.05);
+        }
+
+        @media (prefers-color-scheme: dark) {
+            :root:not([data-theme='light']) {
+                --bg-body: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
+                --bg-panel: rgba(15, 23, 42, 0.85);
+                --text-primary: #f1f5f9;
+                --text-secondary: #cbd5e1;
+                --text-tertiary: #64748b;
+                --border: rgba(148, 163, 184, 0.15);
+                --shadow: 0 20px 60px -15px rgba(0, 0, 0, 0.4);
+                --code-bg: rgba(255, 255, 255, 0.05);
+            }
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Space Grotesk', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-body);
+            color: var(--text-primary);
+            min-height: 100vh;
+            padding: 2rem;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 1rem;
+        }
+
+        .header p {
+            font-size: 1.125rem;
+            color: var(--text-secondary);
+        }
+
+        .card {
+            background: var(--bg-panel);
+            backdrop-filter: blur(30px) saturate(150%);
+            border-radius: 24px;
+            padding: 2.5rem;
+            box-shadow: var(--shadow);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            margin-bottom: 2rem;
+        }
+
+        .card h2 {
+            font-size: 1.75rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            color: var(--text-primary);
+        }
+
+        .card h2 i {
+            width: 28px;
+            height: 28px;
+            color: var(--primary);
+        }
+
+        .endpoint {
+            background: var(--code-bg);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            border: 1px solid var(--border);
+        }
+
+        .endpoint-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .method {
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 0.875rem;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .method.post {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+        }
+
+        .method.get {
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+            color: white;
+        }
+
+        .endpoint-path {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.125rem;
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        .endpoint-description {
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+            line-height: 1.6;
+        }
+
+        .code-block {
+            background: #1e293b;
+            color: #e2e8f0;
+            padding: 1.5rem;
+            border-radius: 12px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.875rem;
+            overflow-x: auto;
+            margin-top: 1rem;
+        }
+
+        .code-block pre {
+            margin: 0;
+        }
+
+        .param-list {
+            list-style: none;
+            margin-top: 1rem;
+        }
+
+        .param-list li {
+            padding: 0.75rem;
+            background: var(--code-bg);
+            border-radius: 8px;
+            margin-bottom: 0.5rem;
+            border-left: 3px solid var(--primary);
+        }
+
+        .param-name {
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        .param-type {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.875rem;
+            color: var(--accent);
+        }
+
+        .theme-toggle {
+            position: fixed;
+            top: 1.5rem;
+            right: 1.5rem;
+            background: var(--bg-panel);
+            backdrop-filter: blur(30px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 50px;
+            padding: 0.75rem 1.25rem;
+            cursor: pointer;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            box-shadow: var(--shadow);
+        }
+
+        .home-btn {
+            position: fixed;
+            top: 1.5rem;
+            left: 1.5rem;
+            background: var(--bg-panel);
+            backdrop-filter: blur(30px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 50px;
+            padding: 0.75rem 1.25rem;
+            cursor: pointer;
+            z-index: 1000;
+            text-decoration: none;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            box-shadow: var(--shadow);
+            transition: all 0.3s;
+        }
+
+        .home-btn:hover,
+        .theme-toggle:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(99, 102, 241, 0.3);
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-left: 0.5rem;
+        }
+
+        .badge.required {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--danger);
+        }
+
+        .badge.optional {
+            background: rgba(59, 130, 246, 0.1);
+            color: var(--accent);
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 1rem;
+            }
+
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .card {
+                padding: 1.5rem;
+            }
+
+            .endpoint-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .home-btn,
+            .theme-toggle {
+                padding: 0.6rem 1rem;
+            }
+
+            .home-btn span,
+            .theme-toggle span {
+                display: none;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <a href="/" class="home-btn">
+        <i data-lucide="home"></i>
+        <span>Home</span>
+    </a>
+
+    <button class="theme-toggle" id="themeToggle">
+        <i data-lucide="moon"></i>
+        <span>Dark</span>
+    </button>
+
+    <div class="container">
+        <div class="header">
+            <h1>📚 API Documentation</h1>
+            <p>Numsy - Phone Number Validation API</p>
+        </div>
+
+        <div class="card">
+            <h2>
+                <i data-lucide="info"></i>
+                Overview
+            </h2>
+            <p style="color: var(--text-secondary); line-height: 1.8;">
+                The Numsy API provides endpoints for uploading and processing CSV/Excel files containing phone numbers.
+                The API validates Indian mobile numbers, removes duplicates, and provides detailed analytics.
+            </p>
+        </div>
+
+        <div class="card">
+            <h2>
+                <i data-lucide="zap"></i>
+                Endpoints
+            </h2>
+
+            <!-- Upload Endpoint -->
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="method post">POST</span>
+                    <span class="endpoint-path">/api/upload</span>
+                </div>
+                <p class="endpoint-description">
+                    Upload and process a CSV or Excel file containing phone numbers. Returns processed data with
+                    analytics and a download ID.
+                </p>
+
+                <h4 style="margin-top: 1.5rem; margin-bottom: 0.75rem; color: var(--text-primary);">Request</h4>
+                <ul class="param-list">
+                    <li>
+                        <span class="param-name">file</span>
+                        <span class="param-type">File (multipart/form-data)</span>
+                        <span class="badge required">Required</span>
+                        <div style="margin-top: 0.5rem; color: var(--text-secondary); font-size: 0.875rem;">
+                            CSV, XLSX, or XLS file (max 50MB)
+                        </div>
+                    </li>
+                </ul>
+
+                <h4 style="margin-top: 1.5rem; margin-bottom: 0.75rem; color: var(--text-primary);">Response</h4>
+                <div class="code-block">
+                    <pre>{
+  "success": true,
+  "message": "File processed successfully",
+  "summary": {
+    "totalRecords": 1000,
+    "validRecords": 850,
+    "invalidRecords": 150,
+    "duplicatesRemoved": 50
+  },
+  "downloadId": "processed_1234567890"
+}</pre>
+                </div>
+            </div>
+
+            <!-- Download Endpoint -->
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="method get">GET</span>
+                    <span class="endpoint-path">/api/download/:id</span>
+                </div>
+                <p class="endpoint-description">
+                    Download the processed ZIP file containing valid numbers, invalid numbers, and analytics report.
+                </p>
+
+                <h4 style="margin-top: 1.5rem; margin-bottom: 0.75rem; color: var(--text-primary);">Parameters</h4>
+                <ul class="param-list">
+                    <li>
+                        <span class="param-name">id</span>
+                        <span class="param-type">String (URL parameter)</span>
+                        <span class="badge required">Required</span>
+                        <div style="margin-top: 0.5rem; color: var(--text-secondary); font-size: 0.875rem;">
+                            Download ID returned from the upload endpoint
+                        </div>
+                    </li>
+                </ul>
+
+                <h4 style="margin-top: 1.5rem; margin-bottom: 0.75rem; color: var(--text-primary);">Response</h4>
+                <p style="color: var(--text-secondary); font-size: 0.875rem; margin-bottom: 1rem;">
+                    Returns a ZIP file containing:
+                </p>
+                <ul style="color: var(--text-secondary); margin-left: 2rem; line-height: 1.8;">
+                    <li><strong>*_valid_*.csv</strong> - Valid phone numbers</li>
+                    <li><strong>*_invalid_*.csv</strong> - Invalid phone numbers with reasons</li>
+                    <li><strong>*_analytics_*.txt</strong> - Detailed analytics report</li>
+                </ul>
+            </div>
+
+            <!-- Health Endpoint -->
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="method get">GET</span>
+                    <span class="endpoint-path">/api/health</span>
+                </div>
+                <p class="endpoint-description">
+                    Health check endpoint to verify API status.
+                </p>
+
+                <h4 style="margin-top: 1.5rem; margin-bottom: 0.75rem; color: var(--text-primary);">Response</h4>
+                <div class="code-block">
+                    <pre>{
+  "status": "OK",
+  "timestamp": "2026-03-09T12:00:00.000Z"
+}</pre>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>
+                <i data-lucide="shield-check"></i>
+                Validation Rules
+            </h2>
+            <ul style="color: var(--text-secondary); line-height: 2; list-style: none;">
+                <li>✓ Must be exactly 10 digits</li>
+                <li>✓ Must start with 6, 7, 8, or 9</li>
+                <li>✓ Only valid Indian mobile numbers</li>
+                <li>✓ Automatic duplicate removal</li>
+                <li>✓ Support for multiple numbers per row</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Initialize Lucide icons
+            if (typeof lucide !== 'undefined') {
+                lucide.createIcons();
+            }
+
+            // Theme Management
+            const themeToggle = document.getElementById('themeToggle');
+            const html = document.documentElement;
+            const savedTheme = localStorage.getItem('theme');
+            const systemDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+            if (savedTheme) {
+                html.setAttribute('data-theme', savedTheme);
+                updateThemeIcon(savedTheme);
+            } else if (systemDark) {
+                html.setAttribute('data-theme', 'dark');
+                updateThemeIcon('dark');
+            }
+
+            themeToggle.addEventListener('click', () => {
+                const current = html.getAttribute('data-theme');
+                const newTheme = current === 'dark' ? 'light' : 'dark';
+                html.setAttribute('data-theme', newTheme);
+                localStorage.setItem('theme', newTheme);
+                updateThemeIcon(newTheme);
+            });
+
+            function updateThemeIcon(theme) {
+                const icon = themeToggle.querySelector('i');
+                const text = themeToggle.querySelector('span');
+                icon.setAttribute('data-lucide', theme === 'dark' ? 'sun' : 'moon');
+                text.textContent = theme === 'dark' ? 'Light' : 'Dark';
+                if (typeof lucide !== 'undefined') {
+                    lucide.createIcons();
+                }
+            }
+        });
+    </script>
+</body>
+
+</html>

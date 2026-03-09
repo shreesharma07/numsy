@@ -155,7 +155,16 @@ export class FileProcessorService {
     let baseFileName = 'processed';
     if (originalFilename) {
       const parsedName = path.parse(originalFilename);
-      baseFileName = parsedName.name; // filename without extension
+      // Sanitize filename: replace spaces with hyphens, remove special characters
+      baseFileName = parsedName.name
+        .replace(/\s+/g, '-') // Replace spaces with hyphens
+        .replace(/[^a-zA-Z0-9_-]/g, '') // Remove special characters
+        .substring(0, 50); // Limit length
+
+      // Fallback if sanitization results in empty string
+      if (!baseFileName) {
+        baseFileName = 'processed';
+      }
     }
 
     const validFilePath = path.join(normalizedOutputDir, `${baseFileName}_valid_${timestamp}.csv`);

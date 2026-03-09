@@ -35,9 +35,7 @@ async function bootstrap() {
     console.log('\n');
     console.log('╔═══════════════════════════════════════════════════════════════╗');
     console.log('║                                                               ║');
-    console.log(
-      '║   🔢  \x1b[1m\x1b[36mNumsy - Phone Number Validator & Sanitizer\x1b[0m  📱    ║',
-    );
+    console.log('║     \x1b[1m\x1b[36mNumsy - Phone Number Validator & Sanitizer\x1b[0m      ║');
     console.log('║                                                               ║');
     console.log('╚═══════════════════════════════════════════════════════════════╝');
     console.log('');
@@ -67,6 +65,9 @@ async function bootstrap() {
     console.log('    4. Download the processed ZIP file');
     console.log('');
     console.log('  \x1b[1m\x1b[34m📊 API Endpoints:\x1b[0m');
+    console.log('    GET    /api                 - API documentation page');
+    console.log('    GET    /api/health-page     - Health check page');
+    console.log('    GET    /api/health          - Health check (JSON)');
     console.log('    POST   /api/upload          - Upload and process file');
     console.log('    GET    /api/download/:id    - Download processed files');
     console.log('');

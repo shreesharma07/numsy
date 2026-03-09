@@ -151,31 +151,103 @@
             z-index: 1;
             min-height: 100vh;
             display: flex;
+            flex-direction: column;
             align-items: center;
             justify-content: center;
             padding: 2rem;
+            gap: 2rem;
+        }
+
+        .app-header {
+            text-align: center;
+            max-width: 900px;
+            width: 100%;
+        }
+
+        .app-header h1 {
+            font-family: 'Lexend', sans-serif;
+            font-size: 2rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.75rem;
+        }
+
+        .app-header p {
+            font-size: 1.125rem;
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+            line-height: 1.6;
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .nav-btn {
+            background: var(--bg-panel);
+            backdrop-filter: blur(30px) saturate(150%);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 14px;
+            padding: 0.875rem 1.75rem;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.625rem;
+            font-size: 0.9375rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            text-decoration: none;
+            box-shadow: var(--shadow);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .nav-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-hover);
+            border-color: rgba(99, 102, 241, 0.3);
+        }
+
+        .nav-btn i {
+            width: 18px;
+            height: 18px;
+        }
+
+        .nav-btn.primary {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            border: none;
+        }
+
+        .nav-btn.primary:hover {
+            box-shadow: 0 8px 30px rgba(99, 102, 241, 0.45);
         }
 
         .panels-wrapper {
             display: grid;
-            grid-template-columns: 320px 1fr 320px;
-            gap: 2.5rem;
-            max-width: 1900px;
+            grid-template-columns: 280px 1fr 280px;
+            gap: 2rem;
+            max-width: 1600px;
             width: 100%;
-            min-height: 700px;
             transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
 
         .panel {
             background: var(--bg-panel);
             backdrop-filter: blur(30px) saturate(150%);
-            border-radius: 24px;
-            padding: 2.5rem;
+            border-radius: 20px;
+            padding: 2rem;
             box-shadow: var(--shadow);
             border: 1px solid rgba(255, 255, 255, 0.08);
             transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
             display: flex;
             flex-direction: column;
+            max-height: 550px;
         }
 
         .panel:hover {
@@ -204,19 +276,19 @@
         .logo {
             display: flex;
             align-items: center;
-            gap: 0.75rem;
-            margin-bottom: 2rem;
+            gap: 0.625rem;
+            margin-bottom: 1.5rem;
         }
 
         .logo i {
-            width: 32px;
-            height: 32px;
+            width: 26px;
+            height: 26px;
             color: var(--primary);
         }
 
         .logo h1 {
-            font-family: 'Space Grotesk', sans-serif;
-            font-size: 1.75rem;
+            font-family: 'Lexend', sans-serif;
+            font-size: 1.375rem;
             font-weight: 800;
             background: linear-gradient(135deg, var(--primary), var(--secondary));
             background-clip: text;
@@ -226,24 +298,35 @@
 
         .info-section {
             flex: 1;
-            margin-bottom: 2rem;
+            margin-bottom: 1.25rem;
+            overflow-y: auto;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+
+        .info-section::-webkit-scrollbar {
+            display: none;
+        }
+
+        .info-section:last-child {
+            margin-bottom: 0;
         }
 
         .info-section h3 {
-            font-size: 0.875rem;
+            font-size: 0.75rem;
             font-weight: 600;
             color: var(--text-secondary);
             text-transform: uppercase;
             letter-spacing: 0.05em;
-            margin-bottom: 1rem;
+            margin-bottom: 0.75rem;
             display: flex;
             align-items: center;
             gap: 0.5rem;
         }
 
         .info-section h3 i {
-            width: 16px;
-            height: 16px;
+            width: 14px;
+            height: 14px;
         }
 
         .feature-list {
@@ -253,33 +336,31 @@
         .feature-list li {
             display: flex;
             align-items: flex-start;
-            gap: 0.75rem;
-            padding: 0.875rem;
-            border-radius: 12px;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            font-size: 0.875rem;
-            line-height: 1.5;
+            gap: 0.5rem;
+            padding: 0.5rem 0.625rem;
+            border-radius: 8px;
+            font-size: 0.75rem;
+            line-height: 1.4;
             color: var(--text-secondary);
         }
 
-        .feature-list li:hover {
-            background: rgba(99, 102, 241, 0.08);
-            transform: translateX(4px);
-            color: var(--text-primary);
-        }
-
         .feature-list li i {
-            width: 18px;
-            height: 18px;
+            width: 16px;
+            height: 16px;
             color: var(--primary);
             flex-shrink: 0;
-            margin-top: 0.1rem;
+            margin-top: 0.05rem;
         }
 
         /* Upload Panel */
         .upload-panel {
             animation: fadeInUp 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) 0.2s both;
             justify-content: flex-start;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .upload-panel.hidden {
+            display: none;
         }
 
         @keyframes fadeInUp {
@@ -296,8 +377,8 @@
 
         .drop-zone {
             border: 2px dashed rgba(99, 102, 241, 0.2);
-            border-radius: 20px;
-            padding: 4rem 2rem;
+            border-radius: 16px;
+            padding: 2.5rem 1.5rem;
             text-align: center;
             cursor: pointer;
             transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
@@ -321,9 +402,9 @@
         }
 
         .drop-icon {
-            width: 64px;
-            height: 64px;
-            margin: 0 auto 1.5rem;
+            width: 48px;
+            height: 48px;
+            margin: 0 auto 1rem;
             color: var(--primary);
             animation: float 3s ease-in-out infinite;
             pointer-events: none;
@@ -342,7 +423,7 @@
         }
 
         .drop-zone h2 {
-            font-size: 1.5rem;
+            font-size: 1.25rem;
             font-weight: 600;
             margin-bottom: 0.5rem;
             color: var(--text-primary);
@@ -452,11 +533,18 @@
             animation: slideInRight 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) 0.4s both;
             opacity: 0.4;
             pointer-events: none;
+            transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+            position: relative;
         }
 
         .analytics-panel.active {
             opacity: 1;
             pointer-events: auto;
+        }
+
+        .analytics-panel.expanded {
+            grid-column: span 2;
+            transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
 
         @keyframes slideInRight {
@@ -476,6 +564,42 @@
             align-items: center;
             gap: 0.75rem;
             margin-bottom: 1.5rem;
+            justify-content: space-between;
+        }
+
+        .analytics-title .title-left {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .back-btn {
+            background: rgba(99, 102, 241, 0.1);
+            border: 1px solid rgba(99, 102, 241, 0.2);
+            border-radius: 10px;
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+            display: none;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--primary);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .back-btn.show {
+            display: flex;
+        }
+
+        .back-btn:hover {
+            background: rgba(99, 102, 241, 0.15);
+            transform: translateX(-2px);
+        }
+
+        .back-btn i {
+            width: 16px;
+            height: 16px;
         }
 
         .analytics-title i {
@@ -489,32 +613,95 @@
             font-weight: 700;
         }
 
+        #statsContainer {
+            display: grid !important;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.25rem;
+            margin-bottom: 1.5rem;
+            overflow-y: auto;
+            max-height: 100%;
+            width: 100%;
+        }
+
         .stat-card {
             background: linear-gradient(135deg, rgba(99, 102, 241, 0.05), rgba(139, 92, 246, 0.05));
             border: 1px solid rgba(99, 102, 241, 0.1);
             border-radius: 16px;
-            padding: 1.5rem;
-            margin-bottom: 1rem;
-            transition: all 0.3s ease;
+            padding: 1.5rem 1.25rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            gap: 0.625rem;
+            min-height: 140px;
+            justify-content: center;
         }
 
-        .stat-card:hover {
-            transform: translateX(4px);
-            background: linear-gradient(135deg, rgba(99, 102, 241, 0.08), rgba(139, 92, 246, 0.08));
+        .stat-card .stat-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-card .stat-icon i {
+            width: 24px;
+            height: 24px;
+        }
+
+        .stat-card.total .stat-icon {
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.15), rgba(139, 92, 246, 0.15));
+            color: var(--primary);
+        }
+
+        .stat-card.valid .stat-icon {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.15), rgba(5, 150, 105, 0.15));
+            color: var(--success);
+        }
+
+        .stat-card.invalid .stat-icon {
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.15), rgba(220, 38, 38, 0.15));
+            color: var(--danger);
+        }
+
+        .stat-card.rate .stat-icon {
+            background: linear-gradient(135deg, rgba(6, 182, 212, 0.15), rgba(8, 145, 178, 0.15));
+            color: var(--accent);
         }
 
         .stat-value {
-            font-size: 2rem;
+            font-size: 2.25rem;
             font-weight: 700;
+            color: var(--text-primary);
+            line-height: 1;
+            margin: 0.25rem 0;
+        }
+
+        .stat-card.total .stat-value {
             color: var(--primary);
-            margin-bottom: 0.25rem;
+        }
+
+        .stat-card.valid .stat-value {
+            color: var(--success);
+        }
+
+        .stat-card.invalid .stat-value {
+            color: var(--danger);
+        }
+
+        .stat-card.rate .stat-value {
+            color: var(--accent);
         }
 
         .stat-label {
-            font-size: 0.8125rem;
+            font-size: 0.75rem;
             color: var(--text-secondary);
             text-transform: uppercase;
             letter-spacing: 0.05em;
+            font-weight: 600;
         }
 
         .result-message {
@@ -531,14 +718,18 @@
             background: linear-gradient(135deg, var(--success), #059669);
             color: white;
             border: none;
-            border-radius: 14px;
-            padding: 1.125rem;
-            font-size: 0.9375rem;
+            border-radius: 12px;
+            padding: 0.875rem 1.25rem;
+            font-size: 0.875rem;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             margin-top: auto;
             box-shadow: 0 4px 15px rgba(16, 185, 129, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
         }
 
         .download-btn:hover {
@@ -546,27 +737,56 @@
             box-shadow: 0 8px 25px rgba(16, 185, 129, 0.35);
         }
 
+        .download-btn i {
+            width: 18px;
+            height: 18px;
+        }
+
         /* Responsive */
         @media (max-width: 1400px) {
             .panels-wrapper {
-                grid-template-columns: 280px 1fr 280px;
-                gap: 2rem;
+                grid-template-columns: 260px 1fr 260px;
+                gap: 1.75rem;
+            }
+
+            .app-header h1 {
+                font-size: 2.5rem;
             }
         }
 
         @media (max-width: 1200px) {
             .panels-wrapper {
                 grid-template-columns: 1fr;
-                gap: 2rem;
-                max-width: 800px;
+                gap: 1.5rem;
+                max-width: 700px;
             }
 
             .panel {
-                padding: 2rem;
+                padding: 1.75rem;
+                max-height: none;
+            }
+
+            .analytics-panel.expanded {
+                grid-column: span 1;
+            }
+
+            #statsContainer {
+                grid-template-columns: repeat(2, 1fr) !important;
+                gap: 1rem;
             }
 
             .app-container {
-                padding: 2rem 1.5rem;
+                padding: 1.5rem 1rem;
+                gap: 1.5rem;
+            }
+
+            .app-header h1 {
+                font-size: 2.25rem;
+            }
+
+            .app-header p {
+                font-size: 1rem;
+                margin-bottom: 1.5rem;
             }
 
             .theme-toggle {
@@ -579,19 +799,62 @@
         @media (max-width: 768px) {
             .panels-wrapper {
                 grid-template-columns: 1fr;
-                gap: 1.5rem;
+                gap: 1.25rem;
             }
 
             .panel {
                 padding: 1.5rem;
             }
 
+            #statsContainer {
+                grid-template-columns: 1fr !important;
+                gap: 1rem;
+            }
+
+            .stat-card {
+                padding: 1.25rem 1rem;
+                min-height: 120px;
+            }
+
+            .stat-card .stat-icon {
+                width: 40px;
+                height: 40px;
+            }
+
+            .stat-card .stat-icon i {
+                width: 20px;
+                height: 20px;
+            }
+
+            .stat-value {
+                font-size: 1.75rem;
+            }
+
             .drop-zone {
-                padding: 3rem 1.5rem;
+                padding: 2rem 1.25rem;
             }
 
             .app-container {
-                padding: 1.5rem 1rem;
+                padding: 1.25rem 0.875rem;
+                gap: 1.25rem;
+            }
+
+            .app-header h1 {
+                font-size: 1.875rem;
+            }
+
+            .app-header p {
+                font-size: 0.9375rem;
+                margin-bottom: 1.25rem;
+            }
+
+            .nav-buttons {
+                gap: 0.75rem;
+            }
+
+            .nav-btn {
+                padding: 0.75rem 1.25rem;
+                font-size: 0.875rem;
             }
 
             .theme-toggle {
@@ -631,14 +894,30 @@
     </button>
 
     <div class="app-container">
+        <!-- Header Section -->
+        <div class="app-header">
+            <h1>Numsy</h1>
+            <p>Validate and sanitize Indian phone numbers from CSV and Excel files with advanced analytics</p>
+            <div class="nav-buttons">
+                <a href="/" class="nav-btn">
+                    <i data-lucide="home"></i>
+                    <span>Home</span>
+                </a>
+                <a href="/api" class="nav-btn">
+                    <i data-lucide="book-open"></i>
+                    <span>API Docs</span>
+                </a>
+                <a href="/api/health-page" class="nav-btn">
+                    <i data-lucide="heart-pulse"></i>
+                    <span>Health Check</span>
+                </a>
+            </div>
+        </div>
+
+        <!-- Panels Section -->
         <div class="panels-wrapper">
             <!-- Info Panel -->
             <div class="panel info-panel">
-                <div class="logo">
-                    <i data-lucide="smartphone"></i>
-                    <h1>Numsy</h1>
-                </div>
-
                 <div class="info-section">
                     <h3><i data-lucide="sparkles"></i> Features</h3>
                     <ul class="feature-list">
@@ -704,7 +983,7 @@
                         <h3 id="fileName">No file selected</h3>
                         <p id="fileSize">0 KB</p>
                     </div>
-                    <button onclick="removeFile()"
+                    <button id="removeFileBtn"
                         style="background: none; border: none; cursor: pointer; color: var(--danger)">
                         <i data-lucide="x"></i>
                     </button>
@@ -724,8 +1003,14 @@
             <!-- Analytics Panel -->
             <div class="panel analytics-panel" id="analyticsPanel">
                 <div class="analytics-title">
-                    <i data-lucide="activity"></i>
-                    <h2>Analytics</h2>
+                    <div class="title-left">
+                        <i data-lucide="activity"></i>
+                        <h2>Analytics</h2>
+                    </div>
+                    <button class="back-btn" id="backBtn">
+                        <i data-lucide="arrow-left"></i>
+                        Back
+                    </button>
                 </div>
 
                 <div class="result-message" id="resultMessage">Upload a file to see analytics</div>
@@ -733,8 +1018,7 @@
                 <div id="statsContainer" style="display: none"></div>
 
                 <button class="download-btn" id="downloadBtn" style="display: none">
-                    <i data-lucide="download"
-                        style="width: 20px; height: 20px; display: inline-block; vertical-align: middle"></i>
+                    <i data-lucide="download"></i>
                     Download Results
                 </button>
             </div>
@@ -742,229 +1026,371 @@
     </div>
 
     <script>
-        lucide.createIcons();
+        // Wait for DOM to be fully loaded
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('DOM fully loaded and parsed');
 
-        // Theme Management
-        const themeToggle = document.getElementById('themeToggle');
-        const html = document.documentElement;
-        const savedTheme = localStorage.getItem('theme');
-        const systemDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-
-        if (savedTheme) {
-            html.setAttribute('data-theme', savedTheme);
-            updateThemeIcon(savedTheme);
-        } else if (systemDark) {
-            html.setAttribute('data-theme', 'dark');
-            updateThemeIcon('dark');
-        }
-
-        themeToggle.addEventListener('click', () => {
-            const current = html.getAttribute('data-theme');
-            const newTheme = current === 'dark' ? 'light' : 'dark';
-            html.setAttribute('data-theme', newTheme);
-            localStorage.setItem('theme', newTheme);
-            updateThemeIcon(newTheme);
-        });
-
-        function updateThemeIcon(theme) {
-            const icon = themeToggle.querySelector('i');
-            const text = themeToggle.querySelector('span');
-            icon.setAttribute('data-lucide', theme === 'dark' ? 'sun' : 'moon');
-            text.textContent = theme === 'dark' ? 'Light' : 'Dark';
-            lucide.createIcons();
-        }
-
-        // File handling
-        const dropZone = document.getElementById('dropZone');
-        const fileInput = document.getElementById('fileInput');
-        const selectedFile = document.getElementById('selectedFile');
-        const fileName = document.getElementById('fileName');
-        const fileSize = document.getElementById('fileSize');
-        const uploadBtn = document.getElementById('uploadBtn');
-        const progressBar = document.getElementById('progressBar');
-        const progressFill = document.getElementById('progressFill');
-        const analyticsPanel = document.getElementById('analyticsPanel');
-
-        let currentFile = null;
-
-        // Prevent default drag behaviors only for dragover to avoid browser opening file
-        document.addEventListener('dragover', (e) => {
-            e.preventDefault();
-        });
-
-        document.addEventListener('drop', (e) => {
-            e.preventDefault();
-        });
-
-        dropZone.addEventListener('click', () => fileInput.click());
-
-        // Comprehensive drag and drop handlers
-        dropZone.addEventListener('dragenter', (e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            console.log('Drag enter detected');
-            dropZone.classList.add('dragover');
-        });
-
-        dropZone.addEventListener('dragover', (e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            console.log('Drag over detected');
-        });
-
-        dropZone.addEventListener('dragleave', (e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            // Check if we're leaving the drop zone element entirely
-            const rect = dropZone.getBoundingClientRect();
-            const x = e.clientX;
-            const y = e.clientY;
-
-            if (x < rect.left || x >= rect.right || y < rect.top || y >= rect.bottom) {
-                console.log('Drag leave - removing dragover class');
-                dropZone.classList.remove('dragover');
-            }
-        });
-
-        dropZone.addEventListener('drop', (e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            console.log('Drop detected!', e.dataTransfer.files);
-            dropZone.classList.remove('dragover');
-
-            const files = e.dataTransfer?.files;
-            if (files && files.length > 0) {
-                console.log('Processing file:', files[0].name);
-                handleFile(files[0]);
-            } else {
-                console.error('No files in drop event');
-            }
-        });
-
-        fileInput.addEventListener('change', (e) => {
-            if (e.target.files.length > 0) {
-                handleFile(e.target.files[0]);
-            }
-        });
-
-        function handleFile(file) {
-            const validExt = ['csv', 'xlsx', 'xls'];
-            const ext = file.name.split('.').pop().toLowerCase();
-
-            if (!validExt.includes(ext)) {
-                alert('Please select a CSV, XLSX, or XLS file');
-                return;
-            }
-
-            if (file.size > 50 * 1024 * 1024) {
-                alert('File size must be less than 50MB');
-                return;
-            }
-
-            currentFile = file;
-            fileName.textContent = file.name;
-            fileSize.textContent = formatFileSize(file.size);
-            selectedFile.classList.add('show');
-            uploadBtn.classList.add('show');
-            lucide.createIcons();
-        }
-
-        function removeFile() {
-            currentFile = null;
-            fileInput.value = '';
-            selectedFile.classList.remove('show');
-            uploadBtn.classList.remove('show');
-        }
-
-        uploadBtn.addEventListener('click', async () => {
-            if (!currentFile) return;
-
-            const formData = new FormData();
-            formData.append('file', currentFile);
-
-            uploadBtn.disabled = true;
-            uploadBtn.innerHTML = 'Processing<span class="spinner"></span>';
-            progressBar.classList.add('show');
-            progressFill.style.width = '0%';
-
-            let progress = 0;
-            const interval = setInterval(() => {
-                progress += 5;
-                if (progress <= 90) {
-                    progressFill.style.width = progress + '%';
-                }
-            }, 150);
-
-            try {
-                const response = await fetch('/api/upload', {
-                    method: 'POST',
-                    body: formData,
-                });
-
-                clearInterval(interval);
-                progressFill.style.width = '100%';
-
-                const data = await response.json();
-
-                if (response.ok && data.success) {
-                    showResults(data);
-                } else {
-                    alert(data.message || 'Failed to process file');
-                }
-            } catch (error) {
-                clearInterval(interval);
-                alert('Network error: ' + error.message);
-            } finally {
-                uploadBtn.disabled = false;
-                uploadBtn.innerHTML =
-                    '<i data-lucide="zap" style="width: 20px; height: 20px; display: inline-block; vertical-align: middle;"></i> Process File';
+            // Initialize Lucide icons
+            if (typeof lucide !== 'undefined') {
                 lucide.createIcons();
-                setTimeout(() => {
-                    progressBar.classList.remove('show');
-                    progressFill.style.width = '0%';
-                }, 1000);
+                console.log('Lucide icons initialized');
+            } else {
+                console.error('Lucide library not loaded');
             }
-        });
 
-        function showResults(data) {
-            const { summary, downloadId } = data;
-            analyticsPanel.classList.add('active');
+            // Theme Management
+            const themeToggle = document.getElementById('themeToggle');
+            console.log('Theme toggle element:', themeToggle);
 
-            document.getElementById('resultMessage').style.display = 'none';
-            document.getElementById('statsContainer').style.display = 'block';
-            document.getElementById('downloadBtn').style.display = 'block';
+            if (!themeToggle) {
+                console.error('Theme toggle button not found!');
+                return;
+            }
 
-            document.getElementById('statsContainer').innerHTML = `
-                <div class="stat-card">
+            const html = document.documentElement;
+            const savedTheme = localStorage.getItem('theme');
+            const systemDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+            if (savedTheme) {
+                html.setAttribute('data-theme', savedTheme);
+                updateThemeIcon(savedTheme);
+            } else if (systemDark) {
+                html.setAttribute('data-theme', 'dark');
+                updateThemeIcon('dark');
+            }
+
+            themeToggle.addEventListener('click', () => {
+                const current = html.getAttribute('data-theme');
+                const newTheme = current === 'dark' ? 'light' : 'dark';
+                html.setAttribute('data-theme', newTheme);
+                localStorage.setItem('theme', newTheme);
+                updateThemeIcon(newTheme);
+            });
+
+            function updateThemeIcon(theme) {
+                if (!themeToggle) {
+                    console.error('Cannot update theme icon: themeToggle is null');
+                    return;
+                }
+                const icon = themeToggle.querySelector('i');
+                const text = themeToggle.querySelector('span');
+                if (!icon || !text) {
+                    console.error('Theme icon or text element not found');
+                    return;
+                }
+                icon.setAttribute('data-lucide', theme === 'dark' ? 'sun' : 'moon');
+                text.textContent = theme === 'dark' ? 'Light' : 'Dark';
+                if (typeof lucide !== 'undefined') {
+                    lucide.createIcons();
+                }
+            }
+
+            // File handling
+            const dropZone = document.getElementById('dropZone');
+            const fileInput = document.getElementById('fileInput');
+            const selectedFile = document.getElementById('selectedFile');
+            const fileName = document.getElementById('fileName');
+            const fileSize = document.getElementById('fileSize');
+            const uploadBtn = document.getElementById('uploadBtn');
+            const progressBar = document.getElementById('progressBar');
+            const progressFill = document.getElementById('progressFill');
+            const analyticsPanel = document.getElementById('analyticsPanel');
+            const removeFileBtn = document.getElementById('removeFileBtn');
+            const backBtn = document.getElementById('backBtn');
+
+            let currentFile = null;
+
+            // Prevent default drag behaviors only for dragover to avoid browser opening file
+            document.addEventListener('dragover', (e) => {
+                e.preventDefault();
+            });
+
+            document.addEventListener('drop', (e) => {
+                e.preventDefault();
+            });
+
+            dropZone.addEventListener('click', () => {
+                console.log('Drop zone clicked! Opening file dialog...');
+                fileInput.click();
+            });
+
+            // Comprehensive drag and drop handlers
+            dropZone.addEventListener('dragenter', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                console.log('Drag enter detected');
+                dropZone.classList.add('dragover');
+            });
+
+            dropZone.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                console.log('Drag over detected');
+            });
+
+            dropZone.addEventListener('dragleave', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                // Check if we're leaving the drop zone element entirely
+                const rect = dropZone.getBoundingClientRect();
+                const x = e.clientX;
+                const y = e.clientY;
+
+                if (x < rect.left || x >= rect.right || y < rect.top || y >= rect.bottom) {
+                    console.log('Drag leave - removing dragover class');
+                    dropZone.classList.remove('dragover');
+                }
+            });
+
+            dropZone.addEventListener('drop', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                console.log('Drop detected!', e.dataTransfer.files);
+                dropZone.classList.remove('dragover');
+
+                const files = e.dataTransfer?.files;
+                if (files && files.length > 0) {
+                    console.log('Processing file:', files[0].name);
+                    handleFile(files[0]);
+                } else {
+                    console.error('No files in drop event');
+                }
+            });
+
+            fileInput.addEventListener('change', (e) => {
+                console.log('File input change event fired!');
+                console.log('Files selected:', e.target.files);
+                if (e.target.files.length > 0) {
+                    console.log('File name:', e.target.files[0].name);
+                    handleFile(e.target.files[0]);
+                } else {
+                    console.warn('No files selected');
+                }
+            });
+
+            function handleFile(file) {
+                const validExt = ['csv', 'xlsx', 'xls'];
+                const ext = file.name.split('.').pop().toLowerCase();
+
+                if (!validExt.includes(ext)) {
+                    alert('Please select a CSV, XLSX, or XLS file');
+                    return;
+                }
+
+                if (file.size > 50 * 1024 * 1024) {
+                    alert('File size must be less than 50MB');
+                    return;
+                }
+
+                currentFile = file;
+                fileName.textContent = file.name;
+                fileSize.textContent = formatFileSize(file.size);
+                selectedFile.classList.add('show');
+                uploadBtn.classList.add('show');
+                lucide.createIcons();
+            }
+
+            function removeFile() {
+                currentFile = null;
+                fileInput.value = '';
+                selectedFile.classList.remove('show');
+                uploadBtn.classList.remove('show');
+            }
+
+            function resetAll() {
+                // Reset file selection
+                removeFile();
+
+                // Hide back button and collapse analytics  
+                if (backBtn) {
+                    backBtn.classList.remove('show');
+                }
+                analyticsPanel.classList.remove('expanded');
+
+                // Wait for collapse animation before resetting
+                setTimeout(() => {
+                    analyticsPanel.classList.remove('active');
+                    document.getElementById('resultMessage').style.display = 'block';
+                    document.getElementById('statsContainer').style.display = 'none';
+                    document.getElementById('statsContainer').innerHTML = '';
+                    document.getElementById('downloadBtn').style.display = 'none';
+
+                    // Show upload panel
+                    const uploadPanel = document.querySelector('.upload-panel');
+                    if (uploadPanel) {
+                        uploadPanel.classList.remove('hidden');
+                    }
+                }, 600);
+
+                console.log('Reset complete - ready for new file');
+            }
+
+            // Attach event listener to remove button
+            if (removeFileBtn) {
+                removeFileBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    removeFile();
+                });
+            }
+
+            // Back button listener
+            if (backBtn) {
+                backBtn.addEventListener('click', () => {
+                    console.log('Back button clicked - resetting application');
+                    resetAll();
+                });
+            }
+
+            // ESC key listener to reset everything
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' || e.key === 'Esc') {
+                    console.log('ESC key pressed - resetting application');
+                    resetAll();
+                }
+            });
+
+            uploadBtn.addEventListener('click', async () => {
+                if (!currentFile) return;
+
+                const formData = new FormData();
+                formData.append('file', currentFile);
+
+                uploadBtn.disabled = true;
+                uploadBtn.innerHTML = 'Processing<span class="spinner"></span>';
+                progressBar.classList.add('show');
+                progressFill.style.width = '0%';
+
+                let progress = 0;
+                const interval = setInterval(() => {
+                    progress += 5;
+                    if (progress <= 90) {
+                        progressFill.style.width = progress + '%';
+                    }
+                }, 150);
+
+                try {
+                    const response = await fetch('/api/upload', {
+                        method: 'POST',
+                        body: formData,
+                    });
+
+                    clearInterval(interval);
+                    progressFill.style.width = '100%';
+
+                    const data = await response.json();
+
+                    if (response.ok && data.success) {
+                        showResults(data);
+                    } else {
+                        alert(data.message || 'Failed to process file');
+                    }
+                } catch (error) {
+                    clearInterval(interval);
+                    alert('Network error: ' + error.message);
+                } finally {
+                    uploadBtn.disabled = false;
+                    uploadBtn.innerHTML =
+                        '<i data-lucide="zap" style="width: 20px; height: 20px; display: inline-block; vertical-align: middle;"></i> Process File';
+                    lucide.createIcons();
+                    setTimeout(() => {
+                        progressBar.classList.remove('show');
+                        progressFill.style.width = '0%';
+                    }, 1000);
+                }
+            });
+
+            function showResults(data) {
+                const { summary, downloadId } = data;
+                analyticsPanel.classList.add('active');
+
+                // Hide upload panel and expand analytics
+                const uploadPanel = document.querySelector('.upload-panel');
+                if (uploadPanel) {
+                    uploadPanel.classList.add('hidden');
+                }
+                setTimeout(() => {
+                    analyticsPanel.classList.add('expanded');
+                    backBtn.classList.add('show');
+                    if (typeof lucide !== 'undefined') {
+                        lucide.createIcons();
+                    }
+                }, 100);
+
+                document.getElementById('resultMessage').style.display = 'none';
+                document.getElementById('statsContainer').style.display = 'block';
+                document.getElementById('downloadBtn').style.display = 'flex';
+
+                document.getElementById('statsContainer').innerHTML = `
+                <div class="stat-card total">
+                    <div class="stat-icon">
+                        <i data-lucide="database"></i>
+                    </div>
                     <div class="stat-value">${summary.totalRecords || 0}</div>
                     <div class="stat-label">Total Records</div>
                 </div>
-                <div class="stat-card">
-                    <div class="stat-value" style="color: var(--success);">${summary.validRecords || 0}</div>
+                <div class="stat-card valid">
+                    <div class="stat-icon">
+                        <i data-lucide="check-circle-2"></i>
+                    </div>
+                    <div class="stat-value">${summary.validRecords || 0}</div>
                     <div class="stat-label">Valid Numbers</div>
                 </div>
-                <div class="stat-card">
-                    <div class="stat-value" style="color: var(--danger);">${summary.invalidRecords || 0}</div>
+                <div class="stat-card invalid">
+                    <div class="stat-icon">
+                        <i data-lucide="x-circle"></i>
+                    </div>
+                    <div class="stat-value">${summary.invalidRecords || 0}</div>
                     <div class="stat-label">Invalid Numbers</div>
                 </div>
-                <div class="stat-card">
+                <div class="stat-card rate">
+                    <div class="stat-icon">
+                        <i data-lucide="trending-up"></i>
+                    </div>
                     <div class="stat-value">${((summary.validRecords / summary.totalRecords) * 100).toFixed(1)}%</div>
                     <div class="stat-label">Success Rate</div>
                 </div>
             `;
 
-            document.getElementById('downloadBtn').onclick = () => {
-                window.location.href = `/api/download/${downloadId}`;
-            };
-        }
+                // Reinitialize Lucide icons for the new stats
+                if (typeof lucide !== 'undefined') {
+                    lucide.createIcons();
+                }
 
-        function formatFileSize(bytes) {
-            if (bytes === 0) return '0 Bytes';
-            const k = 1024;
-            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-            const i = Math.floor(Math.log(bytes) / Math.log(k));
-            return Math.round((bytes / Math.pow(k, i)) * 100) / 100 + ' ' + sizes[i];
-        }
+                document.getElementById('downloadBtn').onclick = () => {
+                    console.log('Download button clicked!');
+                    console.log('Download ID:', downloadId);
+                    const downloadUrl = `/api/download/${encodeURIComponent(downloadId)}`;
+                    console.log('Download URL:', downloadUrl);
+
+                    // Open download in new window to capture errors
+                    const downloadWindow = window.open(downloadUrl, '_blank');
+
+                    if (!downloadWindow) {
+                        alert('Please allow pop-ups to download the file');
+                    }
+                };
+            }
+
+            function formatFileSize(bytes) {
+                if (bytes === 0) return '0 Bytes';
+                const k = 1024;
+                const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+                const i = Math.floor(Math.log(bytes) / Math.log(k));
+                return Math.round((bytes / Math.pow(k, i)) * 100) / 100 + ' ' + sizes[i];
+            }
+
+            // Initialization check
+            console.log('=== INITIALIZATION CHECK ===');
+            console.log('dropZone element:', dropZone);
+            console.log('fileInput element:', fileInput);
+            console.log('selectedFile element:', selectedFile);
+            console.log('fileName element:', fileName);
+            console.log('fileSize element:', fileSize);
+            console.log('uploadBtn element:', uploadBtn);
+            console.log('removeFileBtn element:', removeFileBtn);
+            console.log('All elements found:', !!(dropZone && fileInput && selectedFile && fileName && fileSize && uploadBtn));
+            console.log('=== READY FOR FILE UPLOAD ===');
+        }); // Close DOMContentLoaded event listener
     </script>
 </body>
 
