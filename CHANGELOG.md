@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.1.0](https://github.com/shreesharma07/numsy/compare/v1.0.0...v1.1.0) (2026-03-09)
+
+### ✨ Features
+
+- enhance server startup logging and configuration ([942063e](https://github.com/shreesharma07/numsy/commit/942063e66b810f929580a4b8c52fae7b09931da1))
+- **files,api:** add automatic file cleanup service and improve file handling security ([ce3a21b](https://github.com/shreesharma07/numsy/commit/ce3a21b99271bb8bd72b4b7c71bc9345b66c5ccd))
+- Increase maximum file size limit to 50MB and update related configurations ([fc08268](https://github.com/shreesharma07/numsy/commit/fc0826881abcde682de41371270b30891d2af862))
+
+### 🐛 Bug Fixes
+
+- **ui:** adjust panel height and remove outdated file processing feature ([cdde31a](https://github.com/shreesharma07/numsy/commit/cdde31a1ac22cd4fc527cfc107e205c730e86feb))
+
 ## 1.0.0 (2026-03-09)
 
 ### ✨ Features
