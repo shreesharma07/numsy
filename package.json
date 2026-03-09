@@ -1,4 +1,5 @@
 {
+  "displayName": "🔢 Numsy - A light-weight number processor",
   "name": "numsy",
   "version": "1.0.2",
   "description": "A professional TypeScript-based phone number processor with CSV/Excel parsing capabilities for Indian phone numbers. Class-based architecture with comprehensive error handling and logging.",
