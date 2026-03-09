@@ -1,20 +1,18 @@
-# 🔢 Numsy - A light-weight number processor
+# *Numsy* - _A light-weight number processor_
 
 <div align="center">
 
-[![NPM Version](https://img.shields.io/npm/v/numsy.svg?style=flat-square)](https://www.npmjs.com/package/numsy)
-[![NPM Downloads](https://img.shields.io/npm/dm/numsy.svg?style=flat-square)](https://www.npmjs.com/package/numsy)
+[![NPM Version](https://img.shields.io/npm/v/@numsy/numsy.svg?style=flat-square)](https://www.npmjs.com/package/@numsy/numsy)
+[![NPM Downloads](https://img.shields.io/npm/dm/@numsy/numsy.svg?style=flat-square)](https://www.npmjs.com/package/@numsy/numsy)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-square)](https://opensource.org/licenses/MIT)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.3-blue.svg?style=flat-square&logo=typescript)](https://www.typescriptlang.org/)
 [![Node Version](https://img.shields.io/node/v/@numsy/numsy.svg?style=flat-square)](https://nodejs.org)
-
 [![CI/CD Pipeline](https://github.com/shreesharma07/numsy/actions/workflows/main.yml/badge.svg)](https://github.com/shreesharma07/numsy/actions/workflows/main.yml)
 [![Security](https://img.shields.io/github/actions/workflow/status/shreesharma07/numsy/security.yml?style=flat-square&label=Security&logo=github)](https://github.com/shreesharma07/numsy/actions)
 [![codecov](https://img.shields.io/codecov/c/github/shreesharma07/numsy?style=flat-square&logo=codecov)](https://codecov.io/gh/shreesharma07/numsy)
 [![Known Vulnerabilities](https://snyk.io/test/github/shreesharma07/numsy/badge.svg?style=flat-square)](https://snyk.io/test/github/shreesharma07/numsy)
-
 [![Maintained](https://img.shields.io/badge/Maintained%3F-yes-green.svg?style=flat-square)](https://github.com/shreesharma07/numsy/graphs/commit-activity)
-[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](http://makeapullrequest.com)
+[![PRs Welcome](https://img.shields.io/badge/PRs-Welcome-brightgreen.svg?style=flat-square)](http://makeapullrequest.com)
 [![Conventional Commits](https://img.shields.io/badge/Conventional%20Commits-1.0.0-yellow.svg?style=flat-square)](https://conventionalcommits.org)
 [![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg?style=flat-square)](https://github.com/prettier/prettier)
 [![Package Manager](https://img.shields.io/badge/pnpm-8.15.0-F69220?style=flat-square&logo=pnpm)](https://pnpm.io/)
@@ -24,7 +22,7 @@
 
 </div>
 
-**Numsy** is a light-weight TypeScript library for Indian phone number validation, sanitization, and CSV/Excel file processing. Built with class-based architecture, comprehensive error handling, and extensive logging capabilities.
+_**Numsy** is a light-weight TypeScript library for Indian phone number validation, sanitization, and CSV/Excel file processing. Built with class-based architecture, comprehensive error handling, and extensive logging capabilities._
 
 ## ✨ Features
 
