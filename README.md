@@ -6,7 +6,7 @@
 [![NPM Downloads](https://img.shields.io/npm/dm/numsy.svg?style=flat-square)](https://www.npmjs.com/package/numsy)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-square)](https://opensource.org/licenses/MIT)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.3-blue.svg?style=flat-square&logo=typescript)](https://www.typescriptlang.org/)
-[![Node Version](https://img.shields.io/node/v/numsy.svg?style=flat-square)](https://nodejs.org)
+[![Node Version](https://img.shields.io/node/v/@numsy/numsy.svg?style=flat-square)](https://nodejs.org)
 
 [![CI/CD Pipeline](https://github.com/shreesharma07/numsy/actions/workflows/main.yml/badge.svg)](https://github.com/shreesharma07/numsy/actions/workflows/main.yml)
 [![Security](https://img.shields.io/github/actions/workflow/status/shreesharma07/numsy/security.yml?style=flat-square&label=Security&logo=github)](https://github.com/shreesharma07/numsy/actions)
