@@ -1,102 +1,135 @@
 # GitHub Actions Workflows
 
-This directory contains all CI/CD workflows for the Numsy project.
+This directory contains the CI/CD workflow for the Numsy project.
 
-## 📋 Active Workflows
+## 📋 Active Workflow
 
-### 1. **main.yml** - Primary CI/CD Pipeline ⭐
+### **main.yml** - Unified CI/CD Pipeline ⭐
 
-**Main workflow for all continuous integration and deployment.**
+**Single streamlined workflow for all continuous integration, security, testing, and deployment.**
 
 **Triggers:**
 
-- Push to `main`, `develop`, feature branches
-- Pull requests to `main`, `develop`
+- Push to `main` branch
+- Pull requests to `main`
 - Manual dispatch
 
 **Jobs:**
 
-- ✅ **Quality**: Linting, formatting, type checking, validation
-- 🔒 **Security**: pnpm audit, Snyk scanning
-- 🔍 **CodeQL**: Security analysis
-- 🧪 **Test**: Unit tests, E2E tests, coverage (Node 18 & 20, Ubuntu & Windows)
-- 📦 **Build**: Build package and create artifacts
-- 📊 **Dependency Review**: Review dependencies on PRs
-- 🚀 **Release**: Semantic release, NPM publish (main/develop only)
-- ✔️ **Status**: Overall CI status check
+#### 1. **build-test-security** (Runs on all events)
+
+- ✅ **Code Quality**: Linting, formatting, type checking via `pnpm run validate`
+- 🔒 **Security Scans**:
+  - pnpm audit
+  - Snyk vulnerability scanning (--all-projects for workspace support)
+  - CodeQL security analysis
+- 🧪 **Tests**: Jest unit tests with coverage reporting
+- 📊 **Coverage**: Uploads to Codecov
+- 📦 **Build**: Compiles TypeScript, creates artifacts, checks package size
+
+#### 2. **dependency-review** (PR only)
+
+- 📋 Reviews dependency changes for security issues
+- Fails on moderate+ severity vulnerabilities
+
+#### 3. **release** (main branch only)
+
+- 🚀 **Semantic Release**: Automated versioning based on commit messages
+- 📦 **NPM Publish**: Publishes to NPM registry
+- 📝 **CHANGELOG**: Auto-generates changelog
+- 🏷️ **Git Tags**: Creates version tags
+- ⏰ **NPM Cooldown Handling**: Gracefully handles 24-hour republish restrictions
 
 **Required Secrets:**
 
 - `GITHUB_TOKEN` (auto-provided)
-- `NPM_TOKEN` (for publishing)
-- `CODECOV_TOKEN` (for coverage)
-- `SNYK_TOKEN` (for security scans)
+- `NPM_TOKEN` (for NPM publishing)
+- `CODECOV_TOKEN` (for coverage reporting)
+- `SNYK_TOKEN` (for security scanning)
 
----
+**Environment:**
 
-### 2. **publish.yml** - Manual NPM Publishing
-
-**Direct NPM publishing workflow.**
-
-**Triggers:**
-
-- GitHub releases (created)
-- Manual dispatch
-
-**Use Case:** Quick manual publishing when semantic-release is not needed.
-
-**Required Secrets:**
-
-- `NPM_TOKEN`
-
----
-
-### 3. **security.yml** - Scheduled Security Monitoring
-
-**Regular security scanning and monitoring.**
-
-**Triggers:**
-
-- Push to `main`, `develop`, `release/*`
-- Daily at 00:00 UTC (scheduled)
-- Manual dispatch
-
-**Jobs:**
-
-- Snyk security scans
-- CodeQL analysis (extended security queries)
-- pnpm audit
-- Auto-create issues for vulnerabilities
-
-**Required Secrets:**
-
-- `SNYK_TOKEN`
-
----
-
-## 📁 Legacy/Reference Workflows
-
-### ⚠️ ci.yml (Deprecated)
-
-Replaced by `main.yml`. Kept for reference only.
-
-### ⚠️ npm-publish.yml (Deprecated)
-
-Basic npm publish workflow. Replaced by semantic-release in `main.yml`.
-
-### ⚠️ release.yml (Deprecated)
-
-Manual release workflow. Use `main.yml` semantic-release instead.
-
-### ⚠️ semantic-release.yml (Deprecated)
-
-Standalone semantic-release. Integrated into `main.yml`.
+- Node.js: 20.x
+- Package Manager: pnpm 8.x
+- OS: Ubuntu Latest
 
 ---
 
 ## 🔧 Setup Requirements
 
 ### 1. Repository Secrets
+
+Add these secrets in **Settings → Secrets and variables → Actions**:
+
+```text
+NPM_TOKEN        - NPM publish token (from npmjs.com)
+CODECOV_TOKEN    - Codecov upload token
+SNYK_TOKEN       - Snyk API token
+```
+
+### 2. Branch Protection
+
+Configure branch protection for `main`:
+
+- Require status checks: `build-test-security`
+- Require pull request reviews
+- Enforce linear history (recommended)
+
+---
+
+## 📖 Documentation
+
+For detailed CI/CD documentation, see:
+
+- [CI/CD Setup Complete](../../docs/CI_CD_SETUP_COMPLETE.md)
+- [CI/CD Workflow Guide](../../docs/CI_CD_WORKFLOW_GUIDE.md)
+- [NPM Publishing Guide](../../docs/NPM_PUBLISHING_GUIDE.md)
+- [Secrets Setup](../../docs/SECRETS_SETUP.md)
+
+---
+
+## 🎯 Workflow Execution
+
+### On Pull Request
+
+1. Runs `build-test-security` job (quality + security + tests + build)
+2. Runs `dependency-review` job (checks new dependencies)
+
+### On Push to Main
+
+1. Runs `build-test-security` job (quality + security + tests + build)
+2. Runs `release` job (semantic-release + NPM publish)
+
+### Manual Dispatch
+
+1. Trigger manually from Actions tab
+2. Runs all applicable jobs based on branch
+
+---
+
+## ⚡ Key Features
+
+- **Single Pipeline**: All checks consolidated into one streamlined workflow
+- **Fast Execution**: Sequential steps in single job (no job overhead)
+- **Smart Releases**: Conventional commits trigger automatic versioning
+- **Security First**: Multiple security layers (audit, Snyk, CodeQL)
+- **Coverage Tracking**: Automatic Codecov integration
+- **Error Handling**: Graceful handling of NPM cooldown and security findings
+
+---
+
+## 🚫 Removed Workflows
+
+The following workflows have been consolidated into `main.yml`:
+
+- ~~ci.yml~~ (deprecated)
+- ~~npm-publish.yml~~ (deprecated)
+- ~~publish.yml~~ (deprecated)
+- ~~release.yml~~ (deprecated)
+- ~~security.yml~~ (deprecated)
+- ~~semantic-release.yml~~ (deprecated)
+
+All functionality now exists in the single `main.yml` workflow.
 
 Add these secrets in **Settings → Secrets and variables → Actions**:
 

@@ -2,7 +2,6 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
 import request from 'supertest';
 import { AppModule } from './../src/app.module';
-import { describe, beforeEach, it } from 'node:test';
 
 describe('AppController (e2e)', () => {
   let app: INestApplication;
@@ -16,6 +15,10 @@ describe('AppController (e2e)', () => {
     await app.init();
   });
 
+  afterAll(async () => {
+    await app.close();
+  });
+
   it('/api/health (GET)', () => {
     return request(app.getHttpServer())
       .get('/api/health')
@@ -24,9 +27,5 @@ describe('AppController (e2e)', () => {
         expect(res.body).toHaveProperty('status');
         expect(res.body.status).toBe('OK');
       });
-  });
-
-  afterAll(async () => {
-    await app.close();
   });
 });
