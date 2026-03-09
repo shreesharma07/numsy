@@ -68,13 +68,53 @@ export class FileProcessorService {
   async processFile(filePath: string, outputDir: string): Promise<ProcessingResult> {
     this.logger.log(`Starting file processing: ${filePath}`);
 
+    // Normalize and validate input file path
+    const normalizedFilePath = path.normalize(path.resolve(filePath));
+    const allowedInputDirs = [
+      path.resolve(process.cwd(), 'uploads'),
+      path.resolve(process.cwd(), 'temp'),
+      path.resolve(process.cwd(), 'Temp'),
+    ];
+
+    // Check if file path is within allowed directories
+    const isInputPathAllowed = allowedInputDirs.some((allowedDir) => {
+      const normalizedAllowedDir = path.normalize(allowedDir);
+      return (
+        normalizedFilePath.startsWith(normalizedAllowedDir + path.sep) ||
+        normalizedFilePath === normalizedAllowedDir
+      );
+    });
+
+    if (!isInputPathAllowed || normalizedFilePath.includes('..')) {
+      throw new Error(`Invalid input file path: ${filePath}`);
+    }
+
+    // Normalize and validate output directory
+    const normalizedOutputDir = path.normalize(path.resolve(outputDir));
+    const allowedOutputDirs = [
+      path.resolve(process.cwd(), 'temp'),
+      path.resolve(process.cwd(), 'Temp'),
+    ];
+
+    const isOutputPathAllowed = allowedOutputDirs.some((allowedDir) => {
+      const normalizedAllowedDir = path.normalize(allowedDir);
+      return (
+        normalizedOutputDir.startsWith(normalizedAllowedDir + path.sep) ||
+        normalizedOutputDir === normalizedAllowedDir
+      );
+    });
+
+    if (!isOutputPathAllowed || normalizedOutputDir.includes('..')) {
+      throw new Error(`Invalid output directory path: ${outputDir}`);
+    }
+
     // Ensure output directory exists
-    if (!fs.existsSync(outputDir)) {
-      fs.mkdirSync(outputDir, { recursive: true });
+    if (!fs.existsSync(normalizedOutputDir)) {
+      fs.mkdirSync(normalizedOutputDir, { recursive: true });
     }
 
     // Parse the input file
-    const parseResult = await this.fileParser.parseFile(filePath);
+    const parseResult = await this.fileParser.parseFile(normalizedFilePath);
     this.logger.log(`Parsed ${parseResult.totalRows} rows`);
 
     // Validate parsed data
@@ -103,10 +143,10 @@ export class FileProcessorService {
 
     // Generate output file paths
     const timestamp = Date.now();
-    const validFilePath = path.join(outputDir, `valid_numbers_${timestamp}.csv`);
-    const invalidFilePath = path.join(outputDir, `invalid_numbers_${timestamp}.csv`);
-    const analyticsFilePath = path.join(outputDir, `analytics_${timestamp}.txt`);
-    const zipFilePath = path.join(outputDir, `processed_${timestamp}.zip`);
+    const validFilePath = path.join(normalizedOutputDir, `valid_numbers_${timestamp}.csv`);
+    const invalidFilePath = path.join(normalizedOutputDir, `invalid_numbers_${timestamp}.csv`);
+    const analyticsFilePath = path.join(normalizedOutputDir, `analytics_${timestamp}.txt`);
+    const zipFilePath = path.join(normalizedOutputDir, `processed_${timestamp}.zip`);
 
     // Write CSV files
     await this.fileParser.writeProcessedFiles(
@@ -329,6 +369,19 @@ export class FileProcessorService {
     totalRecords: number,
     phoneColumn: string,
   ): Promise<void> {
+    // Validate file path before writing
+    const normalizedFilePath = path.normalize(path.resolve(filePath));
+    const allowedDirs = [path.resolve(process.cwd(), 'temp'), path.resolve(process.cwd(), 'Temp')];
+
+    const isPathValid = allowedDirs.some((allowedDir) => {
+      const normalizedAllowedDir = path.normalize(allowedDir);
+      return normalizedFilePath.startsWith(normalizedAllowedDir + path.sep);
+    });
+
+    if (!isPathValid || normalizedFilePath.includes('..')) {
+      throw new Error(`Invalid analytics file path: ${filePath}`);
+    }
+
     const timestamp = new Date().toLocaleString();
     const { uniqueNumbers, numberFrequency, fieldDistribution } = allExtractedData;
 
@@ -546,9 +599,9 @@ Thank you for using 🔢 Numsy!
 
 `;
 
-    // Write to file
-    fs.writeFileSync(filePath, content, 'utf-8');
-    this.logger.log(`Analytics report generated: ${filePath}`);
+    // Write to file (using validated path)
+    fs.writeFileSync(normalizedFilePath, content, 'utf-8');
+    this.logger.log(`Analytics report generated: ${normalizedFilePath}`);
   }
 
   /**
@@ -559,13 +612,30 @@ Thank you for using 🔢 Numsy!
    */
   private async createZipFile(filePaths: string[], outputZipPath: string): Promise<void> {
     return new Promise((resolve, reject) => {
-      const output = fs.createWriteStream(outputZipPath);
+      // Validate output zip path
+      const normalizedOutputPath = path.normalize(path.resolve(outputZipPath));
+      const allowedOutputDirs = [
+        path.resolve(process.cwd(), 'temp'),
+        path.resolve(process.cwd(), 'Temp'),
+      ];
+
+      const isOutputValid = allowedOutputDirs.some((allowedDir) => {
+        const normalizedAllowedDir = path.normalize(allowedDir);
+        return normalizedOutputPath.startsWith(normalizedAllowedDir + path.sep);
+      });
+
+      if (!isOutputValid || normalizedOutputPath.includes('..')) {
+        reject(new Error(`Invalid output zip path: ${outputZipPath}`));
+        return;
+      }
+
+      const output = fs.createWriteStream(normalizedOutputPath);
       const archive = archiver('zip', {
         zlib: { level: 9 }, // Maximum compression
       });
 
       output.on('close', () => {
-        this.logger.log(`ZIP file created: ${outputZipPath} (${archive.pointer()} bytes)`);
+        this.logger.log(`ZIP file created: ${normalizedOutputPath} (${archive.pointer()} bytes)`);
         resolve();
       });
 
@@ -576,11 +646,29 @@ Thank you for using 🔢 Numsy!
 
       archive.pipe(output);
 
-      // Add each file to the archive
+      // Validate and add each file to the archive
+      const allowedInputDirs = [
+        path.resolve(process.cwd(), 'temp'),
+        path.resolve(process.cwd(), 'Temp'),
+      ];
+
       for (const filePath of filePaths) {
-        if (fs.existsSync(filePath)) {
-          const fileName = path.basename(filePath);
-          archive.file(filePath, { name: fileName });
+        const normalizedFilePath = path.normalize(path.resolve(filePath));
+
+        // Validate file path before adding to archive
+        const isInputValid = allowedInputDirs.some((allowedDir) => {
+          const normalizedAllowedDir = path.normalize(allowedDir);
+          return normalizedFilePath.startsWith(normalizedAllowedDir + path.sep);
+        });
+
+        if (!isInputValid || normalizedFilePath.includes('..')) {
+          this.logger.warn(`Skipping file with invalid path: ${filePath}`);
+          continue;
+        }
+
+        if (fs.existsSync(normalizedFilePath)) {
+          const fileName = path.basename(normalizedFilePath);
+          archive.file(normalizedFilePath, { name: fileName });
         }
       }
 
@@ -593,18 +681,49 @@ Thank you for using 🔢 Numsy!
    * @param filePaths - Array of file paths to delete
    */
   async cleanupFiles(filePaths: string[]): Promise<void> {
+    // * // Security check to prevent path traversal and ensure only files within allowed directories are deleted. This is crucial to avoid accidental or malicious deletion of important files outside the intended scope. Only files within 'uploads' and 'temp' directories will be deleted. //
+    const allowedDirs = [
+      path.resolve(process.cwd(), 'uploads'),
+      path.resolve(process.cwd(), 'temp'),
+      path.resolve(process.cwd(), 'Temp'), // Windows case-insensitive
+    ];
+
     for (const filePath of filePaths) {
       try {
-        if (
-          !isPathInsideDir(path.join(process.cwd(), 'uploads'), filePath) &&
-          !isPathInsideDir(path.join(process.cwd(), 'temp'), filePath)
-        ) {
+        // * // Sanitize and normalize the path
+        const normalizedPath = path.normalize(path.resolve(filePath));
+
+        // ! // Check for parent directory references //
+        if (normalizedPath.includes('..')) {
+          this.logger.warn(`Path traversal attempt detected: ${filePath}`);
+          continue;
+        }
+
+        // * // Verify the path is within allowed directories
+        const isAllowed = allowedDirs.some((allowedDir) => {
+          const normalizedAllowedDir = path.normalize(allowedDir);
+          return (
+            normalizedPath.startsWith(normalizedAllowedDir + path.sep) ||
+            normalizedPath === normalizedAllowedDir
+          );
+        });
+
+        if (!isAllowed) {
           this.logger.warn(`Skipping deletion of file outside allowed directories: ${filePath}`);
           continue;
         }
-        if (fs.existsSync(filePath)) {
-          fs.unlinkSync(filePath);
-          this.logger.debug(`Deleted file: ${filePath}`);
+
+        // Additional security: Verify it's a file, not a directory
+        if (fs.existsSync(normalizedPath)) {
+          const stats = fs.statSync(normalizedPath);
+          if (!stats.isFile()) {
+            this.logger.warn(`Skipping non-file deletion: ${normalizedPath}`);
+            continue;
+          }
+
+          // Safe to delete now
+          fs.unlinkSync(normalizedPath);
+          this.logger.debug(`Deleted file: ${normalizedPath}`);
         }
       } catch (error) {
         const errorMessage = error instanceof Error ? error.message : String(error);

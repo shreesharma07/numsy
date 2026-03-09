@@ -1,5 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import * as fs from 'fs';
+import * as path from 'path';
 import csv from 'csv-parser';
 import * as ExcelJS from 'exceljs';
 import { createObjectCsvWriter } from 'csv-writer';
@@ -37,16 +38,33 @@ export class FileParserService {
    * @returns Promise with parsed data
    */
   async parseFile(filePath: string): Promise<FileParseResult> {
-    const extension = filePath.split('.').pop()?.toLowerCase() || '';
+    // Validate input file path
+    const normalizedPath = path.normalize(path.resolve(filePath));
+    const allowedDirs = [
+      path.resolve(process.cwd(), 'uploads'),
+      path.resolve(process.cwd(), 'temp'),
+      path.resolve(process.cwd(), 'Temp'),
+    ];
 
-    this.logger.log(`Parsing file: ${filePath} (type: ${extension})`);
+    const isPathValid = allowedDirs.some((allowedDir) => {
+      const normalizedAllowedDir = path.normalize(allowedDir);
+      return normalizedPath.startsWith(normalizedAllowedDir + path.sep);
+    });
+
+    if (!isPathValid || normalizedPath.includes('..')) {
+      throw new Error(`Invalid file path for parsing: ${filePath}`);
+    }
+
+    const extension = normalizedPath.split('.').pop()?.toLowerCase() || '';
+
+    this.logger.log(`Parsing file: ${normalizedPath} (type: ${extension})`);
 
     switch (extension) {
       case 'csv':
-        return this.parseCsv(filePath);
+        return this.parseCsv(normalizedPath);
       case 'xlsx':
       case 'xls':
-        return this.parseExcel(filePath);
+        return this.parseExcel(normalizedPath);
       default:
         throw new Error(`Unsupported file format: ${extension}`);
     }
@@ -243,6 +261,19 @@ export class FileParserService {
       throw new Error('No data to write');
     }
 
+    // Validate output path
+    const normalizedPath = path.normalize(path.resolve(outputPath));
+    const allowedDirs = [path.resolve(process.cwd(), 'temp'), path.resolve(process.cwd(), 'Temp')];
+
+    const isPathValid = allowedDirs.some((allowedDir) => {
+      const normalizedAllowedDir = path.normalize(allowedDir);
+      return normalizedPath.startsWith(normalizedAllowedDir + path.sep);
+    });
+
+    if (!isPathValid || normalizedPath.includes('..')) {
+      throw new Error(`Invalid CSV output path: ${outputPath}`);
+    }
+
     // Get all unique headers from the data
     const headers = Array.from(new Set(data.flatMap((row) => Object.keys(row)))).map((header) => ({
       id: header,
@@ -250,12 +281,12 @@ export class FileParserService {
     }));
 
     const csvWriter = createObjectCsvWriter({
-      path: outputPath,
+      path: normalizedPath,
       header: headers,
     });
 
     await csvWriter.writeRecords(data);
-    this.logger.log(`CSV file written: ${outputPath} (${data.length} rows)`);
+    this.logger.log(`CSV file written: ${normalizedPath} (${data.length} rows)`);
   }
 
   /**

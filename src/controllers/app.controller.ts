@@ -105,11 +105,27 @@ export class AppController {
     this.logger.log(`File uploaded: ${file.originalname} (${file.size} bytes)`);
 
     try {
+      // Validate and sanitize file path before processing
+      const normalizedFilePath = path.normalize(path.resolve(file.path));
+      const normalizedUploadDir = path.normalize(path.resolve(this.uploadDir));
+
+      // Ensure the file is within the upload directory
+      if (!normalizedFilePath.startsWith(normalizedUploadDir + path.sep)) {
+        this.logger.error(`File path outside upload directory: ${file.path}`);
+        throw new HttpException('Invalid file path', HttpStatus.BAD_REQUEST);
+      }
+
+      // Check for path traversal attempts
+      if (normalizedFilePath.includes('..')) {
+        this.logger.error(`Path traversal attempt detected: ${file.path}`);
+        throw new HttpException('Invalid file path', HttpStatus.BAD_REQUEST);
+      }
+
       // Process the file
-      const result = await this.fileProcessor.processFile(file.path, this.tempDir);
+      const result = await this.fileProcessor.processFile(normalizedFilePath, this.tempDir);
 
       // Clean up uploaded file
-      await this.fileProcessor.cleanupFiles([file.path]);
+      await this.fileProcessor.cleanupFiles([normalizedFilePath]);
 
       // Generate download ID (use timestamp from zip filename)
       const downloadId = path.basename(result.zipFilePath, '.zip');
@@ -129,9 +145,21 @@ export class AppController {
     } catch (error: unknown) {
       this.logger.error(`File processing error: ${(error as Error)?.message}`);
 
-      // Clean up uploaded file on error
-      if (fs.existsSync(file.path)) {
-        await this.fileProcessor.cleanupFiles([file.path]);
+      // Clean up uploaded file on error (with proper validation)
+      try {
+        const normalizedFilePath = path.normalize(path.resolve(file.path));
+        const normalizedUploadDir = path.normalize(path.resolve(this.uploadDir));
+
+        // Only clean up if path is valid and within upload directory
+        if (
+          fs.existsSync(normalizedFilePath) &&
+          normalizedFilePath.startsWith(normalizedUploadDir + path.sep) &&
+          !normalizedFilePath.includes('..')
+        ) {
+          await this.fileProcessor.cleanupFiles([normalizedFilePath]);
+        }
+      } catch (cleanupError) {
+        this.logger.error(`Cleanup error: ${(cleanupError as Error)?.message}`);
       }
 
       throw new HttpException(
