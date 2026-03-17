@@ -488,4 +488,11 @@ If you find this package helpful, please give it a star on GitHub!
 
 ---
 
+## 👤 Contributors
+<a href="https://github.com/shreesharma07/numsy/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=shreesharma07/numsy" />
+</a>
+
+---
+
 Made with ❤️ by **Shri Kumar Sharma**
