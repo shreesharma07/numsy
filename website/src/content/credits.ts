@@ -27,7 +27,7 @@ export const credits: Credit[] = [
     license: 'Anthropic Terms of Service',
     licenseUrl: 'https://www.anthropic.com/legal/consumer-terms',
     usedFor:
-      'AI pair programmer. Numsy 1.2 — the CLI, exporters, Biome migration, docs, brand assets and this website — was vibe-coded with Claude in Claude Code, directed by Shri Kumar Sharma. Claude: https://claude.ai. A credit, not an endorsement by Anthropic.',
+      'AI pair programmer. Numsy 2.x (the CLI, the shared engine, the local dashboard and playground, exporters, tests, docs, brand assets and this website) was vibe-coded with Claude in Claude Code, directed by Shri Kumar Sharma. Claude: https://claude.ai. A credit, not an endorsement by Anthropic.',
     category: 'AI assistance',
   },
   {
@@ -130,6 +130,33 @@ export const credits: Credit[] = [
     category: 'Build & tooling',
   },
   {
+    name: 'ExcelJS',
+    url: 'https://github.com/exceljs/exceljs',
+    license: 'MIT',
+    licenseUrl: 'https://github.com/exceljs/exceljs/blob/master/LICENSE',
+    usedFor:
+      'Reads and writes `.xlsx` workbooks in the playground (loaded on demand in a Web Worker) and in the npm package.',
+    category: 'Frameworks & libraries',
+  },
+  {
+    name: 'Playwright',
+    url: 'https://playwright.dev',
+    license: 'Apache-2.0',
+    licenseUrl: 'https://github.com/microsoft/playwright/blob/main/LICENSE',
+    usedFor:
+      'End-to-end tests that drive the playground and the local dashboard in a real browser.',
+    category: 'Build & tooling',
+  },
+  {
+    name: 'Codecov',
+    url: 'https://about.codecov.io',
+    license: 'Free for open source',
+    licenseUrl: 'https://about.codecov.io/terms-of-service/',
+    usedFor:
+      'Test coverage, test results and bundle-size analysis of this site and the local dashboard (`@codecov/vite-plugin`, MIT).',
+    category: 'Build & tooling',
+  },
+  {
     name: 'TypeScript',
     url: 'https://www.typescriptlang.org',
     license: 'Apache-2.0',
@@ -205,11 +232,29 @@ export const credits: Credit[] = [
     category: 'Data & APIs',
   },
   {
+    name: 'Cloudflare Pages',
+    url: 'https://pages.cloudflare.com',
+    license: 'Cloudflare Website and Online Services Terms of Use',
+    licenseUrl: 'https://www.cloudflare.com/website-terms/',
+    usedFor:
+      'Hosts numsy.pages.dev: every build is served from Cloudflare’s global network with HTTPS, the security headers in `public/_headers` and instant rollbacks. Thank you, Cloudflare, for free hosting of open-source sites.',
+    category: 'Hosting',
+  },
+  {
+    name: 'Wrangler',
+    url: 'https://developers.cloudflare.com/workers/wrangler/',
+    license: 'MIT OR Apache-2.0',
+    licenseUrl: 'https://github.com/cloudflare/workers-sdk/blob/main/LICENSE-MIT',
+    usedFor:
+      'Cloudflare’s CLI. `pnpm --filter @numsy/website deploy:cloudflare` builds the site and runs `wrangler pages deploy` for every production deployment.',
+    category: 'Hosting',
+  },
+  {
     name: 'GitHub Pages & Actions',
     url: 'https://pages.github.com',
     license: 'GitHub Terms of Service',
     licenseUrl: 'https://docs.github.com/site-policy/github-terms/github-terms-of-service',
-    usedFor: 'Hosting and the build/deploy workflow.',
+    usedFor: 'Source hosting, releases and the alternate GitHub Pages mirror of this site.',
     category: 'Hosting',
   },
   {

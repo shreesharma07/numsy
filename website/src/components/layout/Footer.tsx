@@ -46,6 +46,9 @@ export function Footer() {
           <a className="footer__claude" href={builtWithClaude.claudeCodeUrl} rel="noopener">
             <Icon name="ph:sparkle-duotone" /> Built with Claude Code
           </a>
+          <a className="footer__claude" href="https://pages.cloudflare.com" rel="noopener">
+            <Icon name="ph:cloud-bold" /> Hosted on Cloudflare Pages
+          </a>
           <span>
             Made in India <FlagIndia className="footer__flag" />
           </span>

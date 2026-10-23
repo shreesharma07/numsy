@@ -145,5 +145,5 @@ Contributions are welcome. Start with [CONTRIBUTING.md](CONTRIBUTING.md), follow
 
 <p align="center">
   <img src="assets/brand/numsy-mark.svg" width="28" alt="" /><br />
-  <sub>Built by <a href="https://shrikumarsharma.in">Shri Kumar Sharma</a> with <a href="https://claude.com/claude-code">Claude Code</a> · <a href="https://github.com/shreesharma07">GitHub</a> · <a href="https://www.linkedin.com/in/shreesharma07/">LinkedIn</a></sub>
+  <sub>Built by <a href="https://shrikumarsharma.in">Shri Kumar Sharma</a> with <a href="https://claude.com/claude-code">Claude Code</a> · <a href="https://github.com/shreesharma07">GitHub</a> · <a href="https://www.linkedin.com/in/shreesharma07/">LinkedIn</a><br />Website hosted and deployed on <a href="https://pages.cloudflare.com">Cloudflare Pages</a> · Coverage by <a href="https://codecov.io/gh/shreesharma07/numsy">Codecov</a></sub>
 </p>
