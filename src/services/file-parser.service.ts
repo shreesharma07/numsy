@@ -1,5 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
-import * as fs from 'fs';
+import * as fs from 'node:fs';
 import csv from 'csv-parser';
 import * as ExcelJS from 'exceljs';
 import { createObjectCsvWriter } from 'csv-writer';

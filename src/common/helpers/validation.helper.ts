@@ -25,7 +25,7 @@ export function isNonEmptyString(value: any): boolean {
  */
 export function isValidNumber(value: any): boolean {
   try {
-    return typeof value === 'number' && !isNaN(value) && isFinite(value);
+    return typeof value === 'number' && Number.isFinite(value);
   } catch (error) {
     logger.error('Error checking valid number', String(error));
     return false;

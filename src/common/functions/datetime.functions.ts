@@ -11,7 +11,7 @@ import moment from 'moment-timezone';
 export function getSystemTimezone(): string {
   try {
     return moment.tz.guess();
-  } catch (error) {
+  } catch (_error) {
     return 'UTC';
   }
 }
@@ -23,7 +23,7 @@ export function getCurrentTimestamp(timezone?: string): string {
   try {
     const tz = timezone || getSystemTimezone();
     return moment().tz(tz).format();
-  } catch (error) {
+  } catch (_error) {
     return new Date().toISOString();
   }
 }
@@ -39,7 +39,7 @@ export function formatDateTime(
   try {
     const tz = timezone || getSystemTimezone();
     return moment(date).tz(tz).format(format);
-  } catch (error) {
+  } catch (_error) {
     return new Date(date).toISOString();
   }
 }
@@ -51,7 +51,7 @@ export function getCurrentDate(format: string = 'YYYY-MM-DD', timezone?: string)
   try {
     const tz = timezone || getSystemTimezone();
     return moment().tz(tz).format(format);
-  } catch (error) {
+  } catch (_error) {
     return new Date().toISOString().split('T')[0];
   }
 }
@@ -63,7 +63,7 @@ export function getCurrentTime(format: string = 'HH:mm:ss', timezone?: string): 
   try {
     const tz = timezone || getSystemTimezone();
     return moment().tz(tz).format(format);
-  } catch (error) {
+  } catch (_error) {
     return new Date().toTimeString().split(' ')[0];
   }
 }
@@ -75,7 +75,7 @@ export function getFileTimestamp(timezone?: string): string {
   try {
     const tz = timezone || getSystemTimezone();
     return moment().tz(tz).format('YYYYMMDD_HHmmss');
-  } catch (error) {
+  } catch (_error) {
     return Date.now().toString();
   }
 }
@@ -86,7 +86,7 @@ export function getFileTimestamp(timezone?: string): string {
 export function getUnixTimestamp(): number {
   try {
     return moment().unix();
-  } catch (error) {
+  } catch (_error) {
     return Math.floor(Date.now() / 1000);
   }
 }
@@ -97,7 +97,7 @@ export function getUnixTimestamp(): number {
 export function getMillisTimestamp(): number {
   try {
     return moment().valueOf();
-  } catch (error) {
+  } catch (_error) {
     return Date.now();
   }
 }
@@ -116,7 +116,7 @@ export function parseDateTime(
       return moment.tz(dateStr, format, tz);
     }
     return moment.tz(dateStr, tz);
-  } catch (error) {
+  } catch (_error) {
     return null;
   }
 }
@@ -127,7 +127,7 @@ export function parseDateTime(
 export function isValidDate(date: any): boolean {
   try {
     return moment(date).isValid();
-  } catch (error) {
+  } catch (_error) {
     return false;
   }
 }
@@ -144,7 +144,7 @@ export function getDateDifference(
     const m1 = moment(date1);
     const m2 = moment(date2);
     return m1.diff(m2, unit);
-  } catch (error) {
+  } catch (_error) {
     return 0;
   }
 }
@@ -156,7 +156,7 @@ export function getRelativeTime(date: Date | string | number, timezone?: string)
   try {
     const tz = timezone || getSystemTimezone();
     return moment(date).tz(tz).fromNow();
-  } catch (error) {
+  } catch (_error) {
     return 'unknown';
   }
 }
@@ -173,7 +173,7 @@ export function addTime(
   try {
     const tz = timezone || getSystemTimezone();
     return moment(date).tz(tz).add(amount, unit).format();
-  } catch (error) {
+  } catch (_error) {
     return new Date(date).toISOString();
   }
 }
@@ -190,7 +190,7 @@ export function subtractTime(
   try {
     const tz = timezone || getSystemTimezone();
     return moment(date).tz(tz).subtract(amount, unit).format();
-  } catch (error) {
+  } catch (_error) {
     return new Date(date).toISOString();
   }
 }
@@ -203,7 +203,7 @@ export function getStartOfDay(date?: Date | string | number, timezone?: string):
     const tz = timezone || getSystemTimezone();
     const d = date || new Date();
     return moment(d).tz(tz).startOf('day').format();
-  } catch (error) {
+  } catch (_error) {
     const d = date ? new Date(date) : new Date();
     d.setHours(0, 0, 0, 0);
     return d.toISOString();
@@ -218,7 +218,7 @@ export function getEndOfDay(date?: Date | string | number, timezone?: string): s
     const tz = timezone || getSystemTimezone();
     const d = date || new Date();
     return moment(d).tz(tz).endOf('day').format();
-  } catch (error) {
+  } catch (_error) {
     const d = date ? new Date(date) : new Date();
     d.setHours(23, 59, 59, 999);
     return d.toISOString();
@@ -241,7 +241,7 @@ export function formatDuration(milliseconds: number): string {
     if (seconds > 0 || parts.length === 0) parts.push(`${seconds}s`);
 
     return parts.join(' ');
-  } catch (error) {
+  } catch (_error) {
     return `${Math.floor(milliseconds / 1000)}s`;
   }
 }
@@ -257,7 +257,7 @@ export function getLocalizedDate(
   try {
     const tz = timezone || getSystemTimezone();
     return moment(date).tz(tz).locale(locale).format('LLL');
-  } catch (error) {
+  } catch (_error) {
     return new Date(date).toLocaleString(locale);
   }
 }

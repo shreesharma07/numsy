@@ -13,8 +13,8 @@ import {
 import { FileInterceptor } from '@nestjs/platform-express';
 import { Response } from 'express';
 import { diskStorage } from 'multer';
-import * as path from 'path';
-import * as fs from 'fs';
+import * as path from 'node:path';
+import * as fs from 'node:fs';
 import { FileProcessorService } from '../services/file-processor.service';
 
 /**
@@ -80,17 +80,17 @@ export class AppController {
   @UseInterceptors(
     FileInterceptor('file', {
       storage: diskStorage({
-        destination: (req, file, cb) => {
+        destination: (_req, _file, cb) => {
           const uploadPath = path.join(process.cwd(), 'uploads');
           cb(null, uploadPath);
         },
-        filename: (req, file, cb) => {
-          const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
+        filename: (_req, file, cb) => {
+          const uniqueSuffix = `${Date.now()}-${Math.round(Math.random() * 1e9)}`;
           const ext = path.extname(file.originalname);
           cb(null, `upload-${uniqueSuffix}${ext}`);
         },
       }),
-      fileFilter: (req, file, cb) => {
+      fileFilter: (_req, file, cb) => {
         const allowedExtensions = ['.csv', '.xlsx', '.xls'];
         const ext = path.extname(file.originalname).toLowerCase();
         if (allowedExtensions.includes(ext)) {
@@ -238,7 +238,7 @@ export class AppController {
       try {
         const files = fs.readdirSync(this.tempDir).filter((f) => f.endsWith('.zip'));
         this.logger.log(`Available ZIP files: ${files.join(', ')}`);
-      } catch (e) {
+      } catch (_e) {
         this.logger.error('Could not list temp directory');
       }
 

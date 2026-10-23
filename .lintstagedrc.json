@@ -1,5 +1,4 @@
 {
-  "*.{ts,tsx}": ["eslint --fix", "prettier --write"],
-  "*.{json,md,yml,yaml}": ["prettier --write"],
+  "*.{ts,js,json}": ["biome check --write --no-errors-on-unmatched --files-ignore-unknown=true"],
   "*.ts": ["jest --bail --findRelatedTests --passWithNoTests"]
 }

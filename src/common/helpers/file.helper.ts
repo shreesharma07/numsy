@@ -3,8 +3,8 @@
  * Provides file system utilities for file operations
  */
 
-import * as fs from 'fs';
-import * as path from 'path';
+import * as fs from 'node:fs';
+import * as path from 'node:path';
 import { LoggerHelper } from './logger.helper';
 import { AppError } from './error.helper';
 

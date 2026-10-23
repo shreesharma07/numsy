@@ -24,7 +24,7 @@ export function findMatchingField(row: Record<string, any>, aliases: string[]): 
       }
     }
     return null;
-  } catch (error) {
+  } catch (_error) {
     return null;
   }
 }
@@ -71,7 +71,7 @@ export function normalizeRowColumns(row: ParsedDataRow): ParsedDataRow {
     });
 
     return normalized;
-  } catch (error) {
+  } catch (_error) {
     return normalized;
   }
 }
@@ -86,7 +86,7 @@ export function normalizeDataRows(data: ParsedDataRow[]): ParsedDataRow[] {
     }
 
     return data.map((row) => normalizeRowColumns(row));
-  } catch (error) {
+  } catch (_error) {
     return [];
   }
 }
@@ -123,7 +123,7 @@ export function detectPhoneColumn(data: ParsedDataRow[]): string | null {
     }
 
     return null;
-  } catch (error) {
+  } catch (_error) {
     return null;
   }
 }
@@ -149,7 +149,7 @@ export function removeDuplicates(data: ParsedDataRow[], keyField: string): Parse
     }
 
     return result;
-  } catch (error) {
+  } catch (_error) {
     return data;
   }
 }
@@ -167,7 +167,7 @@ export function filterRows(
     }
 
     return data.filter(predicate);
-  } catch (error) {
+  } catch (_error) {
     return [];
   }
 }
@@ -195,7 +195,7 @@ export function sortRowsByField(
       const comparison = String(aVal).localeCompare(String(bVal));
       return order === 'asc' ? comparison : -comparison;
     });
-  } catch (error) {
+  } catch (_error) {
     return data;
   }
 }
@@ -223,7 +223,7 @@ export function groupRowsByField(
     }
 
     return groups;
-  } catch (error) {
+  } catch (_error) {
     return groups;
   }
 }
@@ -243,7 +243,7 @@ export function extractUniqueValues(data: ParsedDataRow[], field: string): strin
       .map((val) => String(val));
 
     return [...new Set(values)];
-  } catch (error) {
+  } catch (_error) {
     return [];
   }
 }

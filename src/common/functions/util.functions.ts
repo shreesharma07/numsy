@@ -3,8 +3,8 @@
  * Common utility functions used across the application
  */
 
-import * as path from 'path';
-import * as fs from 'fs';
+import * as path from 'node:path';
+import * as fs from 'node:fs';
 
 /**
  * Validates if a path is within allowed directories
@@ -78,7 +78,7 @@ export function getAllowedDirectories(type: 'input' | 'output' | 'all'): string[
 export function safeFileExists(filePath: string): boolean {
   try {
     return fs.existsSync(filePath);
-  } catch (error) {
+  } catch (_error) {
     return false;
   }
 }
@@ -89,7 +89,7 @@ export function safeFileExists(filePath: string): boolean {
 export function safeGetFileStats(filePath: string): fs.Stats | null {
   try {
     return fs.statSync(filePath);
-  } catch (error) {
+  } catch (_error) {
     return null;
   }
 }
@@ -101,7 +101,7 @@ export function isFile(filePath: string): boolean {
   try {
     const stats = fs.statSync(filePath);
     return stats.isFile();
-  } catch (error) {
+  } catch (_error) {
     return false;
   }
 }
@@ -113,7 +113,7 @@ export function isDirectory(dirPath: string): boolean {
   try {
     const stats = fs.statSync(dirPath);
     return stats.isDirectory();
-  } catch (error) {
+  } catch (_error) {
     return false;
   }
 }
@@ -164,7 +164,7 @@ export function generateUniqueFilename(
     const ts = timestamp || Date.now();
     const cleanBaseName = baseName.replace(/[^a-z0-9_-]/gi, '_');
     return `${cleanBaseName}_${ts}.${extension.replace(/^\./, '')}`;
-  } catch (error) {
+  } catch (_error) {
     return `file_${Date.now()}.${extension.replace(/^\./, '')}`;
   }
 }
@@ -175,7 +175,7 @@ export function generateUniqueFilename(
 export function getFileExtension(filePath: string): string {
   try {
     return path.extname(filePath).toLowerCase().replace(/^\./, '');
-  } catch (error) {
+  } catch (_error) {
     return '';
   }
 }
@@ -186,7 +186,7 @@ export function getFileExtension(filePath: string): string {
 export function getFilenameWithoutExtension(filePath: string): string {
   try {
     return path.basename(filePath, path.extname(filePath));
-  } catch (error) {
+  } catch (_error) {
     return '';
   }
 }
@@ -198,7 +198,7 @@ export function isAllowedExtension(filePath: string, allowedExtensions: string[]
   try {
     const ext = getFileExtension(filePath);
     return allowedExtensions.some((allowed) => allowed.toLowerCase() === ext);
-  } catch (error) {
+  } catch (_error) {
     return false;
   }
 }
@@ -213,7 +213,7 @@ export function sanitizeFilename(filename: string): string {
       .replace(/_{2,}/g, '_')
       .replace(/^[._]+/, '')
       .replace(/[._]+$/, '');
-  } catch (error) {
+  } catch (_error) {
     return `file_${Date.now()}`;
   }
 }
@@ -224,7 +224,7 @@ export function sanitizeFilename(filename: string): string {
 export function safeReadFile(filePath: string, encoding: BufferEncoding = 'utf-8'): string | null {
   try {
     return fs.readFileSync(filePath, encoding);
-  } catch (error) {
+  } catch (_error) {
     return null;
   }
 }
@@ -257,7 +257,7 @@ export function safeReadDirectory(dirPath: string): string[] {
       return [];
     }
     return fs.readdirSync(dirPath);
-  } catch (error) {
+  } catch (_error) {
     return [];
   }
 }
@@ -271,8 +271,8 @@ export function formatFileSize(bytes: number): string {
     const k = 1024;
     const sizes = ['B', 'KB', 'MB', 'GB', 'TB'];
     const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return `${parseFloat((bytes / Math.pow(k, i)).toFixed(2))} ${sizes[i]}`;
-  } catch (error) {
+    return `${parseFloat((bytes / k ** i).toFixed(2))} ${sizes[i]}`;
+  } catch (_error) {
     return `${bytes} B`;
   }
 }
@@ -294,7 +294,7 @@ export async function retryWithBackoff<T>(
       lastError = error instanceof Error ? error : new Error(String(error));
 
       if (attempt < maxRetries) {
-        const delay = baseDelay * Math.pow(2, attempt);
+        const delay = baseDelay * 2 ** attempt;
         await new Promise((resolve) => setTimeout(resolve, delay));
       }
     }
@@ -347,7 +347,7 @@ export function throttle<T extends (...args: any[]) => any>(
 export function deepClone<T>(obj: T): T {
   try {
     return JSON.parse(JSON.stringify(obj));
-  } catch (error) {
+  } catch (_error) {
     return obj;
   }
 }
@@ -358,7 +358,7 @@ export function deepClone<T>(obj: T): T {
 export function deepEqual(obj1: any, obj2: any): boolean {
   try {
     return JSON.stringify(obj1) === JSON.stringify(obj2);
-  } catch (error) {
+  } catch (_error) {
     return false;
   }
 }
@@ -369,7 +369,7 @@ export function deepEqual(obj1: any, obj2: any): boolean {
 export function safeJsonParse<T = any>(jsonString: string, defaultValue?: T): T | null {
   try {
     return JSON.parse(jsonString);
-  } catch (error) {
+  } catch (_error) {
     return defaultValue !== undefined ? defaultValue : null;
   }
 }
@@ -380,7 +380,7 @@ export function safeJsonParse<T = any>(jsonString: string, defaultValue?: T): T 
 export function safeJsonStringify(obj: any, space?: number): string | null {
   try {
     return JSON.stringify(obj, null, space);
-  } catch (error) {
+  } catch (_error) {
     return null;
   }
 }
@@ -396,7 +396,7 @@ export function generateId(length: number = 16): string {
       result += chars.charAt(Math.floor(Math.random() * chars.length));
     }
     return result;
-  } catch (error) {
+  } catch (_error) {
     return Math.random()
       .toString(36)
       .substring(2, 2 + length);
@@ -420,7 +420,7 @@ export function chunkArray<T>(array: T[], size: number): T[][] {
       chunks.push(array.slice(i, i + size));
     }
     return chunks;
-  } catch (error) {
+  } catch (_error) {
     return [array];
   }
 }
@@ -431,7 +431,7 @@ export function chunkArray<T>(array: T[], size: number): T[][] {
 export function uniqueArray<T>(array: T[]): T[] {
   try {
     return Array.from(new Set(array));
-  } catch (error) {
+  } catch (_error) {
     return array;
   }
 }
@@ -442,7 +442,7 @@ export function uniqueArray<T>(array: T[]): T[] {
 export function flattenArray<T>(array: any[]): T[] {
   try {
     return array.flat(Infinity) as T[];
-  } catch (error) {
+  } catch (_error) {
     return array;
   }
 }
@@ -463,7 +463,7 @@ export function groupBy<T>(array: T[], key: keyof T): Record<string, T[]> {
       },
       {} as Record<string, T[]>,
     );
-  } catch (error) {
+  } catch (_error) {
     return {};
   }
 }

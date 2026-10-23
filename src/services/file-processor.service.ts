@@ -1,6 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
-import * as fs from 'fs';
-import * as path from 'path';
+import * as fs from 'node:fs';
+import * as path from 'node:path';
 import archiver from 'archiver';
 import { PhoneValidatorService } from './phone-validator.service';
 import { FileParserService } from './file-parser.service';
@@ -274,7 +274,7 @@ export class FileProcessorService {
 
     const firstRow = data[0];
     const allFields = firstRow ? Object.keys(firstRow) : [];
-    allFields.forEach((field) => fieldDistribution.set(field, 0));
+    for (const field of allFields) fieldDistribution.set(field, 0);
 
     for (const row of data) {
       const phoneValue = row[phoneColumn];

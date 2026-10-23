@@ -3,7 +3,7 @@
  * This parses commits and shows what version would be released
  */
 
-const { execSync } = require('child_process');
+const { execSync } = require('node:child_process');
 
 console.log('🔍 Semantic Release Preview\n');
 console.log('📋 Analyzing commits since last release...\n');
@@ -80,25 +80,25 @@ try {
 
   if (analysis.breaking.length > 0) {
     console.log(`\n💥 Breaking Changes (${analysis.breaking.length}):`);
-    analysis.breaking.forEach((c) => console.log(`  - ${c}`));
+    for (const c of analysis.breaking) console.log(`  - ${c}`);
   }
 
   if (analysis.features.length > 0) {
     console.log(`\n✨ Features (${analysis.features.length}):`);
-    analysis.features.forEach((c) => console.log(`  - ${c}`));
+    for (const c of analysis.features) console.log(`  - ${c}`);
   }
 
   if (analysis.fixes.length > 0) {
     console.log(`\n🐛 Fixes (${analysis.fixes.length}):`);
-    analysis.fixes.forEach((c) => console.log(`  - ${c}`));
+    for (const c of analysis.fixes) console.log(`  - ${c}`);
   }
 
   if (analysis.other.length > 0) {
     console.log(`\n📝 Other (${analysis.other.length}):`);
-    analysis.other.forEach((c) => console.log(`  - ${c}`));
+    for (const c of analysis.other) console.log(`  - ${c}`);
   }
 
-  console.log('\n' + '─'.repeat(50));
+  console.log(`\n${'─'.repeat(50)}`);
   console.log('\n🎯 Release Prediction:');
   console.log(`   Current version: ${currentVersion}`);
   console.log(`   Version bump:    ${bump.toUpperCase()}`);

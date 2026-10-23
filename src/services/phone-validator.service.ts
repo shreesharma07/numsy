@@ -268,7 +268,7 @@ export class PhoneValidatorService {
 
     // Split by common separators: /, comma, or multiple spaces (but not single space within number)
     // First, replace / and , with a unique delimiter
-    const normalized = phoneString.replace(/[\/,]/g, '|');
+    const normalized = phoneString.replace(/[/,]/g, '|');
 
     // Split by the delimiter or by 2+ spaces (to avoid splitting numbers with single space)
     const parts = normalized.split(/\||\s{2,}/).filter((part) => part.trim().length > 0);

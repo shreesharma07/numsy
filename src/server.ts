@@ -40,7 +40,7 @@ async function bootstrap() {
     console.log('╚═══════════════════════════════════════════════════════════════╝');
     console.log('');
     console.log(
-      '  \x1b[32m✓\x1b[0m Server running at: \x1b[1m\x1b[36mhttp://localhost:' + port + '\x1b[0m',
+      `  \x1b[32m✓\x1b[0m Server running at: \x1b[1m\x1b[36mhttp://localhost:${port}\x1b[0m`,
     );
     console.log(
       '  \x1b[32m✓\x1b[0m Environment: \x1b[1m' +
@@ -48,7 +48,7 @@ async function bootstrap() {
         '\x1b[0m',
     );
     console.log(
-      '  \x1b[32m✓\x1b[0m API Documentation: \x1b[36mhttp://localhost:' + port + '/api\x1b[0m',
+      `  \x1b[32m✓\x1b[0m API Documentation: \x1b[36mhttp://localhost:${port}/api\x1b[0m`,
     );
     console.log('');
     console.log('  \x1b[1m\x1b[33m📋 Features:\x1b[0m');
@@ -59,7 +59,7 @@ async function bootstrap() {
     console.log('    • Dark/Light theme with system detection');
     console.log('');
     console.log('  \x1b[1m\x1b[35m🚀 Quick Start:\x1b[0m');
-    console.log('    1. Open \x1b[36mhttp://localhost:' + port + '\x1b[0m in your browser');
+    console.log(`    1. Open \x1b[36mhttp://localhost:${port}\x1b[0m in your browser`);
     console.log('    2. Drag & drop or select a CSV/Excel file');
     console.log('    3. Click "Process File" to validate numbers');
     console.log('    4. Download the processed ZIP file');

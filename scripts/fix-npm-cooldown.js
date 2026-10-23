@@ -1,5 +1,4 @@
 #!/usr/bin/env node
-/* eslint-disable @typescript-eslint/no-var-requires */
 
 /**
  * Quick fix for NPM 24-hour cooldown issue
@@ -8,9 +7,9 @@
  * Usage: node scripts/fix-npm-cooldown.js [patch|minor|major]
  */
 
-const { execSync } = require('child_process');
-const fs = require('fs');
-const path = require('path');
+const { execSync } = require('node:child_process');
+const fs = require('node:fs');
+const path = require('node:path');
 
 const bumpType = process.argv[2] || 'patch';
 

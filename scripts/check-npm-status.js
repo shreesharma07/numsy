@@ -5,7 +5,7 @@
  * Usage: node scripts/check-npm-status.js
  */
 
-const { execSync } = require('child_process');
+const { execSync } = require('node:child_process');
 const packageJson = require('../package.json');
 
 const PACKAGE_NAME = packageJson.name;

@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { ServeStaticModule } from '@nestjs/serve-static';
-import { join } from 'path';
+import { join } from 'node:path';
 import { AppController } from './controllers/app.controller';
 import { PhoneValidatorService } from './services/phone-validator.service';
 import { FileParserService } from './services/file-parser.service';
