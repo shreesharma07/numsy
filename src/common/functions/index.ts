@@ -8,3 +8,4 @@ export * from './phone.functions';
 export * from './data.functions';
 export * from './datetime.functions';
 export * from './util.functions';
+export * from './export.functions';
