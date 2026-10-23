@@ -14,6 +14,8 @@ import {
   ProcessingResult,
   FileParseResult,
   ParsedDataRow,
+  AnalysisReport,
+  AnalyzeOptions,
 } from '../common/interfaces';
 import { LoggerHelper } from '../common/helpers';
 
@@ -32,17 +34,19 @@ export class Numsy {
       enableLogging: options?.enableLogging ?? true,
       logLevel: options?.logLevel ?? 'log',
       throwOnError: options?.throwOnError ?? false,
+      normalizeColumns: options?.normalizeColumns ?? true,
     };
 
     this.logger = new LoggerHelper('Numsy', {
       level: this.options.logLevel,
+      enabled: this.options.enableLogging,
       timestamp: true,
     });
 
     // Initialize core components
     this.parser = new Parser(this.options);
     this.validator = new PhoneValidator(this.options);
-    this.processor = new FileProcessor();
+    this.processor = new FileProcessor(this.options);
 
     if (this.options.enableLogging) {
       this.logger.log('Numsy initialized successfully');
@@ -64,7 +68,31 @@ export class Numsy {
   }
 
   /**
-   * Process a file with phone number validation
+   * Analyse a file in memory: validated rows, invalid rows, unique numbers and analytics
+   */
+  async analyzeFile(filePath: string, options?: AnalyzeOptions): Promise<AnalysisReport> {
+    try {
+      return await this.processor.analyzeFile(filePath, options);
+    } catch (error) {
+      this.logger.error('Error analysing file', String(error));
+      throw error;
+    }
+  }
+
+  /**
+   * Analyse already-parsed rows in memory
+   */
+  analyze(data: ParsedDataRow[], options?: AnalyzeOptions): AnalysisReport {
+    try {
+      return this.processor.analyze(data, options);
+    } catch (error) {
+      this.logger.error('Error analysing data', String(error));
+      throw error;
+    }
+  }
+
+  /**
+   * Process a file and write the ZIP report bundle to disk
    */
   async processFile(filePath: string, outputDir?: string): Promise<ProcessingResult> {
     try {
@@ -202,10 +230,12 @@ export class Numsy {
   setOptions(options: Partial<NumsyOptions>): void {
     try {
       this.options = { ...this.options, ...options };
+      this.logger.setEnabled(this.options.enableLogging ?? true);
 
       // Update options for all components
       this.parser.setOptions(options);
       this.validator.setOptions(options);
+      this.processor.setOptions(options);
 
       this.logger.log('Options updated');
     } catch (error) {

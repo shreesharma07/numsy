@@ -3,7 +3,8 @@
  * Main class for parsing files (CSV, Excel) with validation and processing
  */
 
-import * as fs from 'fs';
+import * as fs from 'node:fs';
+import * as path from 'node:path';
 import csv from 'csv-parser';
 import * as ExcelJS from 'exceljs';
 import { createObjectCsvWriter } from 'csv-writer';
@@ -23,6 +24,20 @@ import {
 } from '../common/functions';
 
 /**
+ * Flattens an ExcelJS cell value (rich text, hyperlink, formula, date) into a primitive
+ */
+function cellToValue(value: any): string | number | boolean {
+  if (value === undefined || value === null) return '';
+  if (value instanceof Date) return value.toISOString();
+  if (typeof value !== 'object') return value;
+  if (Array.isArray(value.richText)) return value.richText.map((r: any) => r.text).join('');
+  if ('text' in value) return cellToValue(value.text);
+  if ('result' in value) return cellToValue(value.result);
+  if ('error' in value) return '';
+  return String(value);
+}
+
+/**
  * Parser class for file parsing operations
  */
 export class Parser {
@@ -40,6 +55,7 @@ export class Parser {
 
     this.logger = new LoggerHelper('Parser', {
       level: this.options.logLevel,
+      enabled: this.options.enableLogging,
       timestamp: true,
     });
 
@@ -162,6 +178,7 @@ export class Parser {
           headerRow = row.values as any[];
           // Remove the first empty element that ExcelJS adds
           headerRow.shift();
+          headerRow = headerRow.map((h) => cellToValue(h));
           detectedColumns.push(...headerRow.map((h) => String(h || '')));
         } else {
           // Data rows
@@ -171,7 +188,7 @@ export class Parser {
           values.shift();
 
           headerRow.forEach((header, index) => {
-            if (header) rowData[String(header)] = values[index] !== undefined ? values[index] : '';
+            if (header) rowData[String(header)] = cellToValue(values[index]);
           });
           data.push(rowData);
         }
@@ -199,7 +216,7 @@ export class Parser {
       if (!data || data.length === 0) throw new AppError('No data to write', 'NO_DATA');
 
       // Ensure output directory exists
-      const dirPath = outputPath.substring(0, outputPath.lastIndexOf('/'));
+      const dirPath = path.dirname(outputPath);
       if (dirPath) ensureDirectory(dirPath);
 
       // Get all unique headers from the data
@@ -277,6 +294,7 @@ export class Parser {
   setOptions(options: Partial<ParserOptions>): void {
     try {
       this.options = { ...this.options, ...options };
+      this.logger.setEnabled(this.options.enableLogging ?? true);
       this.logger.log('Parser options updated');
     } catch (error) {
       this.logger.error('Error setting options', String(error));

@@ -125,6 +125,8 @@ export interface LoggerOptions {
   timestamp?: boolean;
   level?: 'log' | 'error' | 'warn' | 'debug' | 'verbose';
   timezone?: string;
+  /** Set to false to silence the logger entirely */
+  enabled?: boolean;
 }
 
 /**
@@ -134,6 +136,8 @@ export interface NumsyOptions {
   enableLogging?: boolean;
   logLevel?: 'log' | 'error' | 'warn' | 'debug' | 'verbose';
   throwOnError?: boolean;
+  /** Rename known column headers (e.g. "Mobile Number" -> "phone") when parsing files. Default: true */
+  normalizeColumns?: boolean;
 }
 
 /**
@@ -147,10 +151,46 @@ export interface ParserOptions extends NumsyOptions {
 /**
  * Interface for processing options
  */
-export interface ProcessingOptions {
+export interface ProcessingOptions extends NumsyOptions {
   outputDir?: string;
   preserveOriginalColumns?: boolean;
   validateNumbers?: boolean;
+}
+
+/**
+ * Options for in-memory analysis of parsed rows
+ */
+export interface AnalyzeOptions {
+  /** Column holding phone numbers. Auto-detected when omitted. */
+  phoneColumn?: string;
+  /** Column holding contact names. Auto-detected when omitted; pass null to disable. */
+  nameColumn?: string | null;
+}
+
+/**
+ * A unique valid number with the first name seen for it
+ */
+export interface UniqueNumber {
+  phone: string;
+  name?: string;
+  /** How many times the number appeared across the dataset */
+  occurrences: number;
+}
+
+/**
+ * In-memory analysis report produced by FileProcessor.analyze / analyzeFile
+ */
+export interface AnalysisReport {
+  source?: string;
+  phoneColumn: string;
+  nameColumn?: string;
+  totalRecords: number;
+  /** Every output row in input order (rows holding several valid numbers are expanded) */
+  rows: ProcessedRow[];
+  validRows: ProcessedRow[];
+  invalidRows: ProcessedRow[];
+  unique: UniqueNumber[];
+  analytics: ProcessingAnalytics;
 }
 
 /**

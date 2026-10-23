@@ -9,11 +9,13 @@ export class LoggerHelper {
   private context: string;
   private enableTimestamp: boolean;
   private logLevel: 'log' | 'error' | 'warn' | 'debug' | 'verbose';
+  private enabled: boolean;
 
   constructor(context: string = 'App', options?: LoggerOptions) {
     this.context = context;
     this.enableTimestamp = options?.timestamp ?? true;
     this.logLevel = options?.level ?? 'log';
+    this.enabled = options?.enabled ?? true;
   }
 
   /**
@@ -31,6 +33,7 @@ export class LoggerHelper {
    * Log informational messages
    */
   log(message: string, ...optionalParams: any[]): void {
+    if (!this.enabled) return;
     try {
       console.log(this.formatMessage('log', message), ...optionalParams);
     } catch (error) {
@@ -42,6 +45,7 @@ export class LoggerHelper {
    * Log error messages
    */
   error(message: string, trace?: string, ...optionalParams: any[]): void {
+    if (!this.enabled) return;
     try {
       console.error(this.formatMessage('error', message), trace || '', ...optionalParams);
     } catch (error) {
@@ -53,6 +57,7 @@ export class LoggerHelper {
    * Log warning messages
    */
   warn(message: string, ...optionalParams: any[]): void {
+    if (!this.enabled) return;
     try {
       console.warn(this.formatMessage('warn', message), ...optionalParams);
     } catch (error) {
@@ -64,6 +69,7 @@ export class LoggerHelper {
    * Log debug messages
    */
   debug(message: string, ...optionalParams: any[]): void {
+    if (!this.enabled) return;
     try {
       if (this.logLevel === 'debug' || this.logLevel === 'verbose') {
         console.debug(this.formatMessage('debug', message), ...optionalParams);
@@ -77,6 +83,7 @@ export class LoggerHelper {
    * Log verbose messages
    */
   verbose(message: string, ...optionalParams: any[]): void {
+    if (!this.enabled) return;
     try {
       if (this.logLevel === 'verbose') {
         console.log(this.formatMessage('verbose', message), ...optionalParams);
@@ -91,5 +98,19 @@ export class LoggerHelper {
    */
   setContext(context: string): void {
     this.context = context;
+  }
+
+  /**
+   * Enable or silence all output from this logger
+   */
+  setEnabled(enabled: boolean): void {
+    this.enabled = enabled;
+  }
+
+  /**
+   * Whether this logger currently emits output
+   */
+  isEnabled(): boolean {
+    return this.enabled;
   }
 }

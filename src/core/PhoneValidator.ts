@@ -32,6 +32,7 @@ export class PhoneValidator {
 
     this.logger = new LoggerHelper('PhoneValidator', {
       level: this.options.logLevel,
+      enabled: this.options.enableLogging,
       timestamp: true,
     });
 
@@ -284,6 +285,7 @@ export class PhoneValidator {
   setOptions(options: Partial<NumsyOptions>): void {
     try {
       this.options = { ...this.options, ...options };
+      this.logger.setEnabled(this.options.enableLogging ?? true);
       this.logger.log('PhoneValidator options updated');
     } catch (error) {
       this.logger.error('Error setting options', String(error));

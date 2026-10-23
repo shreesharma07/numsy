@@ -3,21 +3,30 @@
  * Coordinates file parsing, phone validation, and output generation
  */
 
-import * as fs from 'fs';
-import * as path from 'path';
+import * as fs from 'node:fs';
+import * as path from 'node:path';
 import archiver from 'archiver';
 import { createObjectCsvWriter } from 'csv-writer';
 import {
+  AnalysisReport,
+  AnalyzeOptions,
   ProcessingResult,
   ProcessedRow,
   ParsedDataRow,
   ProcessingOptions,
   ProcessingAnalytics,
+  UniqueNumber,
 } from '../common/interfaces';
 import { LoggerHelper, AppError, ensureDirectory } from '../common/helpers';
 import { Parser } from './Parser';
 import { PhoneValidator } from './PhoneValidator';
 import { findMatchingField, COLUMN_ALIASES } from '../common/functions';
+
+/**
+ * Percentage helper that never returns NaN/Infinity
+ */
+const percent = (part: number, whole: number): string =>
+  whole > 0 ? ((part / whole) * 100).toFixed(2) : '0.00';
 
 /**
  * FileProcessor class for processing files with phone number validation
@@ -33,20 +42,95 @@ export class FileProcessor {
       outputDir: options?.outputDir ?? './output',
       preserveOriginalColumns: options?.preserveOriginalColumns ?? true,
       validateNumbers: options?.validateNumbers ?? true,
+      enableLogging: options?.enableLogging ?? true,
+      logLevel: options?.logLevel ?? 'log',
+      throwOnError: options?.throwOnError ?? false,
+      normalizeColumns: options?.normalizeColumns ?? true,
     };
 
-    this.logger = new LoggerHelper('FileProcessor');
-    this.parser = new Parser();
-    this.validator = new PhoneValidator();
+    const shared = {
+      enableLogging: this.options.enableLogging,
+      logLevel: this.options.logLevel,
+      throwOnError: this.options.throwOnError,
+      normalizeColumns: this.options.normalizeColumns,
+    };
+
+    this.logger = new LoggerHelper('FileProcessor', {
+      level: this.options.logLevel,
+      enabled: this.options.enableLogging,
+    });
+    this.parser = new Parser(shared);
+    this.validator = new PhoneValidator(shared);
 
     this.logger.log('FileProcessor initialized');
   }
 
   /**
-   * Processes an uploaded file
+   * Parses and analyses a file entirely in memory — nothing is written to disk
+   */
+  async analyzeFile(filePath: string, options?: AnalyzeOptions): Promise<AnalysisReport> {
+    const parseResult = await this.parser.parseFile(filePath);
+    this.logger.log(`Parsed ${parseResult.totalRows} rows`);
+
+    const report = this.analyze(parseResult.data, options);
+    report.source = filePath;
+    return report;
+  }
+
+  /**
+   * Validates, extracts and de-duplicates phone numbers from already-parsed rows
+   */
+  analyze(data: ParsedDataRow[], options?: AnalyzeOptions): AnalysisReport {
+    if (!data || data.length === 0) {
+      throw new AppError('No data found in the uploaded file', 'NO_DATA');
+    }
+
+    const phoneColumn = options?.phoneColumn ?? this.validator.detectPhoneColumn(data);
+    if (!phoneColumn) {
+      throw new AppError(
+        'Could not detect a valid phone number column in the file',
+        'NO_PHONE_COLUMN',
+      );
+    }
+    if (!(phoneColumn in data[0])) {
+      throw new AppError(
+        `Column "${phoneColumn}" not found. Available: ${Object.keys(data[0]).join(', ')}`,
+        'NO_PHONE_COLUMN',
+      );
+    }
+    this.logger.log(`Using phone column: "${phoneColumn}"`);
+
+    const nameColumn =
+      options?.nameColumn === undefined ? this.detectNameColumn(data) : options.nameColumn;
+    if (nameColumn) {
+      this.logger.log(`Detected name column: "${nameColumn}"`);
+    } else {
+      this.logger.log('No name column detected');
+    }
+
+    const { rows, validRows, invalidRows, analytics, unique } = this.processRows(
+      data,
+      phoneColumn,
+      nameColumn,
+    );
+
+    return {
+      phoneColumn,
+      nameColumn: nameColumn || undefined,
+      totalRecords: data.length,
+      rows,
+      validRows,
+      invalidRows,
+      unique,
+      analytics,
+    };
+  }
+
+  /**
+   * Processes a file and writes the classic report bundle (CSVs, analytics, ZIP) to disk
    */
   async processFile(filePath: string, outputDir?: string): Promise<ProcessingResult> {
-    const outputDirectory = outputDir! || this.options.outputDir!;
+    const outputDirectory = outputDir || this.options.outputDir!;
 
     try {
       this.logger.log(`Starting file processing: ${filePath}`);
@@ -54,37 +138,8 @@ export class FileProcessor {
       // Ensure output directory exists
       ensureDirectory(outputDirectory);
 
-      // Parse the input file
-      const parseResult = await this.parser.parseFile(filePath);
-      this.logger.log(`Parsed ${parseResult.totalRows} rows`);
-
-      // Validate parsed data
-      if (!parseResult.data || parseResult.data.length === 0) {
-        throw new AppError('No data found in the uploaded file', 'NO_DATA');
-      }
-
-      // Detect phone column
-      const phoneColumn = this.validator.detectPhoneColumn(parseResult.data);
-      if (!phoneColumn) {
-        throw new AppError(
-          'Could not detect a valid phone number column in the file',
-          'NO_PHONE_COLUMN',
-        );
-      }
-
-      this.logger.log(`Using phone column: "${phoneColumn}"`);
-
-      // Detect name column (if present)
-      const nameColumn = this.detectNameColumn(parseResult.data);
-      if (nameColumn) {
-        this.logger.log(`Detected name column: "${nameColumn}"`);
-      } else {
-        this.logger.log('No name column detected');
-      }
-
-      // Process each row
-      const { validRows, invalidRows, analytics, allExtractedData, uniqueValidNumbers } =
-        this.processRows(parseResult.data, phoneColumn, nameColumn);
+      const report = await this.analyzeFile(filePath);
+      const { phoneColumn, nameColumn, validRows, invalidRows, analytics, unique } = report;
 
       // Generate output file paths using original filename
       const originalFileName = path.basename(filePath, path.extname(filePath));
@@ -109,14 +164,13 @@ export class FileProcessor {
       await this.parser.writeProcessedFiles(validRows, invalidRows, validFilePath, invalidFilePath);
 
       // Write unique numbers file
-      await this.writeUniqueNumbersFile(uniqueValidNumbers, uniqueNumbersFilePath, nameColumn);
+      await this.writeUniqueNumbersFile(unique, uniqueNumbersFilePath, nameColumn);
 
       // Generate analytics file
       await this.generateAnalyticsFile(
         analyticsFilePath,
         analytics,
-        allExtractedData,
-        parseResult.totalRows,
+        report.totalRecords,
         phoneColumn,
         nameColumn,
       );
@@ -133,11 +187,11 @@ export class FileProcessor {
       );
 
       const result: ProcessingResult = {
-        totalRecords: parseResult.totalRows,
+        totalRecords: report.totalRecords,
         validRecords: validRows.length,
         invalidRecords: invalidRows.length,
         phoneColumn,
-        nameColumn: nameColumn || undefined,
+        nameColumn,
         zipFilePath,
         validFilePath,
         invalidFilePath,
@@ -168,35 +222,39 @@ export class FileProcessor {
     phoneColumn: string,
     nameColumn?: string | null,
   ): {
+    rows: ProcessedRow[];
     validRows: ProcessedRow[];
     invalidRows: ProcessedRow[];
     analytics: ProcessingAnalytics;
-    allExtractedData: ProcessedRow[];
-    uniqueValidNumbers: Map<string, { name?: string; phone: string }>;
+    unique: UniqueNumber[];
   } {
+    const rows: ProcessedRow[] = [];
     const validRows: ProcessedRow[] = [];
     const invalidRows: ProcessedRow[] = [];
-    const allExtractedData: ProcessedRow[] = [];
-    const allValidNumbers: string[] = [];
-    const uniqueValidNumbers = new Map<string, { name?: string; phone: string }>();
+    const uniqueValidNumbers = new Map<string, UniqueNumber>();
+    let totalValidNumbers = 0;
     let recordsWithMultipleNumbers = 0;
     let totalNumbersExtracted = 0;
+
+    const pushInvalid = (row: ProcessedRow) => {
+      invalidRows.push(row);
+      rows.push(row);
+    };
 
     try {
       for (const row of data) {
         const phoneValue = row[phoneColumn];
         const nameValue = nameColumn ? row[nameColumn] : undefined;
 
-        if (!phoneValue) {
-          const invalidRow: ProcessedRow = {
+        if (phoneValue === undefined || phoneValue === null || String(phoneValue).trim() === '') {
+          pushInvalid({
             ...row,
             validationStatus: 'INVALID',
             validationReason: 'Empty phone number',
             originalPhone: '',
             sanitizedPhone: '',
             numbersExtracted: 0,
-          };
-          invalidRows.push(invalidRow);
+          });
           continue;
         }
 
@@ -230,14 +288,18 @@ export class FileProcessor {
             }
 
             validRows.push(validRow);
-            allExtractedData.push(validRow);
-            allValidNumbers.push(validNumber.sanitized);
+            rows.push(validRow);
+            totalValidNumbers++;
 
             // Track unique numbers with their associated names
-            if (!uniqueValidNumbers.has(validNumber.sanitized)) {
+            const seen = uniqueValidNumbers.get(validNumber.sanitized);
+            if (seen) {
+              seen.occurrences++;
+            } else {
               uniqueValidNumbers.set(validNumber.sanitized, {
                 phone: validNumber.sanitized,
                 name: nameValue ? String(nameValue) : undefined,
+                occurrences: 1,
               });
             }
           }
@@ -257,29 +319,34 @@ export class FileProcessor {
             invalidRow.name = String(nameValue);
           }
 
-          invalidRows.push(invalidRow);
+          pushInvalid(invalidRow);
         }
       }
 
       // Calculate analytics
       const uniqueCount = uniqueValidNumbers.size;
-      const duplicateNumbers = allValidNumbers.length - uniqueCount;
 
       const analytics: ProcessingAnalytics = {
         totalNumbersExtracted,
-        totalValidNumbers: allValidNumbers.length,
+        totalValidNumbers,
         totalInvalidNumbers: invalidRows.length,
         recordsWithMultipleNumbers,
-        averageNumbersPerRecord: totalNumbersExtracted / data.length || 0,
-        duplicateNumbers,
+        averageNumbersPerRecord: data.length > 0 ? totalNumbersExtracted / data.length : 0,
+        duplicateNumbers: totalValidNumbers - uniqueCount,
         uniqueValidNumbers: uniqueCount,
       };
 
       this.logger.log(
-        `Processed ${data.length} rows: ${allValidNumbers.length} valid (${uniqueCount} unique), ${invalidRows.length} invalid`,
+        `Processed ${data.length} rows: ${totalValidNumbers} valid (${uniqueCount} unique), ${invalidRows.length} invalid`,
       );
 
-      return { validRows, invalidRows, analytics, allExtractedData, uniqueValidNumbers };
+      return {
+        rows,
+        validRows,
+        invalidRows,
+        analytics,
+        unique: Array.from(uniqueValidNumbers.values()),
+      };
     } catch (error) {
       this.logger.error('Error processing rows', String(error));
       throw new AppError('Failed to process data rows', 'PROCESSING_ERROR');
@@ -309,13 +376,11 @@ export class FileProcessor {
    * Writes unique numbers to a CSV file
    */
   private async writeUniqueNumbersFile(
-    uniqueNumbers: Map<string, { name?: string; phone: string }>,
+    uniqueNumbers: UniqueNumber[],
     filePath: string,
     nameColumnDetected: string | null | undefined,
   ): Promise<void> {
     try {
-      const uniqueArray = Array.from(uniqueNumbers.values());
-
       const headers: Array<{ id: string; title: string }> = [
         { id: 'phone', title: 'Phone Number' },
       ];
@@ -329,9 +394,9 @@ export class FileProcessor {
         header: headers,
       });
 
-      await csvWriter.writeRecords(uniqueArray);
+      await csvWriter.writeRecords(uniqueNumbers);
       this.logger.log(
-        `Unique numbers file created: ${filePath} (${uniqueNumbers.size} unique numbers)`,
+        `Unique numbers file created: ${filePath} (${uniqueNumbers.length} unique numbers)`,
       );
     } catch (error) {
       this.logger.error('Error writing unique numbers file', String(error));
@@ -345,7 +410,6 @@ export class FileProcessor {
   private async generateAnalyticsFile(
     filePath: string,
     analytics: ProcessingAnalytics,
-    allExtractedData: ProcessedRow[],
     totalRecords: number,
     phoneColumn: string,
     nameColumn?: string | null,
@@ -375,8 +439,8 @@ DETAILED STATISTICS
 ─────────────────────────────────────────────────────────────
 Records with Multiple Nums : ${analytics.recordsWithMultipleNumbers}
 Average Numbers per Record : ${analytics.averageNumbersPerRecord.toFixed(2)}
-Success Rate              : ${((analytics.totalValidNumbers / totalRecords) * 100).toFixed(2)}%
-Deduplication Rate        : ${((analytics.duplicateNumbers / analytics.totalValidNumbers) * 100).toFixed(2)}%
+Success Rate              : ${percent(analytics.totalValidNumbers, totalRecords)}%
+Deduplication Rate        : ${percent(analytics.duplicateNumbers, analytics.totalValidNumbers)}%
 
 VALIDATION FEATURES
 ─────────────────────────────────────────────────────────────
@@ -443,6 +507,9 @@ Generated on: ${new Date().toISOString()}
   setOptions(options: Partial<ProcessingOptions>): void {
     try {
       this.options = { ...this.options, ...options };
+      this.logger.setEnabled(this.options.enableLogging ?? true);
+      this.parser.setOptions(options);
+      this.validator.setOptions(options);
       this.logger.log('FileProcessor options updated');
     } catch (error) {
       this.logger.error('Error setting options', String(error));
