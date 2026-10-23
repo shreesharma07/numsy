@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.2.0](https://github.com/shreesharma07/numsy/compare/v2.1.1...v2.2.0) (2026-10-23)
+
+### ✨ Features
+
+* **dashboard:** redesign the local REST API and Health pages, add website analytics ([0a85b4e](https://github.com/shreesharma07/numsy/commit/0a85b4e59611b60f9839ef17792ff9acfb807205))
+
 ## [2.1.1](https://github.com/shreesharma07/numsy/compare/v2.1.0...v2.1.1) (2026-10-23)
 
 ### 🐛 Bug Fixes
