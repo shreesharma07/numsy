@@ -1,4 +1,5 @@
 import react from '@vitejs/plugin-react';
+import { fileURLToPath } from 'node:url';
 import { defineConfig } from 'vite';
 import { SITE_URL } from './src/content/pages.ts';
 import { routeShells } from './vite/route-shells.ts';
@@ -17,6 +18,11 @@ export default defineConfig({
     __SITE_URL__: JSON.stringify(SITE_URL),
   },
   plugins: [react(), routeShells()],
+  resolve: {
+    // The shared Numsy engine (../src/engine) also used by the CLI and the local dashboard
+    alias: { '@numsy/engine': fileURLToPath(new URL('../src/engine/index.ts', import.meta.url)) },
+  },
+  worker: { format: 'es' },
   build: {
     target: 'es2020',
     sourcemap: false,

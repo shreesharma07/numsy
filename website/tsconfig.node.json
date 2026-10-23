@@ -15,5 +15,5 @@
     "noUnusedParameters": true,
     "types": ["node"]
   },
-  "include": ["vite.config.ts", "vite/**/*.ts", "src/content/pages.ts"]
+  "include": ["vite.config.ts", "vite.dashboard.config.ts", "vite/**/*.ts", "src/content/pages.ts"]
 }

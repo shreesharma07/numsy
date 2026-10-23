@@ -20,7 +20,10 @@ export class AppError extends Error {
     super(message);
     this.name = 'AppError';
     // V8-only; other browser engines skip it
-    Error.captureStackTrace?.(this, this.constructor);
+    (Error as { captureStackTrace?: (target: object, ctor?: unknown) => void }).captureStackTrace?.(
+      this,
+      this.constructor,
+    );
   }
 }
 

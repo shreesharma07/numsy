@@ -1,165 +1,192 @@
 <!doctype html>
-<html lang="en">
-
-<head>
+<html lang="en-IN">
+  <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="Numsy API Documentation - Phone Number Validation API" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="REST API of the local Numsy dashboard: parse, view, export and analyse phone-number files." />
     <meta name="color-scheme" content="light dark" />
-    <title>Numsy API Documentation</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link rel="shortcut icon"
-        href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📚</text></svg>" />
-    <link
-        href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap"
-        rel="stylesheet" />
-    <script src="https://unpkg.com/lucide@latest"></script>
-    <link rel="stylesheet" href="/assets/css/api-info.css" />
-</head>
+    <meta name="robots" content="noindex" />
+    <title>Numsy: REST API</title>
+    <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="/assets/css/pages.css" />
+  </head>
+  <body>
+    <header class="bar">
+      <a class="brand" href="/">
+        <svg width="32" height="32" viewBox="0 0 120 120" aria-hidden="true">
+          <rect width="120" height="120" rx="24" fill="#111" />
+          <path fill="#FF4D6D" d="M26,50 A24,24 0 0 1 50,26 L50,94 L26,94 Z" />
+          <path fill="#8338EC" d="M50,26 L70,56.9 L70,94 L50,63.1 Z" />
+          <path fill="#FFB703" d="M70,26 L94,26 L94,70 A24,24 0 0 1 70,94 Z" />
+        </svg>
+        Numsy <span>REST API</span>
+      </a>
+      <nav aria-label="Server">
+        <a href="/">Dashboard</a>
+        <a href="/api" aria-current="page">REST API</a>
+        <a href="/api/health-page">Health</a>
+      </nav>
+      <button class="theme" id="themeToggle" type="button">Dark theme</button>
+    </header>
 
-<body>
-    <a href="/" class="home-btn">
-        <i data-lucide="home"></i>
-        <span>Home</span>
-    </a>
+    <main>
+      <p class="label">Local server · <span data-version>numsy</span></p>
+      <h1>REST API</h1>
+      <p class="lede">
+        Everything the dashboard does is available over HTTP on this machine. The API listens on
+        <code>127.0.0.1</code> by default, accepts same-origin requests only, and uses the same engine
+        and settings as the <code>numsy</code> CLI.
+      </p>
 
-    <button class="theme-toggle" id="themeToggle">
-        <i data-lucide="moon"></i>
-        <span>Dark</span>
-    </button>
+      <div class="note" role="note">
+        <p>
+          <strong>Your data stays on this computer.</strong> Uploads are parsed in memory and dropped
+          after an hour of inactivity or when the server stops. Numsy does not store file contents,
+          never sells or shares them with third parties, and never uses them for AI training.
+          <a href="https://numsy.pages.dev/privacy/">Privacy &amp; data disclaimer</a>
+        </p>
+      </div>
 
-    <div class="container">
-        <div class="header">
-            <h1>📚 API Documentation</h1>
-            <p>Numsy - Phone Number Validation API</p>
+      <h2 id="flow">Typical flow</h2>
+      <pre>
+# 1. Parse a file into a session (CSV or .xlsx, up to 50 MB)
+curl -F "file=@contacts.xlsx" http://localhost:6789/api/parse
+# → { "sessionId": "…", "totalRows": 1200, "columns": [...], "detected": { "phoneColumn": "Mobile" } }
+
+# 2. Page through results with any settings
+curl -H "Content-Type: application/json" http://localhost:6789/api/view \
+  -d '{"sessionId":"…","settings":{"dedupe":"first","only":"valid"},"query":{"page":1,"pageSize":50}}'
+
+# 3. Export exactly what you see
+curl -OJ -H "Content-Type: application/json" http://localhost:6789/api/export \
+  -d '{"sessionId":"…","format":"xlsx","settings":{"dedupe":"first","numberHeader":"Mobile"}}'</pre>
+
+      <h2 id="endpoints">Endpoints</h2>
+
+      <article class="endpoint">
+        <header><span class="method get">GET</span><span class="path">/api/meta</span></header>
+        <div><p>Version, upload limit, accepted extensions, export formats and default settings.</p></div>
+      </article>
+
+      <article class="endpoint">
+        <header><span class="method post">POST</span><span class="path">/api/parse</span></header>
+        <div>
+          <p>
+            Multipart upload with a <code>file</code> field (<code>.csv</code> or <code>.xlsx</code>). Parses
+            in memory and opens a session. Returns <code>sessionId</code>, <code>name</code>,
+            <code>totalRows</code>, <code>columns</code>, <code>detected.phoneColumn</code> /
+            <code>detected.nameColumn</code>, <code>size</code> and <code>parseMs</code>.
+          </p>
         </div>
+      </article>
 
-        <div class="card">
-            <h2>
-                <i data-lucide="info"></i>
-                Overview
-            </h2>
-            <p style="color: var(--text-secondary); line-height: 1.8;">
-                The Numsy API provides endpoints for uploading and processing CSV/Excel files containing phone numbers.
-                The API validates Indian mobile numbers, removes duplicates, and provides detailed analytics.
-            </p>
+      <article class="endpoint">
+        <header><span class="method post">POST</span><span class="path">/api/text</span></header>
+        <div>
+          <p>
+            JSON <code>{ "text": "…", "mode": "extract" | "validate" }</code>. Opens a session for pasted
+            text: <code>extract</code> finds numbers anywhere, <code>validate</code> reads one value per line.
+          </p>
         </div>
+      </article>
 
-        <div class="card">
-            <h2>
-                <i data-lucide="zap"></i>
-                Endpoints
-            </h2>
-
-            <!-- Upload Endpoint -->
-            <div class="endpoint">
-                <div class="endpoint-header">
-                    <span class="method post">POST</span>
-                    <span class="endpoint-path">/api/upload</span>
-                </div>
-                <p class="endpoint-description">
-                    Upload and process a CSV or Excel file containing phone numbers. Returns processed data with
-                    analytics and a download ID.
-                </p>
-
-                <h4 style="margin-top: 1.5rem; margin-bottom: 0.75rem; color: var(--text-primary);">Request</h4>
-                <ul class="param-list">
-                    <li>
-                        <span class="param-name">file</span>
-                        <span class="param-type">File (multipart/form-data)</span>
-                        <span class="badge required">Required</span>
-                        <div style="margin-top: 0.5rem; color: var(--text-secondary); font-size: 0.875rem;">
-                            CSV, XLSX, or XLS file (max 50MB)
-                        </div>
-                    </li>
-                </ul>
-
-                <h4 style="margin-top: 1.5rem; margin-bottom: 0.75rem; color: var(--text-primary);">Response</h4>
-                <div class="code-block">
-                    <pre>{
-  "success": true,
-  "message": "File processed successfully",
-  "summary": {
-    "totalRecords": 1000,
-    "validRecords": 850,
-    "invalidRecords": 150,
-    "duplicatesRemoved": 50
-  },
-  "downloadId": "processed_1234567890"
-}</pre>
-                </div>
-            </div>
-
-            <!-- Download Endpoint -->
-            <div class="endpoint">
-                <div class="endpoint-header">
-                    <span class="method get">GET</span>
-                    <span class="endpoint-path">/api/download/:id</span>
-                </div>
-                <p class="endpoint-description">
-                    Download the processed ZIP file containing valid numbers, invalid numbers, and analytics report.
-                </p>
-
-                <h4 style="margin-top: 1.5rem; margin-bottom: 0.75rem; color: var(--text-primary);">Parameters</h4>
-                <ul class="param-list">
-                    <li>
-                        <span class="param-name">id</span>
-                        <span class="param-type">String (URL parameter)</span>
-                        <span class="badge required">Required</span>
-                        <div style="margin-top: 0.5rem; color: var(--text-secondary); font-size: 0.875rem;">
-                            Download ID returned from the upload endpoint
-                        </div>
-                    </li>
-                </ul>
-
-                <h4 style="margin-top: 1.5rem; margin-bottom: 0.75rem; color: var(--text-primary);">Response</h4>
-                <p style="color: var(--text-secondary); font-size: 0.875rem; margin-bottom: 1rem;">
-                    Returns a ZIP file containing:
-                </p>
-                <ul style="color: var(--text-secondary); margin-left: 2rem; line-height: 1.8;">
-                    <li><strong>*_valid_*.csv</strong> - Valid phone numbers</li>
-                    <li><strong>*_invalid_*.csv</strong> - Invalid phone numbers with reasons</li>
-                    <li><strong>*_analytics_*.txt</strong> - Detailed analytics report</li>
-                </ul>
-            </div>
-
-            <!-- Health Endpoint -->
-            <div class="endpoint">
-                <div class="endpoint-header">
-                    <span class="method get">GET</span>
-                    <span class="endpoint-path">/api/health</span>
-                </div>
-                <p class="endpoint-description">
-                    Health check endpoint to verify API status.
-                </p>
-
-                <h4 style="margin-top: 1.5rem; margin-bottom: 0.75rem; color: var(--text-primary);">Response</h4>
-                <div class="code-block">
-                    <pre>{
-  "status": "OK",
-  "timestamp": "2026-03-09T12:00:00.000Z"
-}</pre>
-                </div>
-            </div>
+      <article class="endpoint">
+        <header><span class="method post">POST</span><span class="path">/api/view</span></header>
+        <div>
+          <p>
+            JSON <code>{ sessionId, settings, query }</code> with <code>query</code> =
+            <code>{ page, pageSize (≤ 500), search, allColumns }</code>. Returns <code>summary</code>,
+            <code>counts</code> per row set, <code>columns</code>, the page of <code>rows</code> (each with a
+            <code>status</code> of <code>valid</code>, <code>invalid</code> or <code>duplicate</code>),
+            <code>total</code>, <code>page</code> and <code>pages</code>.
+          </p>
         </div>
+      </article>
 
-        <div class="card">
-            <h2>
-                <i data-lucide="shield-check"></i>
-                Validation Rules
-            </h2>
-            <ul style="color: var(--text-secondary); line-height: 2; list-style: none;">
-                <li>✓ Must be exactly 10 digits</li>
-                <li>✓ Must start with 6, 7, 8, or 9</li>
-                <li>✓ Only valid Indian mobile numbers</li>
-                <li>✓ Automatic duplicate removal</li>
-                <li>✓ Support for multiple numbers per row</li>
-            </ul>
+      <article class="endpoint">
+        <header><span class="method post">POST</span><span class="path">/api/export</span></header>
+        <div>
+          <p>
+            JSON <code>{ sessionId, format, settings }</code>, or <code>{ text, mode, format, settings }</code>
+            without a session. <code>format</code> is <code>csv</code>, <code>xlsx</code>, <code>json</code>,
+            <code>md</code> or <code>txt</code>. Responds with the file as an attachment and an
+            <code>X-Numsy-Rows</code> header.
+          </p>
         </div>
-    </div>
+      </article>
 
-    <script src="/assets/js/api-info.js"></script>
-</body>
+      <article class="endpoint">
+        <header><span class="method post">POST</span><span class="path">/api/analyze</span></header>
+        <div>
+          <p>
+            One-shot analysis: multipart <code>file</code> plus any settings as form fields. Returns the full
+            report: <code>analytics</code>, <code>phoneColumn</code>, <code>rows</code>,
+            <code>validRows</code>, <code>invalidRows</code>, <code>duplicateRows</code>, <code>unique</code>
+            and <code>durationMs</code>.
+          </p>
+        </div>
+      </article>
 
+      <article class="endpoint">
+        <header><span class="method delete">DELETE</span><span class="path">/api/session/:id</span></header>
+        <div><p>Forget a session immediately.</p></div>
+      </article>
+
+      <article class="endpoint">
+        <header><span class="method get">GET</span><span class="path">/api/health</span></header>
+        <div><p><code>{ "status": "OK", "timestamp": "…" }</code></p></div>
+      </article>
+
+      <article class="endpoint">
+        <header>
+          <span class="method post">POST</span><span class="path">/api/upload</span>
+          <span class="legacy">Legacy</span>
+        </header>
+        <div>
+          <p>
+            The 1.x upload: processes a file with default settings and returns a <code>downloadId</code> for
+            <code>GET /api/download/:id</code>, a ZIP of valid and invalid CSVs, unique numbers and an analytics
+            report. Temporary files live in a private folder and are deleted after download.
+          </p>
+        </div>
+      </article>
+
+      <h2 id="settings">Settings</h2>
+      <p>Every field is optional. Unknown or invalid values fall back to the default.</p>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Setting</th><th>Values</th><th>Default</th><th>CLI flag</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><code>phoneColumn</code></td><td>column name</td><td>auto-detect</td><td><code>--column</code></td></tr>
+            <tr><td><code>nameColumn</code></td><td>column name, <code>none</code></td><td>auto-detect</td><td><code>--name-column</code></td></tr>
+            <tr><td><code>dedupe</code></td><td><code>off</code>, <code>first</code>, <code>last</code></td><td><code>off</code></td><td><code>--dedupe</code>, <code>--keep</code></td></tr>
+            <tr><td><code>strict</code></td><td><code>true</code>, <code>false</code></td><td><code>true</code></td><td><code>--loose</code></td></tr>
+            <tr><td><code>multiple</code></td><td><code>all</code>, <code>first</code></td><td><code>all</code></td><td><code>--first-only</code></td></tr>
+            <tr><td><code>skipEmpty</code></td><td><code>true</code>, <code>false</code></td><td><code>false</code></td><td><code>--skip-empty</code></td></tr>
+            <tr><td><code>only</code></td><td><code>all</code>, <code>valid</code>, <code>invalid</code>, <code>unique</code>, <code>duplicates</code></td><td><code>all</code></td><td><code>--only</code></td></tr>
+            <tr><td><code>numberStyle</code></td><td><code>plain</code>, <code>e164</code>, <code>spaced</code></td><td><code>plain</code></td><td><code>--number-style</code></td></tr>
+            <tr><td><code>columns</code></td><td><code>full</code>, <code>numbers</code></td><td><code>full</code></td><td><code>--columns</code></td></tr>
+            <tr><td><code>numberHeader</code></td><td>text, up to 60 characters</td><td>key name</td><td><code>--header-name</code></td></tr>
+            <tr><td><code>header</code></td><td><code>true</code>, <code>false</code></td><td><code>true</code></td><td><code>--no-header</code></td></tr>
+            <tr><td><code>maxRows</code></td><td>whole number, <code>0</code> = all</td><td><code>0</code></td><td><code>--max-rows</code></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h2 id="rules">Validation rules</h2>
+      <p>
+        Digits are kept and a <code>+91</code>, <code>91</code> or leading <code>0</code> prefix is removed. A
+        valid number then has exactly 10 digits and starts with 6, 7, 8 or 9. With <code>strict</code> on,
+        dummy patterns such as <code>9999999999</code> and <code>1234567890</code> are rejected too.
+      </p>
+    </main>
+
+    <footer>
+      <span>Numsy <span data-version></span> · MIT · local server, no internet needed</span>
+      <a href="https://numsy.pages.dev/docs/web-ui/">Documentation</a>
+    </footer>
+    <script src="/assets/js/pages.js"></script>
+  </body>
 </html>

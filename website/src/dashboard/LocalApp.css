@@ -1,0 +1,101 @@
+/* Shell for `numsy dashboard` (no site navbar; nothing loads from the internet) */
+
+.local {
+  --nav-h: 64px;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.local__bar {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3) var(--space-5);
+  min-height: var(--nav-h);
+  padding: var(--space-2) var(--gutter);
+  background: var(--bg);
+  border-bottom: var(--border);
+}
+.local__brand {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  text-decoration: none;
+}
+.local__title {
+  font: 700 1.15rem / 1 var(--f-body);
+  letter-spacing: -0.01em;
+}
+.local__title span {
+  color: var(--muted);
+  font-weight: 500;
+}
+.local__badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: 0.3rem 0.55rem;
+  font: 700 0.7rem / 1 var(--f-mono);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  border: 2px solid var(--rule);
+}
+.local__dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--ok);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--ok) 25%, transparent);
+}
+.local__nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2) var(--space-4);
+  margin-left: auto;
+}
+.local__nav a {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font: 600 0.88rem / 1 var(--f-body);
+  text-decoration: none;
+}
+.local__nav a:hover {
+  text-decoration: underline;
+  text-decoration-color: var(--coral);
+}
+
+.local__main {
+  flex: 1;
+  width: 100%;
+  max-width: 1480px;
+  margin: 0 auto;
+  padding: var(--space-5) var(--gutter) var(--space-7);
+}
+
+.local__footer {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: var(--space-2) var(--space-5);
+  padding: var(--space-4) var(--gutter);
+  font: 0.8rem / 1.5 var(--f-mono);
+  color: var(--muted);
+  border-top: 1px solid var(--rule-soft);
+}
+.local__footer kbd {
+  padding: 0.05rem 0.35rem;
+  border: 1px solid var(--rule-soft);
+}
+
+@media (max-width: 720px) {
+  .local__nav {
+    order: 3;
+    width: 100%;
+    margin-left: 0;
+  }
+}

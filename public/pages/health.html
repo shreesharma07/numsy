@@ -1,64 +1,61 @@
 <!doctype html>
-<html lang="en">
-
-<head>
+<html lang="en-IN">
+  <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="Numsy API Health Check" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="Health of the local Numsy server." />
     <meta name="color-scheme" content="light dark" />
-    <title>Numsy Health Check</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link rel="shortcut icon"
-        href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>💚</text></svg>" />
-    <link
-        href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
-        rel="stylesheet" />
-    <script src="https://unpkg.com/lucide@latest"></script>
-    <link rel="stylesheet" href="/assets/css/health.css" />
-</head>
+    <meta name="robots" content="noindex" />
+    <title>Numsy: Health</title>
+    <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="/assets/css/pages.css" />
+  </head>
+  <body>
+    <header class="bar">
+      <a class="brand" href="/">
+        <svg width="32" height="32" viewBox="0 0 120 120" aria-hidden="true">
+          <rect width="120" height="120" rx="24" fill="#111" />
+          <path fill="#FF4D6D" d="M26,50 A24,24 0 0 1 50,26 L50,94 L26,94 Z" />
+          <path fill="#8338EC" d="M50,26 L70,56.9 L70,94 L50,63.1 Z" />
+          <path fill="#FFB703" d="M70,26 L94,26 L94,70 A24,24 0 0 1 70,94 Z" />
+        </svg>
+        Numsy <span>Health</span>
+      </a>
+      <nav aria-label="Server">
+        <a href="/">Dashboard</a>
+        <a href="/api">REST API</a>
+        <a href="/api/health-page" aria-current="page">Health</a>
+      </nav>
+      <button class="theme" id="themeToggle" type="button">Dark theme</button>
+    </header>
 
-<body>
-    <button class="theme-toggle" id="themeToggle">
-        <i data-lucide="moon"></i>
-        <span>Dark</span>
-    </button>
+    <main>
+      <p class="label">Local server</p>
+      <h1 id="title">Checking…</h1>
+      <p class="lede">Status of the Numsy server running on this computer.</p>
 
-    <div class="container">
-        <div class="card">
-            <i class="status-icon loading" data-lucide="activity" id="statusIcon"></i>
-            <h1 class="loading" id="statusTitle">Checking Health...</h1>
-            <p class="description" id="statusDescription">Connecting to Numsy API...</p>
+      <dl class="status" aria-live="polite">
+        <div><dt>Status</dt><dd id="status">…</dd></div>
+        <div><dt>Version</dt><dd id="version">…</dd></div>
+        <div><dt>Response time</dt><dd id="latency">…</dd></div>
+        <div><dt>Checked at</dt><dd id="checked">…</dd></div>
+      </dl>
+      <button class="btn" id="refresh" type="button">Check again</button>
 
-            <div class="info-grid" id="infoGrid" style="display: none;">
-                <div class="info-item">
-                    <span class="info-label">Status</span>
-                    <span class="info-value" id="statusValue">-</span>
-                </div>
-                <div class="info-item">
-                    <span class="info-label">Timestamp</span>
-                    <span class="info-value" id="timestampValue">-</span>
-                </div>
-                <div class="info-item">
-                    <span class="info-label">Response Time</span>
-                    <span class="info-value" id="responseTimeValue">-</span>
-                </div>
-            </div>
+      <div class="note" role="note">
+        <p>
+          Numsy processes your files on this computer only. It does not store them, never sells or shares them
+          with third parties, and never uses them for AI training.
+          <a href="https://numsy.pages.dev/privacy/">Privacy &amp; data disclaimer</a>
+        </p>
+      </div>
+    </main>
 
-            <div class="btn-group">
-                <a href="/" class="btn btn-primary">
-                    <i data-lucide="home"></i>
-                    Home
-                </a>
-                <button class="btn btn-secondary" onclick="checkHealth()">
-                    <i data-lucide="refresh-cw"></i>
-                    Refresh
-                </button>
-            </div>
-        </div>
-    </div>
-
+    <footer>
+      <span>Numsy <span data-version></span> · MIT · local server, no internet needed</span>
+      <a href="https://numsy.pages.dev/docs/web-ui/">Documentation</a>
+    </footer>
+    <script src="/assets/js/pages.js"></script>
     <script src="/assets/js/health.js"></script>
-</body>
-
+  </body>
 </html>

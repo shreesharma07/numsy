@@ -1,194 +1,24 @@
 <!doctype html>
-<html lang="en">
+<html lang="en-IN">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="Numsy — a lightweight number processor for Indian phone validation, sanitization, and CSV/Excel parsing." />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="color-scheme" content="light dark" />
-    <meta name="theme-color" content="#6366f1" />
-
-    <title>Numsy — Lightweight Number Processor</title>
-
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600;700;800&display=swap"
-      rel="stylesheet"
-    />
-
-    <link
-      rel="shortcut icon"
-      href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🔢</text></svg>"
-    />
-
-    <script src="https://unpkg.com/lucide@latest"></script>
-
-    <link rel="stylesheet" href="/assets/css/home.css" />
+    <meta name="robots" content="noindex" />
+    <title>Numsy: Dashboard not built</title>
+    <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="/assets/css/pages.css" />
   </head>
-
   <body>
-    <button class="chip theme-toggle" id="themeToggle" type="button" aria-label="Toggle theme">
-      <i data-lucide="moon"></i>
-      <span id="themeLabel">Dark</span>
-    </button>
-
-    <main class="container">
-      <div class="shell">
-        <header class="topbar">
-          <a class="brand" href="/">
-            <span class="brand-badge" aria-hidden="true">🔢</span>
-            <span class="brand-title">
-              <strong>Numsy</strong>
-              <span>Lightweight number processor</span>
-            </span>
-          </a>
-
-          <nav class="actions" aria-label="Primary">
-            <a class="chip primary" href="/" title="Open the web app">
-              <i data-lucide="rocket"></i>
-              <span>Open app</span>
-            </a>
-            <a class="chip" href="/api" title="API documentation">
-              <i data-lucide="book-open"></i>
-              <span>API</span>
-            </a>
-            <a class="chip" href="/api/health-page" title="Health check">
-              <i data-lucide="heart-pulse"></i>
-              <span>Health</span>
-            </a>
-            <a class="chip" href="https://www.npmjs.com/package/@numsy/numsy" target="_blank" rel="noreferrer">
-              <i data-lucide="package"></i>
-              <span>NPM</span>
-            </a>
-            <a class="chip" href="https://github.com/shreesharma07/numsy" target="_blank" rel="noreferrer">
-              <i data-lucide="github"></i>
-              <span>GitHub</span>
-            </a>
-          </nav>
-        </header>
-
-        <section class="hero" aria-label="Intro">
-          <h1>Process phone numbers with confidence.</h1>
-          <p>
-            <strong>Numsy</strong> is a lightweight TypeScript library + CLI that validates and sanitizes Indian phone
-            numbers, and helps you parse CSV/Excel files with automatic phone-column detection.
-          </p>
-
-          <div class="kpis" aria-label="Highlights">
-            <div class="kpi">
-              <strong>Indian mobile validation</strong>
-              <span>10 digits, starts with 6–9, smart sanitization.</span>
-            </div>
-            <div class="kpi">
-              <strong>CSV / Excel parsing</strong>
-              <span>Detects phone columns and supports bulk processing.</span>
-            </div>
-            <div class="kpi">
-              <strong>CLI + Web UI</strong>
-              <span>Run locally with <code>npx @numsy/numsy-serve</code>.</span>
-            </div>
-          </div>
-        </section>
-
-        <section class="grid" aria-label="Getting started">
-          <article class="card">
-            <h2><i data-lucide="zap"></i> Quick start</h2>
-
-            <div class="steps">
-              <div class="step">
-                <strong>1) Install</strong>
-                <span>Use your favorite package manager.</span>
-              </div>
-              <div class="step">
-                <strong>2) Validate</strong>
-                <span>Sanitize and validate Indian numbers in one call.</span>
-              </div>
-              <div class="step">
-                <strong>3) Process files</strong>
-                <span>Parse CSV/Excel and generate clean outputs + analytics.</span>
-              </div>
-            </div>
-
-            <div class="code" role="region" aria-label="Code snippet">
-              <header>
-                <span>TypeScript</span>
-                <a class="chip" href="https://github.com/shreesharma07/numsy#-quick-start" target="_blank" rel="noreferrer">
-                  <i data-lucide="external-link"></i>
-                  <span>Docs</span>
-                </a>
-              </header>
-              <pre><code>import Numsy from 'numsy';
-
-const numsy = new Numsy();
-
-numsy.validate('+91-987-654-3210');
-// { original, sanitized: '9876543210', isValid: true }
-</code></pre>
-            </div>
-          </article>
-
-          <aside class="card">
-            <h2><i data-lucide="user"></i> Author</h2>
-            <p style="color: var(--text-secondary); line-height: 1.7">
-              Built and maintained by <strong>Shri Kumar Sharma</strong>.
-              <span class="muted">(Links below can be updated anytime.)</span>
-            </p>
-
-            <div style="height: 0.75rem"></div>
-
-            <div class="social" aria-label="Author links">
-              <a href="https://github.com/shreesharma07" target="_blank" rel="noreferrer">
-                <i data-lucide="github"></i>
-                <span>GitHub</span>
-              </a>
-              <a href="https://www.linkedin.com/in/shreesharma07" target="_blank" rel="noreferrer">
-                <i data-lucide="linkedin"></i>
-                <span>LinkedIn</span>
-              </a>
-              <a href="https://twitter.com/shreesharma07" target="_blank" rel="noreferrer">
-                <i data-lucide="twitter"></i>
-                <span>Twitter</span>
-              </a>
-              <a href="https://shreesharma07.github.io" target="_blank" rel="noreferrer">
-                <i data-lucide="globe"></i>
-                <span>Portfolio</span>
-              </a>
-            </div>
-
-            <div style="height: 1rem"></div>
-
-            <h2><i data-lucide="link"></i> Project links</h2>
-            <div class="social" aria-label="Project links">
-              <a href="https://www.npmjs.com/package/@numsy/numsy" target="_blank" rel="noreferrer">
-                <i data-lucide="package"></i>
-                <span>NPM</span>
-              </a>
-              <a href="https://github.com/shreesharma07/numsy" target="_blank" rel="noreferrer">
-                <i data-lucide="git-branch"></i>
-                <span>Repo</span>
-              </a>
-              <a href="./docs/" target="_blank" rel="noreferrer">
-                <i data-lucide="file-text"></i>
-                <span>Docs</span>
-              </a>
-              <a href="https://github.com/shreesharma07/numsy/issues" target="_blank" rel="noreferrer">
-                <i data-lucide="bug"></i>
-                <span>Issues</span>
-              </a>
-            </div>
-          </aside>
-        </section>
-
-        <footer class="footer" aria-label="Footer">
-          <span>
-            © <span id="year"></span> Numsy • MIT Licensed
-            <span class="muted">• Built with TypeScript</span>
-          </span>
-          <span class="muted">Tip: use <code>npx @numsy/numsy-serve --page</code> to serve the UI locally.</span>
-        </footer>
-      </div>
+    <main>
+      <p class="label">Local server</p>
+      <h1>The dashboard has not been built</h1>
+      <p class="lede">
+        This copy of Numsy has no <code>dist/dashboard</code> bundle. Installs from npm always include it; from a
+        source checkout, run <code>pnpm build</code> and restart <code>numsy dashboard</code>.
+      </p>
+      <p>The <a href="/api">REST API</a> and the <code>numsy</code> CLI work without it.</p>
     </main>
-
-    <script src="/assets/js/home.js"></script>
+    <script src="/assets/js/pages.js"></script>
   </body>
 </html>
