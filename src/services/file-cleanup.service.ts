@@ -14,7 +14,7 @@ export class FileCleanupService implements OnModuleInit {
   private readonly uploadDir = path.join(process.cwd(), 'uploads');
   private readonly tempDir = path.join(process.cwd(), 'Temp');
   private readonly maxFileAge = 5 * 60 * 1000; // 5 minutes in milliseconds
-  private cleanupInterval: NodeJS.Timeout;
+  private cleanupInterval?: NodeJS.Timeout;
 
   /**
    * Called when the module is initialized
@@ -60,7 +60,7 @@ export class FileCleanupService implements OnModuleInit {
           }
         }
       } catch (error) {
-        this.logger.error(`Error flushing directory ${dir}:`, error.message);
+        this.logger.error(`Error flushing directory ${dir}:`, (error as Error).message);
       }
     }
 
@@ -121,7 +121,7 @@ export class FileCleanupService implements OnModuleInit {
           }
         }
       } catch (error) {
-        this.logger.error(`Error cleaning directory ${dir}:`, error.message);
+        this.logger.error(`Error cleaning directory ${dir}:`, (error as Error).message);
       }
     }
 

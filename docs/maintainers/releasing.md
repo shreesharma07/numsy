@@ -35,7 +35,7 @@ push to main → CI validates → semantic-release reads commits since the last 
 ```bash
 pnpm release:preview     # summarise the commits that will ship
 pnpm release:dry         # dry-run semantic-release (needs GITHUB_TOKEN)
-pnpm pack --dry-run      # inspect the tarball contents
+pnpm build && pnpm verify:package   # tarball must contain dist/ and nothing from website/ or src/
 ```
 
 ## Troubleshooting

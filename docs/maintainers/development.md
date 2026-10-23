@@ -6,8 +6,8 @@
 
 | Requirement | Version |
 | --- | --- |
-| Node.js | ≥ 18.3 (CI uses 24 for checks, 20 for releases) |
-| pnpm | 8 (`packageManager: pnpm@8.15.0`) |
+| Node.js | 24 for development (≥ 22.22 for commitlint and lint-staged); the package itself supports ≥ 20 |
+| pnpm | 12 (`packageManager: pnpm@12.15.0`); settings, overrides and build approvals live in `pnpm-workspace.yaml` |
 
 ```bash
 git clone https://github.com/shreesharma07/numsy.git && cd numsy
@@ -30,6 +30,7 @@ pnpm validate         # Biome + type-check + tests
 | Tests | `pnpm test` · `test:watch` · `test:cov` · `test:e2e` | Jest |
 | Security | `pnpm audit:check` · `pnpm snyk:test` | Dependency scans |
 | Release | `pnpm release:dry` · `release:preview` | Preview the next version |
+| | `pnpm verify:package` | Check the npm tarball: build output present, no `website/`, `src/`, `docs/` |
 | npm | `pnpm npm:check` · `npm:fix-cooldown` | Registry status / [cooldown fix](releasing.md#troubleshooting) |
 | Website | `pnpm --filter @numsy/website dev` | Docs site on Vite |
 

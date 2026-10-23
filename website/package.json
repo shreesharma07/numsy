@@ -13,20 +13,20 @@
     "check": "biome check ."
   },
   "dependencies": {
-    "@iconify/react": "6.0.2",
-    "motion": "12.43.0",
-    "react": "18.3.1",
-    "react-dom": "18.3.1",
+    "@iconify/react": "6.0.3",
+    "motion": "14.6.0",
+    "react": "19.3.1",
+    "react-dom": "19.3.1",
     "react-router-dom": "7.18.4"
   },
   "devDependencies": {
     "@iconify-json/ph": "1.2.2",
     "@types/node": "22.20.4",
-    "@types/react": "18.3.31",
-    "@types/react-dom": "18.3.7",
-    "@vitejs/plugin-react": "5.2.0",
-    "typescript": "5.9.3",
-    "vite": "7.3.6"
+    "@types/react": "19.3.0",
+    "@types/react-dom": "19.3.0",
+    "@vitejs/plugin-react": "6.1.2",
+    "typescript": "6.0.3",
+    "vite": "8.3.5"
   },
   "engines": {
     "node": ">=20.19"

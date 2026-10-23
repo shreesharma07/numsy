@@ -28,7 +28,7 @@
 
 ## <img src="assets/icons/setup.svg" width="22" alt="" /> Setup
 
-Requires **Node.js ≥ 18.3** and **pnpm 8**. Maintainer docs (architecture, CI/CD, releasing) live in [`docs/maintainers`](docs/README.md#maintaining-numsy).
+Requires **Node.js 24** (≥ 22.22 for the dev tooling) and **pnpm 12**. Maintainer docs (architecture, CI/CD, releasing) live in [`docs/maintainers`](docs/README.md#maintaining-numsy).
 
 ```bash
 git clone https://github.com/shreesharma07/numsy.git && cd numsy

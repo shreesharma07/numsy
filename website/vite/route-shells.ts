@@ -1,7 +1,7 @@
 import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import type { Plugin, ResolvedConfig } from 'vite';
-import { canonicalUrl, fullTitle, OG_IMAGE, type PageMeta, pages } from '../src/content/pages';
+import { canonicalUrl, fullTitle, OG_IMAGE, type PageMeta, pages } from '../src/content/pages.ts';
 
 /**
  * GitHub Pages has no SPA rewrites. Instead of the "?/" redirect hack we emit a real

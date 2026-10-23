@@ -16,7 +16,8 @@ import { FileCleanupService } from './services/file-cleanup.service';
     // Serve static files from the public directory
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '..', 'public'),
-      exclude: ['/api*'],
+      // Express 5 wildcard syntax: let the API routes handle everything under /api
+      exclude: ['/api/{*path}'],
     }),
   ],
   controllers: [AppController],

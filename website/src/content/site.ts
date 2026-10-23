@@ -17,7 +17,7 @@ export const pkg = {
   /** Shown until the npm registry answers */
   fallbackVersion: '1.2.0',
   license: 'MIT',
-  node: '18',
+  node: '20',
   install: {
     npm: 'npm i @numsy/numsy',
     pnpm: 'pnpm add @numsy/numsy',

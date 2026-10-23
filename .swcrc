@@ -14,8 +14,7 @@
     "target": "es2021",
     "loose": false,
     "externalHelpers": false,
-    "keepClassNames": true,
-    "baseUrl": "./"
+    "keepClassNames": true
   },
   "module": {
     "type": "commonjs",

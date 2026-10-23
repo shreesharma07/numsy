@@ -1,3 +1,45 @@
 packages:
   - '.'
   - 'website'
+
+# Install settings (moved from .npmrc)
+autoInstallPeers: true
+strictPeerDependencies: false
+shamefullyHoist: false
+
+# Security pins for vulnerable transitive dependencies
+overrides:
+  "path-to-regexp@>=0.2.0 <1.9.0": ">=1.9.0"
+  "cross-spawn@<6.0.6": ">=6.0.6"
+  "tmp@<=0.2.3": ">=0.2.4"
+  "glob@>=10.2.0 <10.5.0": ">=10.5.0"
+  "webpack@>=5.49.0 <=5.104.0": ">=5.104.1"
+  "webpack@>=5.49.0 <5.104.0": ">=5.104.0"
+  "minimatch@>=9.0.0 <9.0.6": ">=9.0.6"
+  "minimatch@>=9.0.0 <9.0.7": ">=9.0.7"
+  "multer@<2.1.0": ">=2.1.0"
+  "ajv@>=7.0.0-alpha.0 <8.18.0": ">=8.18.0"
+  "multer@<2.1.1": ">=2.1.1"
+  "uuid@<11.1.1": ">=11.1.1 <12"
+minimumReleaseAgeExclude:
+  - "@swc/core-darwin-arm64@1.16.20"
+  - "@swc/core-darwin-x64@1.16.20"
+  - "@swc/core-linux-arm-gnueabihf@1.16.20"
+  - "@swc/core-linux-arm64-gnu@1.16.20"
+  - "@swc/core-linux-arm64-musl@1.16.20"
+  - "@swc/core-linux-ppc64-gnu@1.16.20"
+  - "@swc/core-linux-s390x-gnu@1.16.20"
+  - "@swc/core-linux-x64-gnu@1.16.20"
+  - "@swc/core-linux-x64-musl@1.16.20"
+  - "@swc/core-win32-arm64-msvc@1.16.20"
+  - "@swc/core-win32-ia32-msvc@1.16.20"
+  - "@swc/core-win32-x64-msvc@1.16.20"
+  - "@swc/core@1.16.20"
+  - multer@2.5.0
+allowBuilds:
+  '@nestjs/core': false
+  '@parcel/watcher': false
+  '@swc/core': true
+  esbuild: true
+  snyk: true
+  unrs-resolver: false
