@@ -181,5 +181,21 @@ describe('numsy CLI', () => {
       expect(await run(['process', 'leads.csv', '-c', 'Phone'], badColumn.io)).toBe(EXIT.ERROR);
       expect(badColumn.stderr()).toContain('Column "Phone" not found');
     });
+
+    it('strips terminal escape sequences from file contents in the table', async () => {
+      fs.writeFileSync(
+        path.join(dir, 'evil.csv'),
+        'Name,phone\n"\x1b[2J\x1b[31mEve\x1b]0;pwned\x07",9876501234\n',
+      );
+      const { io, stdout } = createIO(dir);
+      await run(['process', 'evil.csv', '--limit', '0'], io);
+      // Only newlines may remain; ESC, BEL and other control characters must be gone
+      const controls = [...stdout()].filter((ch) => {
+        const code = ch.charCodeAt(0);
+        return ch !== '\n' && (code < 0x20 || (code >= 0x7f && code <= 0x9f));
+      });
+      expect(controls).toEqual([]);
+      expect(stdout()).toContain('Eve');
+    });
   });
 });

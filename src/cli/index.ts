@@ -26,6 +26,7 @@ import {
   emit,
   formatSummary,
   shouldUseColor,
+  toTerminalSafe,
 } from './output';
 
 /**
@@ -498,7 +499,9 @@ export async function run(argv: string[], io: CliIO): Promise<number> {
         : error instanceof AppError
           ? err.message
           : `Unexpected error: ${err.message}`;
-    io.stderr.write(`${paint.bad('✖')} ${message}\n`);
+    // Messages can echo file contents (e.g. column names), so strip control characters per line
+    const safe = message.split('\n').map(toTerminalSafe).join('\n');
+    io.stderr.write(`${paint.bad('✖')} ${safe}\n`);
     return EXIT.ERROR;
   }
 }

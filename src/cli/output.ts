@@ -106,8 +106,19 @@ const MAX_CELL = 42;
 // biome-ignore lint/suspicious/noControlCharactersInRegex: strips ANSI colour escapes
 const visibleLength = (text: string) => text.replace(/\x1b\[[0-9;]*m/g, '').length;
 
-const truncate = (text: string) =>
-  text.length > MAX_CELL ? `${text.slice(0, MAX_CELL - 1)}…` : text;
+// biome-ignore lint/suspicious/noControlCharactersInRegex: matching control characters is the point
+const CONTROL_CHARS = /[\u0000-\u001f\u007f-\u009f]/g;
+
+/**
+ * Removes C0/C1 control characters (ESC, CSI, BEL, newlines...) from untrusted text so file
+ * contents can't inject terminal escape sequences. Colour codes are added after this step.
+ */
+export const toTerminalSafe = (text: string): string => text.replace(CONTROL_CHARS, ' ');
+
+const truncate = (text: string) => {
+  const safe = toTerminalSafe(text);
+  return safe.length > MAX_CELL ? `${safe.slice(0, MAX_CELL - 1)}…` : safe;
+};
 
 /**
  * Renders rows as a box-drawn table with a summary line
@@ -115,7 +126,7 @@ const truncate = (text: string) =>
 export function renderTable(dataset: Dataset, paint: Paint, limit: number): string {
   const columns = dataset.tableColumns ?? collectColumns(dataset.rows);
   const shown = limit > 0 ? dataset.rows.slice(0, limit) : dataset.rows;
-  const header = ['#', ...columns];
+  const header = ['#', ...columns.map(truncate)];
 
   const body = shown.map((row, index) => [
     String(index + 1),
@@ -138,7 +149,7 @@ export function renderTable(dataset: Dataset, paint: Paint, limit: number): stri
 
   const out: string[] = [];
   out.push('');
-  out.push(`  ${paint.bold(paint.violet('■'))} ${paint.bold(dataset.title)}`);
+  out.push(`  ${paint.bold(paint.violet('■'))} ${paint.bold(toTerminalSafe(dataset.title))}`);
   out.push(`  ${formatSummary(dataset.summary, paint)}`);
   out.push('');
 
@@ -172,7 +183,7 @@ export function formatSummary(summary: Record<string, string | number>, paint: P
   return Object.entries(summary)
     .map(([key, value]) => {
       const lower = key.toLowerCase();
-      const text = String(value);
+      const text = toTerminalSafe(String(value));
       const colored = lower.startsWith('valid')
         ? paint.ok(text)
         : lower.startsWith('invalid')
