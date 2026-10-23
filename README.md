@@ -1,5 +1,5 @@
 <p align="center">
-  <a href="https://shreesharma07.github.io/numsy/">
+  <a href="https://numsy.pages.dev/">
     <picture>
       <source media="(prefers-color-scheme: dark)" srcset="assets/brand/numsy-banner-dark.svg" />
       <img src="assets/brand/numsy-banner.svg" alt="Numsy — validate, sanitize and extract Indian mobile numbers" width="100%" />
@@ -17,7 +17,7 @@
 </p>
 
 <p align="center">
-  <a href="https://shreesharma07.github.io/numsy/"><b>Website</b></a> ·
+  <a href="https://numsy.pages.dev/"><b>Website</b></a> ·
   <a href="CONTRIBUTING.md">Contributing</a> ·
   <a href="CODE_OF_CONDUCT.md">Code of Conduct</a> ·
   <a href="SECURITY.md">Security</a> ·
@@ -51,8 +51,8 @@ numsy.validate('+91 98765 01234'); // → { sanitized: '9876501234', isValid: tr
 
 | | |
 | --- | --- |
-| **Website** | [Getting started](https://shreesharma07.github.io/numsy/docs/) · [CLI](https://shreesharma07.github.io/numsy/docs/cli/) · [API](https://shreesharma07.github.io/numsy/docs/api/) · [Formats](https://shreesharma07.github.io/numsy/docs/formats/) · [FAQ](https://shreesharma07.github.io/numsy/docs/faq/) |
-| **Try it** | [Playground](https://shreesharma07.github.io/numsy/playground/): runs in your browser, nothing is uploaded |
+| **Website** | [Getting started](https://numsy.pages.dev/docs/) · [CLI](https://numsy.pages.dev/docs/cli/) · [API](https://numsy.pages.dev/docs/api/) · [Formats](https://numsy.pages.dev/docs/formats/) · [FAQ](https://numsy.pages.dev/docs/faq/) |
+| **Try it** | [Playground](https://numsy.pages.dev/playground/): runs in your browser, nothing is uploaded |
 | **In this repo** | [`docs/`](docs/README.md): [CLI](docs/guides/cli.md) · [Library](docs/guides/library.md) · [REST API](docs/guides/rest-api.md) |
 
 ## <img src="assets/icons/community.svg" width="22" alt="" /> Community

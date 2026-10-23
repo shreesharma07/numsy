@@ -122,7 +122,7 @@ Environment Variables:
   PORT                    Override default port
   NODE_ENV                Set environment (development/production)
 
-Docs: https://shreesharma07.github.io/numsy/
+Docs: https://numsy.pages.dev/
 `);
 }
 

@@ -7,7 +7,7 @@
     <a href="CONTRIBUTING.md">Contributing</a> ·
     <a href="CODE_OF_CONDUCT.md">Code of Conduct</a> ·
     <a href="SECURITY.md"><b>Security</b></a> ·
-    <a href="https://shreesharma07.github.io/numsy/">Website</a>
+    <a href="https://numsy.pages.dev/">Website</a>
   </p>
 </div>
 

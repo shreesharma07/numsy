@@ -1,7 +1,7 @@
 <div align="center">
   <img src="../assets/brand/numsy-mark.svg" width="56" alt="Numsy" />
   <h1>Numsy Docs</h1>
-  <p>Reference for using and maintaining Numsy. The polished version lives on the <a href="https://shreesharma07.github.io/numsy/">website</a>.</p>
+  <p>Reference for using and maintaining Numsy. The polished version lives on the <a href="https://numsy.pages.dev/">website</a>.</p>
 </div>
 
 ---

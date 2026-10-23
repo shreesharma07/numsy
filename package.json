@@ -64,7 +64,7 @@
   "bugs": {
     "url": "https://github.com/shreesharma07/numsy/issues"
   },
-  "homepage": "https://shreesharma07.github.io/numsy/",
+  "homepage": "https://numsy.pages.dev/",
   "engines": {
     "node": ">=20"
   },

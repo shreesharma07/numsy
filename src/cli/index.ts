@@ -133,7 +133,7 @@ ${p.bold('Examples')}
   ${p.dim('$')} numsy process leads.csv --only unique -o unique.csv
   ${p.dim('$')} numsy process leads.csv -f xlsx --country-code --fail-on-invalid
 
-${p.dim('Docs: https://shreesharma07.github.io/numsy/')}
+${p.dim('Docs: https://numsy.pages.dev/')}
 `;
 
 /**
