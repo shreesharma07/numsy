@@ -8,6 +8,7 @@
 | --- | --- | --- |
 | `main.yml` | push to `main`/`develop`, PRs to `main`, manual | Validate, scan, build, release |
 | `security.yml` | weekly (Mon 03:00 UTC) | `pnpm audit`, Snyk, CodeQL |
+| `pages.yml` | changes under `website/`, `assets/brand/` or the lockfile on `main`; manual | Build `website/` and deploy it to GitHub Pages |
 
 ## `main.yml` jobs
 
@@ -27,3 +28,9 @@
 | `CODECOV_TOKEN` | optional | Coverage upload |
 
 Add them under **Settings → Secrets and variables → Actions**.
+
+## GitHub Pages
+
+`pages.yml` builds `website/` and deploys it with `actions/deploy-pages`. Every action is pinned to a commit SHA, and only the deploy job gets `pages: write` + `id-token: write`.
+
+One-time setup: **Settings → Pages → Source: GitHub Actions**.
