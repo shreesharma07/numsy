@@ -51,3 +51,7 @@ codecov.exe
 .env
 # release tarballs written by semantic-release (tarballDir)
 /release
+
+# Playwright output (never committed: tests may read private files)
+/test-results
+/playwright-report

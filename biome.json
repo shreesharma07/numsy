@@ -10,6 +10,8 @@
       "src/**",
       "test/**",
       "scripts/**",
+      "playwright.config.ts",
+      "e2e/**",
       "website/**",
       "*.json",
       "*.js",
