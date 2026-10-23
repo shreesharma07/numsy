@@ -92,8 +92,8 @@
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
-    "prepare": "husky install",
-    "prepublishOnly": "pnpm run build",
+    "prepare": "husky",
+    "prepublishOnly": "pnpm run build && pnpm run verify:package",
     "version": "pnpm run format && git add -A src",
     "postversion": "git push && git push --tags",
     "audit:fix": "pnpm audit --fix",
@@ -113,7 +113,8 @@
     "npm:fix-cooldown": "node scripts/fix-npm-cooldown.js",
     "cli": "ts-node src/cli/index.ts",
     "check": "biome check --write .",
-    "check:ci": "biome ci ."
+    "check:ci": "biome ci .",
+    "verify:package": "node scripts/verify-package.js"
   },
   "dependencies": {
     "@nestjs/common": "^10.4.22",
