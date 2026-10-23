@@ -1,6 +1,7 @@
 import {
   analyzeRows,
   checkNumber,
+  detectPhoneColumn,
   extractNumbers,
   formatNumber,
   parseCsv,
@@ -75,6 +76,16 @@ describe('analyzeRows', () => {
     expect(analyzeRows(rows, { multiple: 'first' }).validRows).toHaveLength(4);
     const skipped = analyzeRows(rows, { skipEmpty: true });
     expect(skipped.invalidRows.map((r) => r.Name)).toEqual(['E']);
+  });
+
+  it('prefers the hinted column that actually holds numbers', () => {
+    const data = [
+      { Contact: 'Asha', Alt: '98765 01234', 'Phone Type': 'mobile' },
+      { Contact: 'Ravi', Alt: '+91 91234 56789', 'Phone Type': 'home' },
+    ];
+    expect(detectPhoneColumn(data)).toBe('Alt');
+    expect(detectPhoneColumn([{ Phone: '', Name: 'x' }])).toBe('Phone');
+    expect(detectPhoneColumn([{ City: 'Pune' }])).toBeNull();
   });
 
   it('honours an explicit phone column and disables names with null', () => {

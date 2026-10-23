@@ -21,27 +21,43 @@ const PHONE_HINTS = [
 /** Rows sampled when looking for phone-like values */
 const CONTENT_SAMPLE = 25;
 
+/** How many of the sampled rows hold a phone-like value (10+ digits) in a column */
+const phoneLikeCount = (sample: ParsedDataRow[], key: string) =>
+  sample.filter((row) => {
+    const value = row[key];
+    const text = typeof value === 'number' ? String(value) : value;
+    return isNonEmptyString(text) && sanitizePhoneNumber(text).length >= 10;
+  }).length;
+
+/** The column with the most phone-like values, or null when none has any */
+const bestByContent = (sample: ParsedDataRow[], keys: string[]) => {
+  let best: string | null = null;
+  let bestCount = 0;
+  for (const key of keys) {
+    const count = phoneLikeCount(sample, key);
+    if (count > bestCount) {
+      best = key;
+      bestCount = count;
+    }
+  }
+  return best;
+};
+
 /**
- * Finds the phone column: first by header name, then by phone-like values in the first rows
+ * Finds the phone column. Header hints ("phone", "mobile", "contact"…) come first, but a hinted
+ * column must also hold phone-like values, so a "Contact" column of names loses to the numbers.
+ * Then any column with phone-like values; finally the first hinted header.
  */
 export function detectPhoneColumn(data: ParsedDataRow[]): string | null {
   if (!Array.isArray(data) || data.length === 0) return null;
   const keys = Object.keys(data[0]);
-
-  for (const key of keys) {
+  const sample = data.slice(0, CONTENT_SAMPLE);
+  const hinted = keys.filter((key) => {
     const keyLower = key.toLowerCase().trim();
-    if (PHONE_HINTS.some((hint) => keyLower.includes(hint))) return key;
-  }
+    return PHONE_HINTS.some((hint) => keyLower.includes(hint));
+  });
 
-  for (const row of data.slice(0, CONTENT_SAMPLE)) {
-    for (const key of keys) {
-      const value = row[key];
-      const text = typeof value === 'number' ? String(value) : value;
-      if (isNonEmptyString(text) && sanitizePhoneNumber(text).length >= 10) return key;
-    }
-  }
-
-  return null;
+  return bestByContent(sample, hinted) ?? bestByContent(sample, keys) ?? hinted[0] ?? null;
 }
 
 /**
