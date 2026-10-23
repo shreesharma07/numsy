@@ -2,6 +2,28 @@
 
 All notable changes to this project will be documented in this file. See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.1.0](https://github.com/shreesharma07/numsy/compare/v2.0.0...v2.1.0) (2026-10-23)
+
+### ✨ Features
+
+* **cli:** add filter and output flags and the `numsy dashboard` command ([1bc9add](https://github.com/shreesharma07/numsy/commit/1bc9add50e39f8c14d8b57af124b6f4cbf10e5c7))
+* **dashboard:** add the dashboard UI shared by `numsy dashboard` and the playground ([88d086a](https://github.com/shreesharma07/numsy/commit/88d086a9beb0772bce3edba7ae36e072fbb12c5a))
+* **engine:** add a browser-safe `src/engine` shared by library, CLI and UI ([0fc26cc](https://github.com/shreesharma07/numsy/commit/0fc26cc12e4adacdb8de769ea7a8c917b6738490))
+* **package:** export the browser-safe engine as `numsy/engine` ([ea68be0](https://github.com/shreesharma07/numsy/commit/ea68be0563ea7e189e2a675c2839aeb64efe0659))
+* **package:** publish as `numsy` with the local dashboard bundled ([7109cf8](https://github.com/shreesharma07/numsy/commit/7109cf83d22a2be8ea90897d6023d7a2cbc16a52))
+* **server:** serve the dashboard on `localhost:6789` with a session-based REST API ([5605340](https://github.com/shreesharma07/numsy/commit/56053400bb6f6e068a45e6e544bb596b031f2f31))
+* **website:** run the playground on the shared dashboard and add a privacy page ([ec28c41](https://github.com/shreesharma07/numsy/commit/ec28c41d6a164d0b67ee5cf40a858b00c4a687a5))
+
+### 🐛 Bug Fixes
+
+* **engine:** pick the hinted phone column that actually holds numbers ([0bdbfa3](https://github.com/shreesharma07/numsy/commit/0bdbfa3796fe68c7578e59d5c756ca32382ffc8b))
+* **server:** keep legacy upload scratch files in a private per-process directory ([f2ed80b](https://github.com/shreesharma07/numsy/commit/f2ed80be0aa026c79db155aa1030a858a62413f8))
+
+### 📚 Documentation
+
+* add the Socket security badge to README and SECURITY ([6e89d86](https://github.com/shreesharma07/numsy/commit/6e89d8694954651f75782ac798e99c332db7d0fe))
+* document `numsy`, the local dashboard, filters, performance and privacy ([5fab9a2](https://github.com/shreesharma07/numsy/commit/5fab9a2975d3412777e2d0267d14ada4c4ceddd7))
+
 ## [2.0.0](https://github.com/shreesharma07/numsy/compare/v1.1.0...v2.0.0) (2026-10-23)
 
 ### ⚠ BREAKING CHANGES
