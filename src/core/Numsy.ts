@@ -68,6 +68,21 @@ export class Numsy {
   }
 
   /**
+   * Parse file contents already in memory (an upload, a fetch response); fileName picks CSV or Excel
+   */
+  async parseBuffer(
+    buffer: Buffer | ArrayBuffer | Uint8Array,
+    fileName: string,
+  ): Promise<FileParseResult> {
+    try {
+      return await this.parser.parseBuffer(buffer, fileName);
+    } catch (error) {
+      this.logger.error('Error parsing buffer', String(error));
+      throw error;
+    }
+  }
+
+  /**
    * Analyse a file in memory: validated rows, invalid rows, unique numbers and analytics
    */
   async analyzeFile(filePath: string, options?: AnalyzeOptions): Promise<AnalysisReport> {
@@ -94,9 +109,13 @@ export class Numsy {
   /**
    * Process a file and write the ZIP report bundle to disk
    */
-  async processFile(filePath: string, outputDir?: string): Promise<ProcessingResult> {
+  async processFile(
+    filePath: string,
+    outputDir?: string,
+    options?: AnalyzeOptions,
+  ): Promise<ProcessingResult> {
     try {
-      return await this.processor.processFile(filePath, outputDir);
+      return await this.processor.processFile(filePath, outputDir, options);
     } catch (error) {
       this.logger.error('Error processing file', String(error));
       throw error;

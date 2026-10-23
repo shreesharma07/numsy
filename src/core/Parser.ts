@@ -5,7 +5,6 @@
 
 import * as fs from 'node:fs';
 import * as path from 'node:path';
-import csv from 'csv-parser';
 import * as ExcelJS from 'exceljs';
 import { createObjectCsvWriter } from 'csv-writer';
 import { ParsedDataRow, FileParseResult, ParserOptions } from '../common/interfaces';
@@ -17,25 +16,13 @@ import {
   validateFileExtension,
 } from '../common/helpers';
 import { getFileExtension } from '../common/functions';
+import { parseCsv } from '../engine/csv';
+import { worksheetToRows } from '../engine/workbook';
 import {
   SUPPORTED_FILE_EXTENSIONS,
   normalizeDataRows,
   detectPhoneColumn,
 } from '../common/functions';
-
-/**
- * Flattens an ExcelJS cell value (rich text, hyperlink, formula, date) into a primitive
- */
-function cellToValue(value: any): string | number | boolean {
-  if (value === undefined || value === null) return '';
-  if (value instanceof Date) return value.toISOString();
-  if (typeof value !== 'object') return value;
-  if (Array.isArray(value.richText)) return value.richText.map((r: any) => r.text).join('');
-  if ('text' in value) return cellToValue(value.text);
-  if ('result' in value) return cellToValue(value.result);
-  if ('error' in value) return '';
-  return String(value);
-}
 
 /**
  * Parser class for file parsing operations
@@ -68,36 +55,28 @@ export class Parser {
    * Parses a file based on its extension
    */
   async parseFile(filePath: string): Promise<FileParseResult> {
+    if (!fileExists(filePath)) {
+      throw new AppError(`File not found: ${filePath}`, 'FILE_NOT_FOUND');
+    }
+    this.assertSupported(filePath);
+    this.logger.log(`Parsing file: ${filePath}`);
+    return this.parseBuffer(await fs.promises.readFile(filePath), filePath);
+  }
+
+  /**
+   * Parses file contents already in memory (e.g. an upload); fileName decides CSV vs Excel
+   */
+  async parseBuffer(
+    buffer: Buffer | ArrayBuffer | Uint8Array,
+    fileName: string,
+  ): Promise<FileParseResult> {
     try {
-      // Validate file exists
-      if (!fileExists(filePath)) {
-        throw new AppError(`File not found: ${filePath}`, 'FILE_NOT_FOUND');
-      }
-
-      // Validate file extension
-      const extension = getFileExtension(filePath);
-      if (!validateFileExtension(filePath, SUPPORTED_FILE_EXTENSIONS)) {
-        throw new AppError(
-          `Unsupported file format: ${extension}. Supported: ${SUPPORTED_FILE_EXTENSIONS.join(', ')}`,
-          'UNSUPPORTED_FORMAT',
-        );
-      }
-
-      this.logger.log(`Parsing file: ${filePath} (type: ${extension})`);
-
-      let result: FileParseResult;
-
-      switch (extension) {
-        case 'csv':
-          result = await this.parseCsv(filePath);
-          break;
-        case 'xlsx':
-        case 'xls':
-          result = await this.parseExcel(filePath);
-          break;
-        default:
-          throw new AppError(`Unsupported file format: ${extension}`, 'UNSUPPORTED_FORMAT');
-      }
+      const extension = this.assertSupported(fileName);
+      const bytes = Buffer.isBuffer(buffer) ? buffer : Buffer.from(buffer as ArrayBuffer);
+      const result =
+        extension === 'csv'
+          ? this.parseCsvText(bytes.toString('utf-8'))
+          : await this.parseExcel(bytes, extension);
 
       // Normalize columns if enabled
       if (this.options.normalizeColumns && result.data.length > 0) {
@@ -108,10 +87,7 @@ export class Parser {
       return result;
     } catch (error) {
       this.logger.error('Error parsing file', String(error));
-      if (this.options.throwOnError) {
-        throw error;
-      }
-      if (error instanceof AppError) {
+      if (this.options.throwOnError || error instanceof AppError) {
         throw error;
       }
       throw new AppError('Failed to parse file', 'PARSE_ERROR');
@@ -119,93 +95,58 @@ export class Parser {
   }
 
   /**
-   * Parses a CSV file
+   * Throws UNSUPPORTED_FORMAT unless the name ends in a supported extension; returns the extension
    */
-  private async parseCsv(filePath: string): Promise<FileParseResult> {
-    return new Promise((resolve, reject) => {
-      const data: ParsedDataRow[] = [];
-      let detectedColumns: string[] = [];
-
-      try {
-        fs.createReadStream(filePath)
-          .pipe(csv())
-          .on('headers', (headers: string[]) => {
-            detectedColumns = headers;
-            this.logger.debug(`Detected CSV columns: ${headers.join(', ')}`);
-          })
-          .on('data', (row) => {
-            data.push(row);
-          })
-          .on('end', () => {
-            this.logger.log(`CSV parsing complete: ${data.length} rows`);
-            resolve({
-              data,
-              totalRows: data.length,
-              detectedColumns,
-            });
-          })
-          .on('error', (error) => {
-            this.logger.error(`CSV parsing error: ${error.message}`);
-            reject(new AppError('CSV parsing failed', 'CSV_PARSE_ERROR'));
-          });
-      } catch (error) {
-        this.logger.error('CSV parsing error', String(error));
-        reject(new AppError('CSV parsing failed', 'CSV_PARSE_ERROR'));
-      }
-    });
+  private assertSupported(fileName: string): string {
+    const extension = getFileExtension(fileName);
+    if (!validateFileExtension(fileName, SUPPORTED_FILE_EXTENSIONS)) {
+      throw new AppError(
+        `Unsupported file format: ${extension || 'none'}. Supported: ${SUPPORTED_FILE_EXTENSIONS.join(', ')}`,
+        'UNSUPPORTED_FORMAT',
+      );
+    }
+    return extension;
   }
 
   /**
-   * Parses an Excel file
+   * Parses CSV text (delimiter, quotes and BOM handled by the shared engine)
    */
-  private async parseExcel(filePath: string): Promise<FileParseResult> {
+  private parseCsvText(text: string): FileParseResult {
     try {
-      const workbook = new ExcelJS.Workbook();
-      await workbook.xlsx.readFile(filePath);
+      const result = parseCsv(text);
+      this.logger.debug(`Detected CSV columns: ${result.detectedColumns.join(', ')}`);
+      this.logger.log(`CSV parsing complete: ${result.totalRows} rows`);
+      return result;
+    } catch (error) {
+      this.logger.error('CSV parsing error', String(error));
+      throw new AppError('CSV parsing failed', 'CSV_PARSE_ERROR');
+    }
+  }
 
-      const worksheet = workbook.worksheets[0];
-
-      if (!worksheet) throw new AppError('No worksheet found in Excel file', 'EXCEL_PARSE_ERROR');
-
-      const data: ParsedDataRow[] = [];
-      const detectedColumns: string[] = [];
-      let headerRow: any[] = [];
-
-      // Process rows
-      worksheet.eachRow((row, rowNumber) => {
-        if (rowNumber === 1) {
-          // First row is header
-          headerRow = row.values as any[];
-          // Remove the first empty element that ExcelJS adds
-          headerRow.shift();
-          headerRow = headerRow.map((h) => cellToValue(h));
-          detectedColumns.push(...headerRow.map((h) => String(h || '')));
-        } else {
-          // Data rows
-          const rowData: ParsedDataRow = {};
-          const values = row.values as any[];
-          // Remove the first empty element
-          values.shift();
-
-          headerRow.forEach((header, index) => {
-            if (header) rowData[String(header)] = cellToValue(values[index]);
-          });
-          data.push(rowData);
-        }
-      });
-
-      this.logger.log(`Excel parsing complete: ${data.length} rows`);
-      this.logger.debug(`Detected Excel columns: ${detectedColumns.join(', ')}`);
-
-      return {
-        data,
-        totalRows: data.length,
-        detectedColumns,
-      };
+  /**
+   * Parses an Excel workbook (first worksheet, first row as headers)
+   */
+  private async parseExcel(bytes: Buffer, extension: string): Promise<FileParseResult> {
+    const workbook = new ExcelJS.Workbook();
+    try {
+      await workbook.xlsx.load(bytes as any);
     } catch (error) {
       this.logger.error('Excel parsing error', String(error));
-      throw new AppError('Excel parsing failed', 'EXCEL_PARSE_ERROR');
+      throw new AppError(
+        extension === 'xls'
+          ? 'Could not read this .xls file. Legacy Excel 97-2003 files are not supported: save it as .xlsx or .csv'
+          : 'Excel parsing failed: the file is not a valid .xlsx workbook (it may be truncated or corrupted; try re-saving it in Excel)',
+        'EXCEL_PARSE_ERROR',
+      );
     }
+
+    const worksheet = workbook.worksheets[0];
+    if (!worksheet) throw new AppError('No worksheet found in Excel file', 'EXCEL_PARSE_ERROR');
+
+    const result = worksheetToRows(worksheet);
+    this.logger.log(`Excel parsing complete: ${result.totalRows} rows`);
+    this.logger.debug(`Detected Excel columns: ${result.detectedColumns.join(', ')}`);
+    return result;
   }
 
   /**

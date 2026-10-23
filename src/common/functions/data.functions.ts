@@ -5,7 +5,7 @@
 
 import { ParsedDataRow } from '../interfaces';
 import { COLUMN_ALIASES } from './constants';
-import { isNonEmptyString, isValidArray } from '../helpers';
+import { isNonEmptyString, isValidArray } from '../helpers/validation.helper';
 
 /**
  * Finds a matching field name from a list of aliases

@@ -6,6 +6,11 @@
 import * as path from 'node:path';
 import * as ExcelJS from 'exceljs';
 import { ensureDirectory } from '../helpers';
+import { XlsxSheet } from '../../engine/serialize';
+import { buildWorkbook } from '../../engine/workbook';
+
+export { collectColumns, toCSV, toJSON, toMarkdown, toText } from '../../engine/serialize';
+export type { XlsxSheet } from '../../engine/serialize';
 
 /**
  * Output formats understood by the exporters and the CLI
@@ -55,169 +60,24 @@ export function formatFromExtension(filePath: string): OutputFormat | null {
 }
 
 /**
- * Collects the union of keys across rows, preserving first-seen order
- */
-export function collectColumns(rows: Record<string, any>[]): string[] {
-  const columns = new Set<string>();
-  for (const row of rows) {
-    for (const key of Object.keys(row)) columns.add(key);
-  }
-  return Array.from(columns);
-}
-
-const stringify = (value: any): string => {
-  if (value === undefined || value === null) return '';
-  if (value instanceof Date) return value.toISOString();
-  if (typeof value === 'object') return JSON.stringify(value);
-  return String(value);
-};
-
-/**
- * Serialises any value to JSON
- */
-export function toJSON(data: unknown, options?: { pretty?: boolean }): string {
-  return JSON.stringify(data, null, options?.pretty === false ? undefined : 2);
-}
-
-/**
- * Guards against CSV formula injection while leaving phone numbers like "+91 98765 43210" intact
- */
-const neutraliseFormula = (value: string): string => {
-  if (/^[=@\t\r]/.test(value)) return `'${value}`;
-  if (/^[+-]/.test(value) && !/^[+-][\d\s().-]*$/.test(value)) return `'${value}`;
-  return value;
-};
-
-/**
- * Serialises rows to RFC 4180 CSV
- */
-export function toCSV(
-  rows: Record<string, any>[],
-  options?: { columns?: string[]; delimiter?: string },
-): string {
-  const columns = options?.columns ?? collectColumns(rows);
-  const delimiter = options?.delimiter ?? ',';
-  const escapeCell = (value: any): string => {
-    const text = neutraliseFormula(stringify(value));
-    return /["\r\n]/.test(text) || text.includes(delimiter)
-      ? `"${text.replace(/"/g, '""')}"`
-      : text;
-  };
-
-  const lines = [columns.map(escapeCell).join(delimiter)];
-  for (const row of rows) {
-    lines.push(columns.map((column) => escapeCell(row[column])).join(delimiter));
-  }
-  return `${lines.join('\r\n')}\r\n`;
-}
-
-/**
- * Serialises rows to a Markdown document with an optional title and summary list
- */
-export function toMarkdown(
-  rows: Record<string, any>[],
-  options?: {
-    columns?: string[];
-    title?: string;
-    summary?: Record<string, string | number>;
-  },
-): string {
-  const columns = options?.columns ?? collectColumns(rows);
-  const cell = (value: any) => stringify(value).replace(/\|/g, '\\|').replace(/\r?\n/g, '<br>');
-  const parts: string[] = [];
-
-  if (options?.title) parts.push(`# ${options.title}`, '');
-
-  if (options?.summary) {
-    parts.push('| Metric | Value |', '| --- | ---: |');
-    for (const [key, value] of Object.entries(options.summary)) {
-      parts.push(`| ${cell(key)} | ${cell(value)} |`);
-    }
-    parts.push('');
-  }
-
-  if (columns.length === 0) {
-    parts.push('_No rows._');
-  } else {
-    parts.push(`| ${columns.map(cell).join(' | ')} |`);
-    parts.push(`| ${columns.map(() => '---').join(' | ')} |`);
-    for (const row of rows) {
-      parts.push(`| ${columns.map((column) => cell(row[column])).join(' | ')} |`);
-    }
-  }
-
-  return `${parts.join('\n')}\n`;
-}
-
-/**
- * Joins values into newline separated text
- */
-export function toText(values: Array<string | number>): string {
-  return values.length ? `${values.map(String).join('\n')}\n` : '';
-}
-
-/**
- * A worksheet to be written by writeXlsx / toXlsxBuffer
- */
-export interface XlsxSheet {
-  name: string;
-  rows: Record<string, any>[];
-  columns?: string[];
-}
-
-const buildWorkbook = (sheets: XlsxSheet[]): ExcelJS.Workbook => {
-  const workbook = new ExcelJS.Workbook();
-  workbook.creator = 'Numsy';
-  workbook.created = new Date();
-
-  for (const sheet of sheets) {
-    // Excel limits sheet names to 31 chars and forbids []:*?/\
-    const worksheet = workbook.addWorksheet(sheet.name.replace(/[[\]:*?/\\]/g, ' ').slice(0, 31));
-    const columns = sheet.columns ?? collectColumns(sheet.rows);
-
-    worksheet.columns = columns.map((column) => ({
-      header: column,
-      key: column,
-      width: Math.min(
-        60,
-        Math.max(
-          column.length,
-          ...sheet.rows.slice(0, 200).map((row) => stringify(row[column]).length),
-        ) + 2,
-      ),
-    }));
-
-    for (const row of sheet.rows) {
-      const values: Record<string, any> = {};
-      for (const column of columns) values[column] = stringify(row[column]);
-      worksheet.addRow(values);
-    }
-
-    if (columns.length) {
-      worksheet.getRow(1).font = { bold: true };
-      worksheet.views = [{ state: 'frozen', ySplit: 1 }];
-      worksheet.autoFilter = {
-        from: { row: 1, column: 1 },
-        to: { row: 1, column: columns.length },
-      };
-    }
-  }
-
-  return workbook;
-};
-
-/**
  * Builds an Excel workbook in memory
  */
-export async function toXlsxBuffer(sheets: XlsxSheet[]): Promise<Buffer> {
-  const buffer = await buildWorkbook(sheets).xlsx.writeBuffer();
+export async function toXlsxBuffer(
+  sheets: XlsxSheet[],
+  options?: { header?: boolean },
+): Promise<Buffer> {
+  const buffer = await buildWorkbook(ExcelJS, sheets, options).xlsx.writeBuffer();
   return Buffer.from(buffer as ArrayBuffer);
 }
 
 /**
  * Writes an Excel workbook to disk, creating the parent directory if needed
  */
-export async function writeXlsx(sheets: XlsxSheet[], filePath: string): Promise<void> {
+export async function writeXlsx(
+  sheets: XlsxSheet[],
+  filePath: string,
+  options?: { header?: boolean },
+): Promise<void> {
   ensureDirectory(path.dirname(filePath));
-  await buildWorkbook(sheets).xlsx.writeFile(filePath);
+  await buildWorkbook(ExcelJS, sheets, options).xlsx.writeFile(filePath);
 }

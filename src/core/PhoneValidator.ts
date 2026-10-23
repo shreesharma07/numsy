@@ -15,6 +15,7 @@ import {
   extractAndValidatePhoneNumbers,
 } from '../common/functions';
 import { NumsyOptions } from '../common/interfaces';
+import { detectPhoneColumn } from '../engine/columns';
 
 /**
  * PhoneValidator class for phone number validation operations
@@ -236,43 +237,10 @@ export class PhoneValidator {
         this.logger.warn('No data provided for phone column detection');
         return null;
       }
-
-      const firstRow = data[0];
-      const keys = Object.keys(firstRow);
-
-      // Try common phone field names
-      const commonNames = [
-        'phone',
-        'mobile',
-        'contact',
-        'telephone',
-        'number',
-        'phone_number',
-        'mobile_number',
-      ];
-
-      for (const key of keys) {
-        const keyLower = key.toLowerCase().trim();
-        if (commonNames.some((name) => keyLower.includes(name))) {
-          this.logger.log(`Detected phone column: ${key}`);
-          return key;
-        }
-      }
-
-      // If no match found, check for columns with phone-like values
-      for (const key of keys) {
-        const value = firstRow[key];
-        if (isNonEmptyString(value)) {
-          const sanitized = sanitizePhoneNumber(value);
-          if (sanitized.length >= 10) {
-            this.logger.log(`Detected phone column by content: ${key}`);
-            return key;
-          }
-        }
-      }
-
-      this.logger.warn('Could not detect phone column');
-      return null;
+      const column = detectPhoneColumn(data);
+      if (column) this.logger.log(`Detected phone column: ${column}`);
+      else this.logger.warn('Could not detect phone column');
+      return column;
     } catch (error) {
       this.logger.error('Error detecting phone column', String(error));
       return null;

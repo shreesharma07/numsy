@@ -5,7 +5,7 @@
 
 import { PHONE_PATTERNS, PHONE_LENGTH } from './constants';
 import { PhoneValidationResult } from '../interfaces';
-import { isNonEmptyString } from '../helpers';
+import { isNonEmptyString } from '../helpers/validation.helper';
 
 /**
  * Sanitizes a phone number by removing non-digit characters

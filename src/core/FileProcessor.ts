@@ -11,7 +11,6 @@ import {
   AnalysisReport,
   AnalyzeOptions,
   ProcessingResult,
-  ProcessedRow,
   ParsedDataRow,
   ProcessingOptions,
   ProcessingAnalytics,
@@ -19,8 +18,7 @@ import {
 } from '../common/interfaces';
 import { LoggerHelper, AppError, ensureDirectory } from '../common/helpers';
 import { Parser } from './Parser';
-import { PhoneValidator } from './PhoneValidator';
-import { findMatchingField, COLUMN_ALIASES } from '../common/functions';
+import { analyzeRows } from '../engine/analyze';
 
 /**
  * Percentage helper that never returns NaN/Infinity
@@ -34,7 +32,6 @@ const percent = (part: number, whole: number): string =>
 export class FileProcessor {
   private logger: LoggerHelper;
   private parser: Parser;
-  private validator: PhoneValidator;
   private options: ProcessingOptions;
 
   constructor(options?: ProcessingOptions) {
@@ -60,7 +57,6 @@ export class FileProcessor {
       enabled: this.options.enableLogging,
     });
     this.parser = new Parser(shared);
-    this.validator = new PhoneValidator(shared);
 
     this.logger.log('FileProcessor initialized');
   }
@@ -81,55 +77,21 @@ export class FileProcessor {
    * Validates, extracts and de-duplicates phone numbers from already-parsed rows
    */
   analyze(data: ParsedDataRow[], options?: AnalyzeOptions): AnalysisReport {
-    if (!data || data.length === 0) {
-      throw new AppError('No data found in the uploaded file', 'NO_DATA');
-    }
-
-    const phoneColumn = options?.phoneColumn ?? this.validator.detectPhoneColumn(data);
-    if (!phoneColumn) {
-      throw new AppError(
-        'Could not detect a valid phone number column in the file',
-        'NO_PHONE_COLUMN',
-      );
-    }
-    if (!(phoneColumn in data[0])) {
-      throw new AppError(
-        `Column "${phoneColumn}" not found. Available: ${Object.keys(data[0]).join(', ')}`,
-        'NO_PHONE_COLUMN',
-      );
-    }
-    this.logger.log(`Using phone column: "${phoneColumn}"`);
-
-    const nameColumn =
-      options?.nameColumn === undefined ? this.detectNameColumn(data) : options.nameColumn;
-    if (nameColumn) {
-      this.logger.log(`Detected name column: "${nameColumn}"`);
-    } else {
-      this.logger.log('No name column detected');
-    }
-
-    const { rows, validRows, invalidRows, analytics, unique } = this.processRows(
-      data,
-      phoneColumn,
-      nameColumn,
+    const report = analyzeRows(data, options);
+    this.logger.log(
+      `Analysed ${report.totalRecords} rows using "${report.phoneColumn}"${report.nameColumn ? ` and "${report.nameColumn}"` : ''}: ${report.validRows.length} valid (${report.unique.length} unique), ${report.invalidRows.length} invalid`,
     );
-
-    return {
-      phoneColumn,
-      nameColumn: nameColumn || undefined,
-      totalRecords: data.length,
-      rows,
-      validRows,
-      invalidRows,
-      unique,
-      analytics,
-    };
+    return report;
   }
 
   /**
    * Processes a file and writes the classic report bundle (CSVs, analytics, ZIP) to disk
    */
-  async processFile(filePath: string, outputDir?: string): Promise<ProcessingResult> {
+  async processFile(
+    filePath: string,
+    outputDir?: string,
+    options?: AnalyzeOptions,
+  ): Promise<ProcessingResult> {
     const outputDirectory = outputDir || this.options.outputDir!;
 
     try {
@@ -138,7 +100,7 @@ export class FileProcessor {
       // Ensure output directory exists
       ensureDirectory(outputDirectory);
 
-      const report = await this.analyzeFile(filePath);
+      const report = await this.analyzeFile(filePath, options);
       const { phoneColumn, nameColumn, validRows, invalidRows, analytics, unique } = report;
 
       // Generate output file paths using original filename
@@ -211,164 +173,6 @@ export class FileProcessor {
         throw error;
       }
       throw new AppError('Failed to process file', 'PROCESSING_ERROR');
-    }
-  }
-
-  /**
-   * Processes data rows and validates phone numbers
-   */
-  private processRows(
-    data: ParsedDataRow[],
-    phoneColumn: string,
-    nameColumn?: string | null,
-  ): {
-    rows: ProcessedRow[];
-    validRows: ProcessedRow[];
-    invalidRows: ProcessedRow[];
-    analytics: ProcessingAnalytics;
-    unique: UniqueNumber[];
-  } {
-    const rows: ProcessedRow[] = [];
-    const validRows: ProcessedRow[] = [];
-    const invalidRows: ProcessedRow[] = [];
-    const uniqueValidNumbers = new Map<string, UniqueNumber>();
-    let totalValidNumbers = 0;
-    let recordsWithMultipleNumbers = 0;
-    let totalNumbersExtracted = 0;
-
-    const pushInvalid = (row: ProcessedRow) => {
-      invalidRows.push(row);
-      rows.push(row);
-    };
-
-    try {
-      for (const row of data) {
-        const phoneValue = row[phoneColumn];
-        const nameValue = nameColumn ? row[nameColumn] : undefined;
-
-        if (phoneValue === undefined || phoneValue === null || String(phoneValue).trim() === '') {
-          pushInvalid({
-            ...row,
-            validationStatus: 'INVALID',
-            validationReason: 'Empty phone number',
-            originalPhone: '',
-            sanitizedPhone: '',
-            numbersExtracted: 0,
-          });
-          continue;
-        }
-
-        const multipleResult = this.validator.extractMultiple(String(phoneValue));
-        const extractedCount = multipleResult.extractedNumbers.length;
-        totalNumbersExtracted += extractedCount;
-
-        if (extractedCount > 1) {
-          recordsWithMultipleNumbers++;
-          this.logger.debug(
-            `Row contains ${extractedCount} numbers: ${multipleResult.extractedNumbers.join(', ')}`,
-          );
-        }
-
-        if (multipleResult.validNumbers.length > 0) {
-          // Create a row for each valid number extracted
-          for (const validNumber of multipleResult.validNumbers) {
-            const validRow: ProcessedRow = {
-              ...row,
-              [phoneColumn]: validNumber.sanitized,
-              validationStatus: 'VALID',
-              originalPhone: String(phoneValue),
-              sanitizedPhone: validNumber.sanitized,
-              numbersExtracted: extractedCount,
-              allExtractedNumbers: multipleResult.extractedNumbers.join(', '),
-            };
-
-            // Add name to the row if detected
-            if (nameColumn && nameValue) {
-              validRow.name = String(nameValue);
-            }
-
-            validRows.push(validRow);
-            rows.push(validRow);
-            totalValidNumbers++;
-
-            // Track unique numbers with their associated names
-            const seen = uniqueValidNumbers.get(validNumber.sanitized);
-            if (seen) {
-              seen.occurrences++;
-            } else {
-              uniqueValidNumbers.set(validNumber.sanitized, {
-                phone: validNumber.sanitized,
-                name: nameValue ? String(nameValue) : undefined,
-                occurrences: 1,
-              });
-            }
-          }
-        } else {
-          // No valid numbers found
-          const validation = this.validator.validate(String(phoneValue));
-          const invalidRow: ProcessedRow = {
-            ...row,
-            validationStatus: 'INVALID',
-            validationReason: validation.reason || 'Invalid format',
-            originalPhone: String(phoneValue),
-            sanitizedPhone: validation.sanitized,
-            numbersExtracted: extractedCount,
-          };
-
-          if (nameColumn && nameValue) {
-            invalidRow.name = String(nameValue);
-          }
-
-          pushInvalid(invalidRow);
-        }
-      }
-
-      // Calculate analytics
-      const uniqueCount = uniqueValidNumbers.size;
-
-      const analytics: ProcessingAnalytics = {
-        totalNumbersExtracted,
-        totalValidNumbers,
-        totalInvalidNumbers: invalidRows.length,
-        recordsWithMultipleNumbers,
-        averageNumbersPerRecord: data.length > 0 ? totalNumbersExtracted / data.length : 0,
-        duplicateNumbers: totalValidNumbers - uniqueCount,
-        uniqueValidNumbers: uniqueCount,
-      };
-
-      this.logger.log(
-        `Processed ${data.length} rows: ${totalValidNumbers} valid (${uniqueCount} unique), ${invalidRows.length} invalid`,
-      );
-
-      return {
-        rows,
-        validRows,
-        invalidRows,
-        analytics,
-        unique: Array.from(uniqueValidNumbers.values()),
-      };
-    } catch (error) {
-      this.logger.error('Error processing rows', String(error));
-      throw new AppError('Failed to process data rows', 'PROCESSING_ERROR');
-    }
-  }
-
-  /**
-   * Detects name column from data using multiple variations
-   */
-  private detectNameColumn(data: ParsedDataRow[]): string | null {
-    try {
-      if (!data || data.length === 0) {
-        return null;
-      }
-
-      const firstRow = data[0];
-      const nameField = findMatchingField(firstRow, COLUMN_ALIASES.name);
-
-      return nameField;
-    } catch (error) {
-      this.logger.error('Error detecting name column', String(error));
-      return null;
     }
   }
 
@@ -509,7 +313,6 @@ Generated on: ${new Date().toISOString()}
       this.options = { ...this.options, ...options };
       this.logger.setEnabled(this.options.enableLogging ?? true);
       this.parser.setOptions(options);
-      this.validator.setOptions(options);
       this.logger.log('FileProcessor options updated');
     } catch (error) {
       this.logger.error('Error setting options', String(error));

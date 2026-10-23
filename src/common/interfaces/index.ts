@@ -73,6 +73,10 @@ export interface ProcessingAnalytics {
   averageNumbersPerRecord: number;
   duplicateNumbers: number;
   uniqueValidNumbers: number;
+  /** Repeat occurrences dropped by the `dedupe` setting (0 when dedupe is off) */
+  duplicatesRemoved?: number;
+  /** Rows whose phone cell was empty */
+  emptyRecords?: number;
 }
 
 /**
@@ -165,7 +169,25 @@ export interface AnalyzeOptions {
   phoneColumn?: string;
   /** Column holding contact names. Auto-detected when omitted; pass null to disable. */
   nameColumn?: string | null;
+  /**
+   * Remove repeat occurrences of the same valid number from `rows` and `validRows`.
+   * - off:   keep every occurrence (default)
+   * - first: keep the first occurrence
+   * - last:  keep the last occurrence
+   */
+  dedupe?: DedupeMode;
+  /** Reject dummy and test patterns such as 9999999999 or 1234567890. Default: true */
+  strict?: boolean;
+  /** When a cell holds several valid numbers: one row per number ('all', default) or only the first */
+  multiple?: 'all' | 'first';
+  /** Leave rows with an empty phone cell out of `invalidRows`. Default: false */
+  skipEmpty?: boolean;
 }
+
+/**
+ * Duplicate handling for AnalyzeOptions.dedupe
+ */
+export type DedupeMode = 'off' | 'first' | 'last';
 
 /**
  * A unique valid number with the first name seen for it
@@ -189,6 +211,8 @@ export interface AnalysisReport {
   rows: ProcessedRow[];
   validRows: ProcessedRow[];
   invalidRows: ProcessedRow[];
+  /** Repeat occurrences of a valid number (removed from rows/validRows unless dedupe is off) */
+  duplicateRows: ProcessedRow[];
   unique: UniqueNumber[];
   analytics: ProcessingAnalytics;
 }
