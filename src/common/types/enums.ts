@@ -159,7 +159,7 @@ export const FILE_CONSTANTS = {
  * Default port configuration
  */
 export const PORT_CONSTANTS = {
-  DEFAULT: 3000,
+  DEFAULT: 6789,
   MIN: 1024,
   MAX: 65535,
 } as const;

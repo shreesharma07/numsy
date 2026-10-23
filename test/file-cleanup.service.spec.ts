@@ -7,7 +7,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { Logger } from '@nestjs/common';
 import { FileCleanupService } from '../src/services/file-cleanup.service';
 import * as fs from 'node:fs';
-import * as path from 'node:path';
+import { workDir } from '../src/common/functions/paths';
 
 // Mock fs module
 jest.mock('node:fs');
@@ -20,8 +20,8 @@ describe('FileCleanupService', () => {
   let clearIntervalSpy: jest.SpyInstance;
 
   // Mock directories
-  const mockUploadDir = path.join(process.cwd(), 'uploads');
-  const mockTempDir = path.join(process.cwd(), 'Temp');
+  const mockUploadDir = workDir('uploads');
+  const mockTempDir = workDir('temp');
 
   beforeEach(async () => {
     // Reset all mocks before each test

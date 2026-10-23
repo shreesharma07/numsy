@@ -1,6 +1,7 @@
 import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import * as fs from 'node:fs';
 import * as path from 'node:path';
+import { workDir } from '../common/functions/paths';
 
 /**
  * Service for automatic cleanup of uploaded and temporary files
@@ -11,8 +12,8 @@ import * as path from 'node:path';
 @Injectable()
 export class FileCleanupService implements OnModuleInit {
   private readonly logger = new Logger(FileCleanupService.name);
-  private readonly uploadDir = path.join(process.cwd(), 'uploads');
-  private readonly tempDir = path.join(process.cwd(), 'Temp');
+  private readonly uploadDir = workDir('uploads');
+  private readonly tempDir = workDir('temp');
   private readonly maxFileAge = 5 * 60 * 1000; // 5 minutes in milliseconds
   private cleanupInterval?: NodeJS.Timeout;
 
@@ -82,11 +83,13 @@ export class FileCleanupService implements OnModuleInit {
     this.cleanupInterval = setInterval(() => {
       this.cleanupOldFiles();
     }, 60 * 1000); // 1 minute
+    // Never keep the process alive just for housekeeping
+    this.cleanupInterval.unref();
 
     // Also run immediately after a short delay
     setTimeout(() => {
       this.cleanupOldFiles();
-    }, 10000); // 10 seconds after startup
+    }, 10000).unref(); // 10 seconds after startup
   }
 
   /**

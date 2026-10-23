@@ -1,61 +1,60 @@
 #!/usr/bin/env node
 
-import { NestFactory } from '@nestjs/core';
-import { AppModule } from '../app.module';
+import { spawn } from 'node:child_process';
 import * as net from 'node:net';
 import { Logger } from '@nestjs/common';
+import { NestFactory } from '@nestjs/core';
+import { NestExpressApplication } from '@nestjs/platform-express';
+import { NextFunction, Request, Response } from 'express';
+import { AppModule } from '../app.module';
+import { PORT_CONSTANTS } from '../common/types/enums';
+import { dashboardDir } from '../common/functions/paths';
 
-const logger = new Logger('ServerCLI');
+const logger = new Logger('Numsy');
 
 /**
  * Options accepted by startServer
  */
 export interface ServerOptions {
+  /** Preferred port (default: PORT env, then 6789). The next free port is used when busy. */
   port?: number;
-  page?: boolean;
+  /** Interface to bind (default: 127.0.0.1, so only this machine can reach the dashboard) */
+  host?: string;
+  /** Open the dashboard in the default browser once listening */
+  open?: boolean;
 }
 
 /**
- * CLI Options interface
+ * A running server
  */
-interface CLIOptions extends ServerOptions {
-  help?: boolean;
+export interface RunningServer {
+  url: string;
+  port: number;
+  close: () => Promise<void>;
 }
 
+const DEFAULT_HOST = '127.0.0.1';
+
 /**
- * Check if a port is available
+ * Check if a port is free on the given interface
  */
-async function isPortAvailable(port: number): Promise<boolean> {
+function isPortAvailable(port: number, host: string): Promise<boolean> {
   return new Promise((resolve) => {
     const server = net.createServer();
-
-    server.once('error', () => {
-      resolve(false);
-    });
-
-    server.once('listening', () => {
-      server.close();
-      resolve(true);
-    });
-
-    server.listen(port);
+    server.once('error', () => resolve(false));
+    server.once('listening', () => server.close(() => resolve(true)));
+    server.listen(port, host);
   });
 }
 
 /**
  * Find an available port starting from the preferred port
  */
-async function findAvailablePort(preferredPort: number): Promise<number> {
-  let port = preferredPort;
+async function findAvailablePort(preferredPort: number, host: string): Promise<number> {
   const maxAttempts = 100;
-
-  for (let i = 0; i < maxAttempts; i++) {
-    if (await isPortAvailable(port)) {
-      return port;
-    }
-    port++;
+  for (let port = preferredPort; port < preferredPort + maxAttempts; port++) {
+    if (port <= PORT_CONSTANTS.MAX && (await isPortAvailable(port, host))) return port;
   }
-
   throw new Error(`Could not find an available port after ${maxAttempts} attempts`);
 }
 
@@ -63,137 +62,98 @@ async function findAvailablePort(preferredPort: number): Promise<number> {
  * Parse a port value, returning undefined when it is out of range
  */
 export function parsePort(value: string | undefined): number | undefined {
-  const port = parseInt(String(value), 10);
-  return !Number.isNaN(port) && port >= 1024 && port <= 65535 ? port : undefined;
+  const port = Number.parseInt(String(value), 10);
+  return !Number.isNaN(port) && port >= PORT_CONSTANTS.MIN && port <= PORT_CONSTANTS.MAX
+    ? port
+    : undefined;
 }
 
 /**
- * Parse command line arguments
+ * Opens a URL in the default browser without blocking or failing the server
  */
-function parseCLIArgs(): CLIOptions {
-  const args = process.argv.slice(2);
-  const options: CLIOptions = {};
-
-  for (let i = 0; i < args.length; i++) {
-    const arg = args[i];
-
-    switch (arg) {
-      case '--port':
-      case '-p': {
-        const port = parsePort(args[++i]);
-        if (port) {
-          options.port = port;
-        } else {
-          logger.error('Invalid port number. Using default.');
-        }
-        break;
-      }
-
-      case '--page':
-      case '--serve':
-      case '-s':
-        options.page = true;
-        break;
-
-      case '--help':
-      case '-h':
-        options.help = true;
-        break;
-    }
+export function openBrowser(url: string): void {
+  const [command, args] =
+    process.platform === 'win32'
+      ? ['cmd', ['/c', 'start', '""', url]]
+      : process.platform === 'darwin'
+        ? ['open', [url]]
+        : ['xdg-open', [url]];
+  try {
+    const child = spawn(command, args as string[], { detached: true, stdio: 'ignore' });
+    child.on('error', () => logger.warn(`Could not open a browser. Visit ${url}`));
+    child.unref();
+  } catch {
+    logger.warn(`Could not open a browser. Visit ${url}`);
   }
-
-  return options;
 }
 
 /**
- * Display help information
+ * Rejects requests whose Host header is not this server (blocks DNS-rebinding attacks
+ * against a dashboard bound to localhost)
  */
-function displayHelp(): void {
-  console.log(`
-Numsy server — web UI + REST API
-
-Usage: numsy serve [options]      (or: numsy-serve [options])
-
-Options:
-  -p, --port <number>     Port to listen on (default: 3000, next free port is used if busy)
-  -h, --help              Display this help message
-
-Environment Variables:
-  PORT                    Override default port
-  NODE_ENV                Set environment (development/production)
-
-Docs: https://numsy.pages.dev/
-`);
-}
+const hostGuard = (host: string, port: number) => {
+  const allowed = new Set(
+    ['localhost', '127.0.0.1', '[::1]', host].flatMap((name) => [name, `${name}:${port}`]),
+  );
+  const open = host === '0.0.0.0' || host === '::';
+  return (req: Request, res: Response, next: NextFunction) => {
+    if (open || allowed.has(String(req.headers.host ?? '').toLowerCase())) return next();
+    res.status(403).json({ statusCode: 403, message: 'Unexpected Host header' });
+  };
+};
 
 /**
- * Start the NestJS server (web UI on "/", API under "/api")
+ * Start the dashboard: web UI on "/", REST API under "/api"
  */
-export async function startServer(options: ServerOptions = {}): Promise<void> {
-  const preferredPort = options.port || parsePort(process.env.PORT) || 3000;
-
-  logger.log(`Looking for available port starting from ${preferredPort}...`);
-  const port = await findAvailablePort(preferredPort);
+export async function startServer(options: ServerOptions = {}): Promise<RunningServer> {
+  const host = options.host || process.env.HOST || DEFAULT_HOST;
+  const preferredPort = options.port || parsePort(process.env.PORT) || PORT_CONSTANTS.DEFAULT;
+  const port = await findAvailablePort(preferredPort, host);
 
   if (port !== preferredPort) {
     logger.warn(`Port ${preferredPort} is in use. Using port ${port} instead.`);
   }
 
-  const app = await NestFactory.create(AppModule, {
-    logger: ['log', 'error', 'warn'],
+  const app = await NestFactory.create<NestExpressApplication>(AppModule, {
+    logger: ['error', 'warn'],
   });
+  app.use(hostGuard(host, port));
+  // Pasted text is exported through a JSON body
+  app.useBodyParser('json', { limit: '25mb' });
+  app.disable('x-powered-by');
+  await app.listen(port, host);
 
-  app.enableCors({
-    origin: '*',
-    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
-  });
+  const shown = host === '0.0.0.0' || host === '::' || host === DEFAULT_HOST ? 'localhost' : host;
+  const url = `http://${shown}:${port}`;
+  const ui = dashboardDir() ? url : `${url}  (UI not built: run "pnpm build")`;
 
-  // Routes are already namespaced by @Controller('api'), so no global prefix here
-  await app.listen(port);
+  process.stdout.write(`
+  \x1b[1mNumsy dashboard\x1b[0m is running
 
-  const url = `http://localhost:${port}`;
+  Dashboard      ${ui}
+  REST API       ${url}/api
+  Health         ${url}/api/health
+  Listening on   ${host}:${port}
 
-  logger.log(`
-  Numsy server is running
+  Press Ctrl+C to stop
+`);
 
-  Web UI         ${url}
-  API            ${url}/api
-  Health check   ${url}/api/health
-  Environment    ${process.env.NODE_ENV || 'development'}
-  Process ID     ${process.pid}
+  if (options.open) openBrowser(url);
 
-  Press Ctrl+C to stop the server
-    `);
-
-  const shutdown = async (signal: string) => {
-    logger.log(`${signal} received: closing HTTP server`);
-    await app.close();
+  const close = () => app.close();
+  const shutdown = async () => {
+    await close();
     process.exit(0);
   };
+  process.once('SIGTERM', shutdown);
+  process.once('SIGINT', shutdown);
 
-  process.on('SIGTERM', () => shutdown('SIGTERM'));
-  process.on('SIGINT', () => shutdown('SIGINT'));
-}
-
-/**
- * Bootstrap when executed directly as the numsy-serve binary
- */
-async function bootstrap(): Promise<void> {
-  const options = parseCLIArgs();
-
-  if (options.help) {
-    displayHelp();
-    process.exit(0);
-  }
-
-  try {
-    await startServer(options);
-  } catch (error) {
-    logger.error('Failed to start server:', error);
-    process.exit(1);
-  }
+  return { url, port, close };
 }
 
 if (require.main === module) {
-  bootstrap();
+  startServer({ open: process.argv.includes('--open') }).catch((error) => {
+    logger.error(`Failed to start server: ${(error as Error).message}`);
+    process.exit(1);
+  });
 }

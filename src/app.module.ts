@@ -1,26 +1,37 @@
 import { Module } from '@nestjs/common';
 import { ServeStaticModule } from '@nestjs/serve-static';
-import { join } from 'node:path';
 import { AppController } from './controllers/app.controller';
+import { DashboardController } from './controllers/dashboard.controller';
 import { PhoneValidatorService } from './services/phone-validator.service';
 import { FileParserService } from './services/file-parser.service';
 import { FileProcessorService } from './services/file-processor.service';
 import { FileCleanupService } from './services/file-cleanup.service';
+import { DashboardSessions } from './services/dashboard-sessions.service';
+import { dashboardDir, publicDir } from './common/functions/paths';
+
+// Express 5 wildcard syntax: let the API routes handle everything under /api
+const exclude = ['/api/{*path}'];
+const dashboard = dashboardDir();
 
 /**
  * Root application module
- * Configures services, controllers, and static file serving
+ * Serves the dashboard on "/", the static API/health pages' assets, and the REST API
  */
 @Module({
   imports: [
-    // Serve static files from the public directory
-    ServeStaticModule.forRoot({
-      rootPath: join(__dirname, '..', 'public'),
-      // Express 5 wildcard syntax: let the API routes handle everything under /api
-      exclude: ['/api/{*path}'],
-    }),
+    ServeStaticModule.forRoot(
+      // The built dashboard wins for "/"; public/ supplies assets for the API pages and a fallback page
+      ...(dashboard ? [{ rootPath: dashboard, exclude }] : []),
+      { rootPath: publicDir(), exclude },
+    ),
   ],
-  controllers: [AppController],
-  providers: [PhoneValidatorService, FileParserService, FileProcessorService, FileCleanupService],
+  controllers: [DashboardController, AppController],
+  providers: [
+    PhoneValidatorService,
+    FileParserService,
+    FileProcessorService,
+    FileCleanupService,
+    DashboardSessions,
+  ],
 })
 export class AppModule {}

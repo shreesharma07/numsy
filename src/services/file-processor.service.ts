@@ -1,6 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import * as fs from 'node:fs';
 import * as path from 'node:path';
+import { workDir } from '../common/functions/paths';
 import archiver from 'archiver';
 import { PhoneValidatorService } from './phone-validator.service';
 import { FileParserService } from './file-parser.service';
@@ -77,11 +78,7 @@ export class FileProcessorService {
 
     // Normalize and validate input file path
     const normalizedFilePath = path.normalize(path.resolve(filePath));
-    const allowedInputDirs = [
-      path.resolve(process.cwd(), 'uploads'),
-      path.resolve(process.cwd(), 'temp'),
-      path.resolve(process.cwd(), 'Temp'),
-    ];
+    const allowedInputDirs = [workDir('uploads'), workDir('temp')];
 
     // Check if file path is within allowed directories
     const isInputPathAllowed = allowedInputDirs.some((allowedDir) => {
@@ -98,10 +95,7 @@ export class FileProcessorService {
 
     // Normalize and validate output directory
     const normalizedOutputDir = path.normalize(path.resolve(outputDir));
-    const allowedOutputDirs = [
-      path.resolve(process.cwd(), 'temp'),
-      path.resolve(process.cwd(), 'Temp'),
-    ];
+    const allowedOutputDirs = [workDir('temp')];
 
     const isOutputPathAllowed = allowedOutputDirs.some((allowedDir) => {
       const normalizedAllowedDir = path.normalize(allowedDir);
@@ -401,7 +395,7 @@ export class FileProcessorService {
   ): Promise<void> {
     // Validate file path before writing
     const normalizedFilePath = path.normalize(path.resolve(filePath));
-    const allowedDirs = [path.resolve(process.cwd(), 'temp'), path.resolve(process.cwd(), 'Temp')];
+    const allowedDirs = [workDir('temp')];
 
     const isPathValid = allowedDirs.some((allowedDir) => {
       const normalizedAllowedDir = path.normalize(allowedDir);
@@ -644,10 +638,7 @@ Thank you for using 🔢 Numsy!
     return new Promise((resolve, reject) => {
       // Validate output zip path
       const normalizedOutputPath = path.normalize(path.resolve(outputZipPath));
-      const allowedOutputDirs = [
-        path.resolve(process.cwd(), 'temp'),
-        path.resolve(process.cwd(), 'Temp'),
-      ];
+      const allowedOutputDirs = [workDir('temp')];
 
       const isOutputValid = allowedOutputDirs.some((allowedDir) => {
         const normalizedAllowedDir = path.normalize(allowedDir);
@@ -677,10 +668,7 @@ Thank you for using 🔢 Numsy!
       archive.pipe(output);
 
       // Validate and add each file to the archive
-      const allowedInputDirs = [
-        path.resolve(process.cwd(), 'temp'),
-        path.resolve(process.cwd(), 'Temp'),
-      ];
+      const allowedInputDirs = [workDir('temp')];
 
       for (const filePath of filePaths) {
         const normalizedFilePath = path.normalize(path.resolve(filePath));
@@ -712,11 +700,7 @@ Thank you for using 🔢 Numsy!
    */
   async cleanupFiles(filePaths: string[]): Promise<void> {
     // * // Security check to prevent path traversal and ensure only files within allowed directories are deleted. This is crucial to avoid accidental or malicious deletion of important files outside the intended scope. Only files within 'uploads' and 'temp' directories will be deleted. //
-    const allowedDirs = [
-      path.resolve(process.cwd(), 'uploads'),
-      path.resolve(process.cwd(), 'temp'),
-      path.resolve(process.cwd(), 'Temp'), // Windows case-insensitive
-    ];
+    const allowedDirs = [workDir('uploads'), workDir('temp')];
 
     for (const filePath of filePaths) {
       try {
@@ -768,7 +752,7 @@ Thank you for using 🔢 Numsy!
    */
   async cleanupDirectory(dirPath: string): Promise<void> {
     try {
-      if (!isPathInsideDir(path.join(process.cwd(), 'temp'), dirPath)) {
+      if (!isPathInsideDir(workDir('temp'), dirPath)) {
         this.logger.warn(`Skipping cleanup of directory outside allowed temp dir: ${dirPath}`);
         return;
       }
@@ -776,7 +760,7 @@ Thank you for using 🔢 Numsy!
         const files = fs.readdirSync(dirPath);
         for (const file of files) {
           const filePath = path.join(dirPath, file);
-          if (!isPathInsideDir(path.join(process.cwd(), 'temp'), filePath)) {
+          if (!isPathInsideDir(workDir('temp'), filePath)) {
             this.logger.warn(`Skipping deletion of file outside allowed temp dir: ${filePath}`);
             continue;
           }

@@ -5,6 +5,7 @@
 
 import * as path from 'node:path';
 import * as fs from 'node:fs';
+import { workDir } from './paths';
 
 /**
  * Validates if a path is within allowed directories
@@ -56,17 +57,16 @@ export function isPathAllowed(
  * Gets allowed directories for file operations
  */
 export function getAllowedDirectories(type: 'input' | 'output' | 'all'): string[] {
-  const uploadDir = path.resolve(process.cwd(), 'uploads');
-  const tempDir = path.resolve(process.cwd(), 'temp');
-  const tempDirAlt = path.resolve(process.cwd(), 'Temp');
+  const uploadDir = workDir('uploads');
+  const tempDir = workDir('temp');
 
   switch (type) {
     case 'input':
-      return [uploadDir, tempDir, tempDirAlt];
+      return [uploadDir, tempDir];
     case 'output':
-      return [tempDir, tempDirAlt];
+      return [tempDir];
     case 'all':
-      return [uploadDir, tempDir, tempDirAlt];
+      return [uploadDir, tempDir];
     default:
       return [];
   }

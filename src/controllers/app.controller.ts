@@ -14,6 +14,7 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { Response } from 'express';
 import { diskStorage } from 'multer';
 import * as path from 'node:path';
+import { workDir } from '../common/functions/paths';
 import * as fs from 'node:fs';
 import { FileProcessorService } from '../services/file-processor.service';
 
@@ -28,8 +29,8 @@ const PAGES_DIR = path.join(__dirname, '..', '..', 'public', 'pages');
 @Controller('api')
 export class AppController {
   private readonly logger = new Logger(AppController.name);
-  private readonly uploadDir = path.join(process.cwd(), 'uploads');
-  private readonly tempDir = path.join(process.cwd(), 'temp');
+  private readonly uploadDir = workDir('uploads');
+  private readonly tempDir = workDir('temp');
 
   constructor(private readonly fileProcessor: FileProcessorService) {
     // Ensure directories exist
@@ -86,7 +87,7 @@ export class AppController {
     FileInterceptor('file', {
       storage: diskStorage({
         destination: (_req, _file, cb) => {
-          const uploadPath = path.join(process.cwd(), 'uploads');
+          const uploadPath = workDir('uploads');
           cb(null, uploadPath);
         },
         filename: (_req, file, cb) => {
