@@ -3,7 +3,7 @@
 [Docs](../README.md) › Using Numsy › CLI
 
 ```bash
-npm install -g @numsy/numsy     # or run any command with: npx @numsy/numsy …
+npm install -g numsy     # or run any command with: npx numsy …
 numsy --help
 ```
 
@@ -14,7 +14,7 @@ numsy --help
 | `numsy validate [numbers…]` | args, `--input <file>`, or stdin (one per line) | Validates each value |
 | `numsy extract [text…]` | args, `--input <file>`, or stdin | Finds every number in free text |
 | `numsy process <file>` | `.csv` / `.xlsx` | Detects the phone column, validates, de-dupes, exports |
-| `numsy serve` | — | Starts the [web UI & REST API](rest-api.md) |
+| `numsy dashboard` | — | Starts the [local dashboard & REST API](rest-api.md) on `localhost:6789` (aliases `serve`, `ui`) |
 | `numsy formats` | — | Lists output formats |
 
 ## Options
@@ -27,10 +27,25 @@ numsy --help
 | `-o, --output <path>` | — | Write to this file; format inferred from the extension if `-f` is omitted |
 | `-d, --out-dir <dir>` | cwd | Directory for generated files |
 | `-n, --name <base>` | `<input>-numsy` | Base filename for generated files |
-| `--only <set>` | `all` | `all` · `valid` · `invalid` · `unique` |
-| `--country-code` | off | Print valid numbers as `+91XXXXXXXXXX` |
+| `--only <set>` | `all` | `all` · `valid` · `invalid` · `unique` · `duplicates` |
+| `--number-style <s>` | `plain` | `plain` (9876501234) · `e164` (+919876501234) · `spaced` (+91 98765 01234) |
+| `--country-code` | off | Shorthand for `--number-style e164` |
+| `--columns <c>` | `full` | `full` keeps every column, `numbers` keeps only the name and number |
+| `--header-name <h>` | key name | Rename the number column in exports, e.g. `Mobile` |
+| `--no-header` | header on | Leave the header row out of CSV and Excel output |
+| `--max-rows <n>` | `0` (all) | Export at most `n` rows |
 | `--no-pretty` | pretty | Compact JSON |
 | `--limit <n>` | `50` | Max rows in the terminal table (`0` = all) |
+
+### Filters
+
+| Option | Applies to | Description |
+| --- | --- | --- |
+| `--dedupe` | all | Drop repeat occurrences of a number, keeping the first |
+| `--keep <first\|last>` | all | Drop repeats, keeping the first or the last occurrence |
+| `--loose` | all | Accept dummy patterns such as `9999999999`; only the shape is checked |
+| `--first-only` | process | Keep only the first valid number of each cell |
+| `--skip-empty` | process | Leave rows with an empty phone cell out of the invalid set |
 
 ### Input & behaviour
 
@@ -38,12 +53,20 @@ numsy --help
 | --- | --- | --- |
 | `-i, --input <file>` | validate, extract | Read input from a text file |
 | `-c, --column <name>` | process | Phone column (auto-detected by default) |
+| `--name-column <c>` | process | Contact-name column (auto-detected); `none` disables it |
 | `--normalize` | process | Rename known headers, e.g. `Mobile Number` → `phone` |
 | `--bundle` | process | Also write the classic ZIP report |
 | `--fail-on-invalid` | all | Exit `2` when any number is invalid |
 | `-q, --quiet` | all | Print only the requested output |
 | `--no-color` | all | Disable colour (also `NO_COLOR`) |
-| `-p, --port <n>` | serve | Port, default `3000` |
+
+### Dashboard
+
+| Option | Default | Description |
+| --- | --- | --- |
+| `-p, --port <n>` | `6789` | Port; the next free one is used when busy. `PORT` also works |
+| `--host <addr>` | `127.0.0.1` | Interface to listen on; the default accepts this machine only |
+| `--open` | off | Open the dashboard in your browser |
 
 ## Where output goes
 
@@ -56,16 +79,16 @@ numsy --help
 | `-f json,csv -o report` | `report.json` + `report.csv` |
 | `-d reports -n clean -f json,md` | `reports/clean.json` + `reports/clean.md` |
 
-Data goes to **stdout**, status lines go to **stderr**.
+Data goes to **stdout**, status lines go to **stderr**. The terminal table always shows the full result; `--columns`, `--header-name`, `--no-header` and `--max-rows` shape the exported formats.
 
 ## What each format contains
 
 | Format | Content |
 | --- | --- |
 | `json` | `{ title, generatedAt, summary, rows, … }`, plus `analytics` and `unique` for `process` |
-| `csv` | Rows with a header line. Formula-like cells are neutralised |
-| `md` | Title, summary table, rows table |
-| `xlsx` | Summary sheet + All rows / Valid / Invalid / Unique sheets |
+| `csv` | Rows with a header line (unless `--no-header`). Formula-like cells are neutralised |
+| `md` | `# Title`, a `## Summary` table and a `## Rows (n)` table, one blank line between blocks |
+| `xlsx` | Summary sheet + All rows / Valid / Invalid / Unique / Duplicates sheets |
 | `txt` | One number per line (valid by default; follows `--only`) |
 
 ## Exit codes
@@ -79,15 +102,21 @@ Data goes to **stdout**, status lines go to **stderr**.
 ## Recipes
 
 ```bash
-# Validate a list from a file and keep only good numbers
-numsy validate -i numbers.txt --only valid -f txt > clean.txt
+# Validate a list from a file and keep only good, distinct numbers
+numsy validate -i numbers.txt --dedupe --only valid -f txt > clean.txt
 
 # Clean a contact sheet into every format at once
 numsy process contacts.xlsx -f json,csv,md,xlsx -d reports -n contacts-clean
 
-# Unique numbers in international format
-numsy process leads.csv --only unique --country-code -o unique.csv
+# De-duplicated valid numbers as two columns: Name, Mobile
+numsy process leads.csv --dedupe --only valid --columns numbers --header-name Mobile -o clean.csv
+
+# First 500 unique numbers in +91 format, no header row
+numsy process leads.xlsx --only unique --number-style e164 --no-header --max-rows 500 -o top.csv
 
 # Fail a CI job when a data file contains bad numbers
 numsy process data/customers.csv --fail-on-invalid -q -f txt > /dev/null
+
+# Open the local dashboard
+numsy dashboard --open
 ```

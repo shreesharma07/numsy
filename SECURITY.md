@@ -17,10 +17,10 @@
 
 | Version | Supported |
 | --- | :-: |
-| 1.x | ✅ |
-| < 1.0 | ❌ |
+| 2.x | ✅ |
+| < 2.0 | ❌ |
 
-Fixes ship as patch releases of the latest 1.x.
+Fixes ship as patch releases of the latest 2.x. Install with `npm i numsy@latest`; the old `@numsy/numsy` package is deprecated.
 
 ## <img src="assets/icons/report.svg" width="22" alt="" /> Reporting a vulnerability
 
@@ -31,7 +31,7 @@ Fixes ship as patch releases of the latest 1.x.
 Please include:
 
 - **Version** and how you installed it (npm, global CLI, source)
-- **Component**: library, CLI, or `numsy serve`
+- **Component**: library, CLI, `numsy dashboard`, or the website playground
 - **Steps to reproduce**, ideally with a minimal input file and no real personal data
 - **Impact**, as you understand it
 
@@ -49,14 +49,15 @@ You'll get progress updates, credit in the release notes (unless you'd rather st
 
 | Area | What Numsy does | What you should do |
 | --- | --- | --- |
-| **Data** | Library and CLI run locally and make no network calls | Treat phone numbers as personal data (e.g. India's DPDP Act 2023) |
-| **`numsy serve`** | Local dev server: open CORS, listens on all interfaces, auto-deletes uploads | Don't expose it publicly without a proxy, auth and upload limits |
+| **Data** | Library, CLI and dashboard run locally and make no network calls; nothing is stored, sold, shared or used for AI training | Treat phone numbers as personal data (e.g. India's DPDP Act 2023) |
+| **`numsy dashboard`** | Binds to `127.0.0.1`, same-origin only, rejects foreign `Host` headers (DNS rebinding), parses uploads in memory; legacy `/api/upload` files live in a private `0700` temp folder | It has no authentication: use `--host` only on trusted networks, never on the internet |
+| **Website playground** | Runs the engine in a Web Worker; files never leave the browser | No action needed |
 | **CSV output** | Neutralises formula cells (`=`, `@`, non-numeric `+`/`-`); keeps `+91 …` intact | Still be careful opening untrusted files in spreadsheets |
 | **Terminal output** | Strips control characters from file contents before printing | No action needed |
 
 ## <img src="assets/icons/deps.svg" width="22" alt="" /> Dependencies
 
-[![Socket Badge](https://badge.socket.dev/npm/package/@numsy/numsy/2.0.0)](https://badge.socket.dev/npm/package/@numsy/numsy/2.0.0)
+[![Socket Badge](https://badge.socket.dev/npm/package/numsy/2.1.0)](https://badge.socket.dev/npm/package/numsy/2.1.0)
 
 CI runs `pnpm audit`, Snyk, CodeQL and dependency review. Vulnerable transitive packages are pinned through `overrides` in `pnpm-workspace.yaml`, and production dependencies currently report no known vulnerabilities.
 

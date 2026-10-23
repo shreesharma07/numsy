@@ -11,8 +11,9 @@
 | | Guide | What's inside |
 | :-: | --- | --- |
 | <img src="../assets/icons/terminal.svg" width="20" alt="" /> | [CLI](guides/cli.md) | Commands, options, output routing, exit codes, recipes |
-| <img src="../assets/icons/library.svg" width="20" alt="" /> | [Library](guides/library.md) | `Numsy` API, validation rules, analysis reports, exporters |
-| <img src="../assets/icons/rest.svg" width="20" alt="" /> | [Web UI & REST API](guides/rest-api.md) | `numsy serve`, endpoints, limits, file lifecycle |
+| <img src="../assets/icons/library.svg" width="20" alt="" /> | [Library](guides/library.md) | `Numsy` API, analysis options, exporters, `numsy/engine` |
+| <img src="../assets/icons/rest.svg" width="20" alt="" /> | [Local dashboard & REST API](guides/rest-api.md) | `numsy dashboard`, settings, endpoints, data lifecycle |
+| <img src="../assets/icons/quickstart.svg" width="20" alt="" /> | [Performance](guides/performance.md) | Benchmarks on synthetic and real-world data |
 
 ## Maintaining Numsy
 

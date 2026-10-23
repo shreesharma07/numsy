@@ -19,18 +19,21 @@ pnpm validate         # Biome + type-check + tests
 
 | Area | Script | Does |
 | --- | --- | --- |
-| Build | `pnpm build` | swc → `dist/`, then `tsc --emitDeclarationOnly` |
+| Build | `pnpm build` | swc → `dist/`, `tsc --emitDeclarationOnly`, then `build:dashboard` |
+| | `pnpm build:dashboard` | Dashboard UI (`website/local`) → `dist/dashboard` |
 | Run | `pnpm cli -- <args>` | CLI from source |
-| | `pnpm serve` / `pnpm serve:prod` | Server from source / from `dist` |
+| | `pnpm serve` / `pnpm serve:prod` | Dashboard server from source / from `dist` (port 6789) |
 | | `pnpm dev` | nodemon watch mode |
 | Quality | `pnpm check` | Biome lint + format with fixes |
 | | `pnpm check:ci` | Biome, read-only (CI) |
 | | `pnpm type-check` | `tsc --noEmit` |
 | | `pnpm validate` | `check:ci` + `type-check` + `test` |
-| Tests | `pnpm test` · `test:watch` · `test:cov` · `test:e2e` | Jest |
+| Tests | `pnpm test` · `test:watch` · `test:cov` · `test:e2e` | Jest: engine, CLI, dashboard API, library |
+| | `pnpm test:ui` | Playwright: local dashboard + website playground (build both first) |
+| | `node scripts/benchmark.js` | [Performance](../guides/performance.md) benchmark on synthetic data |
 | Security | `pnpm audit:check` · `pnpm snyk:test` | Dependency scans |
 | Release | `pnpm release:dry` · `release:preview` | Preview the next version |
-| | `pnpm verify:package` | Check the npm tarball: build output present, no `website/`, `src/`, `docs/` |
+| | `pnpm verify:package` | Check the npm tarball: library, engine and dashboard present; no `website/`, `src/`, `e2e/`, `docs/` |
 | npm | `pnpm npm:check` · `npm:fix-cooldown` | Registry status / [cooldown fix](releasing.md#troubleshooting) |
 | Website | `pnpm --filter @numsy/website dev` | Docs site on Vite |
 | | `pnpm --filter @numsy/website deploy:cloudflare` | Build and deploy the site to Cloudflare Pages |

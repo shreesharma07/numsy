@@ -38,23 +38,26 @@ pnpm validate        # Biome + type-check + tests (the same gate CI runs)
 
 | Command | Purpose |
 | --- | --- |
-| `pnpm build` | Compile `src/` → `dist/` |
+| `pnpm build` | Compile `src/` → `dist/` and the dashboard → `dist/dashboard` |
 | `pnpm cli -- validate 9876501234` | Run the CLI from source |
-| `pnpm serve` | Start the web UI + REST API |
+| `pnpm serve` | Start the local dashboard + REST API on port 6789 |
 | `pnpm test` · `pnpm test:cov` | Jest, optionally with coverage |
+| `pnpm test:ui` | Playwright on the local dashboard and the website playground |
 | `pnpm check` | Biome lint + format, with fixes applied |
 | `pnpm --filter @numsy/website dev` | Run the docs website locally |
 
 ## <img src="assets/icons/layout.svg" width="22" alt="" /> Project layout
 
 ```text
-src/cli        numsy CLI · terminal output · server launcher
+src/engine     browser-safe engine shared by every surface (numsy/engine)
+src/cli        numsy CLI · terminal output · dashboard server launcher
 src/core       Numsy facade · Parser · PhoneValidator · FileProcessor
 src/common     pure functions · helpers · interfaces · types
-src/controllers, src/services   NestJS web server
-public/        web UI served by `numsy serve`
+src/controllers, src/services   NestJS server: dashboard API + legacy upload
+public/        REST API and health pages served by `numsy dashboard`
 test/          Jest specs
-website/       documentation site (GitHub Pages)
+e2e/           Playwright specs for both dashboards
+website/       website (Cloudflare Pages) and the shared dashboard UI (website/src/dashboard)
 assets/        brand assets and doc icons
 ```
 
@@ -63,7 +66,8 @@ assets/        brand assets and doc icons
 [Biome](https://biomejs.dev) formats and lints everything, and the pre-commit hook runs it on staged files.
 
 - Give public APIs explicit types, and avoid `any` in new code.
-- Keep `src/common/functions` pure; I/O belongs in `core/` or `cli/`.
+- Keep `src/engine` and `src/common/functions` free of Node.js imports; I/O belongs in `core/` or `cli/`.
+- Test files with synthetic data only. Never commit real phone numbers or contact lists.
 - Give every exported symbol a short JSDoc comment.
 - Naming: `PascalCase` for classes and types, `camelCase` for functions and variables, `UPPER_SNAKE_CASE` for constants.
 

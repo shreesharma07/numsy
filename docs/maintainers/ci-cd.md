@@ -23,7 +23,7 @@
 | Secret | Required | Used by |
 | --- | :-: | --- |
 | `GITHUB_TOKEN` | automatic | semantic-release (tags, releases, changelog commit) |
-| `NPM_TOKEN` | ✅ | npm publish: an npm **automation** token with publish rights to `@numsy` |
+| `NPM_TOKEN` | ✅ | npm publish: an npm **automation** token with publish rights to `numsy` |
 | `SNYK_TOKEN` | optional | Snyk scans (steps continue on error) |
 | `CODECOV_TOKEN` | optional | Coverage upload |
 
@@ -35,8 +35,8 @@ The site is built from `website/`. One build-time variable, `SITE_URL`, sets can
 
 | Target | URL | How it deploys | `SITE_URL` |
 | --- | --- | --- | --- |
-| **Cloudflare Pages** (primary) | https://numsy.pages.dev | Cloudflare Git integration, or `pnpm --filter @numsy/website deploy:cloudflare` | unset (default) |
-| GitHub Pages (alternate) | https://shreesharma07.github.io/numsy | `pages.yml` (needs GitHub Actions) | `https://shreesharma07.github.io/numsy` |
+| **Cloudflare Pages** (primary) | <https://numsy.pages.dev> | Cloudflare Git integration, or `pnpm --filter @numsy/website deploy:cloudflare` | unset (default) |
+| GitHub Pages (alternate) | <https://shreesharma07.github.io/numsy> | `pages.yml` (needs GitHub Actions) | `https://shreesharma07.github.io/numsy` |
 
 ### Cloudflare Pages setup (no GitHub Actions minutes)
 
