@@ -1,7 +1,7 @@
 // Builds an offline subset of the Phosphor icon set (Iconify "ph" collection)
 // containing only the icons referenced in src/ as "ph:<name>". The site then
 // never calls the Iconify API at runtime.
-import { readdirSync, readFileSync, statSync, writeFileSync } from 'node:fs';
+import { mkdirSync, readdirSync, readFileSync, statSync, writeFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -40,7 +40,9 @@ if (missing.length) {
   process.exit(1);
 }
 const subset = { prefix: 'ph', width: set.width ?? 256, height: set.height ?? 256, icons };
-writeFileSync(outFile, `${JSON.stringify(subset, null, 2)}\n`);
+// src/generated is git-ignored, so a clean checkout (e.g. Cloudflare's build) starts without it
+mkdirSync(dirname(outFile), { recursive: true });
+writeFileSync(outFile,`${JSON.stringify(subset, null, 2)}\n`);
 console.log(
   `[build-icons] ${Object.keys(icons).length} Phosphor icons -> src/generated/phosphor-icons.json`,
 );
