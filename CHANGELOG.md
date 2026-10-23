@@ -2,6 +2,53 @@
 
 All notable changes to this project will be documented in this file. See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.0.0](https://github.com/shreesharma07/numsy/compare/v1.1.0...v2.0.0) (2026-10-23)
+
+### ⚠ BREAKING CHANGES
+
+* **deps:** Node.js 20 or newer is now required (previously 18.3).
+The bundled web server now runs on NestJS 11 and Express 5.
+
+Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+
+### ✨ Features
+
+* **cli:** add `numsy` CLI with JSON, CSV, Markdown, Excel and text output ([3c35ba7](https://github.com/shreesharma07/numsy/commit/3c35ba73a9b8378b3f3299e11e348d62c95bcf24))
+* **core:** add in-memory `analyzeFile()` API and silent logging ([42187e6](https://github.com/shreesharma07/numsy/commit/42187e6f9860c0b5872cda62457690e13ef88f21))
+* **export:** add JSON, CSV, Markdown, Excel and text exporters ([bcce769](https://github.com/shreesharma07/numsy/commit/bcce7693f27a7b4d88b5ec18af64d99164efe505))
+
+### 🐛 Bug Fixes
+
+* **cli:** strip terminal control characters from file contents in output ([204ef36](https://github.com/shreesharma07/numsy/commit/204ef364c7f8d786c488d222648974f8b12918ee))
+* **package:** point `exports` at files the build actually emits ([84292c0](https://github.com/shreesharma07/numsy/commit/84292c09b01e0cf7d908be15124acea462217374))
+* **package:** stop publishing the release tarball inside `dist/` ([75ec81e](https://github.com/shreesharma07/numsy/commit/75ec81e431b0054c7398942fdf44f2028291e23a))
+* **phone:** extract numbers written with spaces, dashes or a +91 prefix ([0b531ce](https://github.com/shreesharma07/numsy/commit/0b531cef6d05f2e4a9b70ec8c1361448100cc027))
+* **serve:** stop serving the REST API under a doubled `/api/api` prefix ([7e04a63](https://github.com/shreesharma07/numsy/commit/7e04a632034abef5c622e8e1478bd602249a5663))
+
+### 📚 Documentation
+
+* credit Claude and Claude Code for building the v1.2 work ([0a6fb41](https://github.com/shreesharma07/numsy/commit/0a6fb418eb0447dedea58226aa7fdb48c9edbe80))
+* **maintainers:** Mermaid architecture diagrams and website hosting guide ([4a74baf](https://github.com/shreesharma07/numsy/commit/4a74baf5f6b43b3e7108b4b8f94f57a6288767ac))
+* point website links to numsy.pages.dev ([003518a](https://github.com/shreesharma07/numsy/commit/003518a2658774b6fbd2779e087cb949a10bfd46))
+* **readme:** link documentation sections to their website pages ([3ea3153](https://github.com/shreesharma07/numsy/commit/3ea31535d929891011fe13eab72ab98768f90490))
+* **releasing:** document milestone and audit tag conventions ([8194b74](https://github.com/shreesharma07/numsy/commit/8194b7488e154f6146beffa938c40a4920e037b9))
+* replace 27 legacy docs with a structured guide set ([338256f](https://github.com/shreesharma07/numsy/commit/338256f907b6532fb693bbb12189f30bfbac714f))
+* restyle README and community docs with a shared branded layout ([45f8846](https://github.com/shreesharma07/numsy/commit/45f8846210a737f99ad33c20491b6d9058872601))
+
+### ♻️ Code Refactoring
+
+* **public:** split server pages into pages/ and assets/, drop unused backups ([e4fa921](https://github.com/shreesharma07/numsy/commit/e4fa921a8e29ac0404650d30a7648f822e3e4693))
+
+### 🏗️ Build System
+
+* **deps:** move to pnpm 12 and Node 20+, upgrade dependencies and fix audit findings ([3235bdc](https://github.com/shreesharma07/numsy/commit/3235bdc362e7d56d12c6544ac0ddcf2dff358d30))
+* **deps:** pin conventional-changelog-conventionalcommits to 9.x for release notes ([268a3b9](https://github.com/shreesharma07/numsy/commit/268a3b95b7ebbb8ba6cd578ce35818d3fb856db5))
+* **deps:** update dependencies within their semver ranges via `pnpm up -r` ([ef8b7f9](https://github.com/shreesharma07/numsy/commit/ef8b7f9f4e93052232c6d007ffbb71e62a8191c3))
+
+# Changelog
+
+All notable changes to this project will be documented in this file. See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
+
 ## [1.1.0](https://github.com/shreesharma07/numsy/compare/v1.0.0...v1.1.0) (2026-03-09)
 
 ### ✨ Features
