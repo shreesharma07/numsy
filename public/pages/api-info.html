@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Numsy API Documentation - Phone Number Validation API" />
+    <meta name="color-scheme" content="light dark" />
+    <title>Numsy API Documentation</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="shortcut icon"
+        href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📚</text></svg>" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap"
+        rel="stylesheet" />
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="stylesheet" href="/assets/css/api-info.css" />
+</head>
+
+<body>
+    <a href="/" class="home-btn">
+        <i data-lucide="home"></i>
+        <span>Home</span>
+    </a>
+
+    <button class="theme-toggle" id="themeToggle">
+        <i data-lucide="moon"></i>
+        <span>Dark</span>
+    </button>
+
+    <div class="container">
+        <div class="header">
+            <h1>📚 API Documentation</h1>
+            <p>Numsy - Phone Number Validation API</p>
+        </div>
+
+        <div class="card">
+            <h2>
+                <i data-lucide="info"></i>
+                Overview
+            </h2>
+            <p style="color: var(--text-secondary); line-height: 1.8;">
+                The Numsy API provides endpoints for uploading and processing CSV/Excel files containing phone numbers.
+                The API validates Indian mobile numbers, removes duplicates, and provides detailed analytics.
+            </p>
+        </div>
+
+        <div class="card">
+            <h2>
+                <i data-lucide="zap"></i>
+                Endpoints
+            </h2>
+
+            <!-- Upload Endpoint -->
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="method post">POST</span>
+                    <span class="endpoint-path">/api/upload</span>
+                </div>
+                <p class="endpoint-description">
+                    Upload and process a CSV or Excel file containing phone numbers. Returns processed data with
+                    analytics and a download ID.
+                </p>
+
+                <h4 style="margin-top: 1.5rem; margin-bottom: 0.75rem; color: var(--text-primary);">Request</h4>
+                <ul class="param-list">
+                    <li>
+                        <span class="param-name">file</span>
+                        <span class="param-type">File (multipart/form-data)</span>
+                        <span class="badge required">Required</span>
+                        <div style="margin-top: 0.5rem; color: var(--text-secondary); font-size: 0.875rem;">
+                            CSV, XLSX, or XLS file (max 50MB)
+                        </div>
+                    </li>
+                </ul>
+
+                <h4 style="margin-top: 1.5rem; margin-bottom: 0.75rem; color: var(--text-primary);">Response</h4>
+                <div class="code-block">
+                    <pre>{
+  "success": true,
+  "message": "File processed successfully",
+  "summary": {
+    "totalRecords": 1000,
+    "validRecords": 850,
+    "invalidRecords": 150,
+    "duplicatesRemoved": 50
+  },
+  "downloadId": "processed_1234567890"
+}</pre>
+                </div>
+            </div>
+
+            <!-- Download Endpoint -->
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="method get">GET</span>
+                    <span class="endpoint-path">/api/download/:id</span>
+                </div>
+                <p class="endpoint-description">
+                    Download the processed ZIP file containing valid numbers, invalid numbers, and analytics report.
+                </p>
+
+                <h4 style="margin-top: 1.5rem; margin-bottom: 0.75rem; color: var(--text-primary);">Parameters</h4>
+                <ul class="param-list">
+                    <li>
+                        <span class="param-name">id</span>
+                        <span class="param-type">String (URL parameter)</span>
+                        <span class="badge required">Required</span>
+                        <div style="margin-top: 0.5rem; color: var(--text-secondary); font-size: 0.875rem;">
+                            Download ID returned from the upload endpoint
+                        </div>
+                    </li>
+                </ul>
+
+                <h4 style="margin-top: 1.5rem; margin-bottom: 0.75rem; color: var(--text-primary);">Response</h4>
+                <p style="color: var(--text-secondary); font-size: 0.875rem; margin-bottom: 1rem;">
+                    Returns a ZIP file containing:
+                </p>
+                <ul style="color: var(--text-secondary); margin-left: 2rem; line-height: 1.8;">
+                    <li><strong>*_valid_*.csv</strong> - Valid phone numbers</li>
+                    <li><strong>*_invalid_*.csv</strong> - Invalid phone numbers with reasons</li>
+                    <li><strong>*_analytics_*.txt</strong> - Detailed analytics report</li>
+                </ul>
+            </div>
+
+            <!-- Health Endpoint -->
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="method get">GET</span>
+                    <span class="endpoint-path">/api/health</span>
+                </div>
+                <p class="endpoint-description">
+                    Health check endpoint to verify API status.
+                </p>
+
+                <h4 style="margin-top: 1.5rem; margin-bottom: 0.75rem; color: var(--text-primary);">Response</h4>
+                <div class="code-block">
+                    <pre>{
+  "status": "OK",
+  "timestamp": "2026-03-09T12:00:00.000Z"
+}</pre>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>
+                <i data-lucide="shield-check"></i>
+                Validation Rules
+            </h2>
+            <ul style="color: var(--text-secondary); line-height: 2; list-style: none;">
+                <li>✓ Must be exactly 10 digits</li>
+                <li>✓ Must start with 6, 7, 8, or 9</li>
+                <li>✓ Only valid Indian mobile numbers</li>
+                <li>✓ Automatic duplicate removal</li>
+                <li>✓ Support for multiple numbers per row</li>
+            </ul>
+        </div>
+    </div>
+
+    <script src="/assets/js/api-info.js"></script>
+</body>
+
+</html>

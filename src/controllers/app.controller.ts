@@ -18,6 +18,11 @@ import * as fs from 'node:fs';
 import { FileProcessorService } from '../services/file-processor.service';
 
 /**
+ * HTML pages shipped in the package (resolved from dist/ or src/, not the working directory)
+ */
+const PAGES_DIR = path.join(__dirname, '..', '..', 'public', 'pages');
+
+/**
  * Controller for handling file upload and download operations
  */
 @Controller('api')
@@ -48,7 +53,7 @@ export class AppController {
    */
   @Get()
   getApiDocs(@Res() res: Response): void {
-    const apiDocsPath = path.join(process.cwd(), 'public', 'api-info.html');
+    const apiDocsPath = path.join(PAGES_DIR, 'api-info.html');
     res.sendFile(apiDocsPath);
   }
 
@@ -57,7 +62,7 @@ export class AppController {
    */
   @Get('health-page')
   getHealthPage(@Res() res: Response): void {
-    const healthPagePath = path.join(process.cwd(), 'public', 'health.html');
+    const healthPagePath = path.join(PAGES_DIR, 'health.html');
     res.sendFile(healthPagePath);
   }
 

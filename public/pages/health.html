@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Numsy API Health Check" />
+    <meta name="color-scheme" content="light dark" />
+    <title>Numsy Health Check</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="shortcut icon"
+        href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>💚</text></svg>" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+        rel="stylesheet" />
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="stylesheet" href="/assets/css/health.css" />
+</head>
+
+<body>
+    <button class="theme-toggle" id="themeToggle">
+        <i data-lucide="moon"></i>
+        <span>Dark</span>
+    </button>
+
+    <div class="container">
+        <div class="card">
+            <i class="status-icon loading" data-lucide="activity" id="statusIcon"></i>
+            <h1 class="loading" id="statusTitle">Checking Health...</h1>
+            <p class="description" id="statusDescription">Connecting to Numsy API...</p>
+
+            <div class="info-grid" id="infoGrid" style="display: none;">
+                <div class="info-item">
+                    <span class="info-label">Status</span>
+                    <span class="info-value" id="statusValue">-</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Timestamp</span>
+                    <span class="info-value" id="timestampValue">-</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Response Time</span>
+                    <span class="info-value" id="responseTimeValue">-</span>
+                </div>
+            </div>
+
+            <div class="btn-group">
+                <a href="/" class="btn btn-primary">
+                    <i data-lucide="home"></i>
+                    Home
+                </a>
+                <button class="btn btn-secondary" onclick="checkHealth()">
+                    <i data-lucide="refresh-cw"></i>
+                    Refresh
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="/assets/js/health.js"></script>
+</body>
+
+</html>
