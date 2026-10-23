@@ -42,7 +42,7 @@ if (missing.length) {
 const subset = { prefix: 'ph', width: set.width ?? 256, height: set.height ?? 256, icons };
 // src/generated is git-ignored, so a clean checkout (e.g. Cloudflare's build) starts without it
 mkdirSync(dirname(outFile), { recursive: true });
-writeFileSync(outFile,`${JSON.stringify(subset, null, 2)}\n`);
+writeFileSync(outFile, `${JSON.stringify(subset, null, 2)}\n`);
 console.log(
   `[build-icons] ${Object.keys(icons).length} Phosphor icons -> src/generated/phosphor-icons.json`,
 );

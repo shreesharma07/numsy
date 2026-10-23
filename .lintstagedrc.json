@@ -1,4 +1,6 @@
 {
-  "*.{ts,js,json}": ["biome check --write --no-errors-on-unmatched --files-ignore-unknown=true"],
+  "*.{ts,tsx,js,mjs,cjs,json,css}": [
+    "biome check --write --no-errors-on-unmatched --files-ignore-unknown=true"
+  ],
   "*.ts": ["jest --bail --findRelatedTests --passWithNoTests"]
 }
