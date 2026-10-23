@@ -1,6 +1,6 @@
 /*
- * Numsy design tokens — the only place colours, type and spacing are defined.
- * Palette: "Creative Energy" poster — coral, amber, violet, ink on cream paper.
+ * Numsy design tokens: the only place colours, type and spacing are defined.
+ * Palette: "Creative Energy" poster (coral, amber, violet, ink on cream paper).
  * Rule: text on coral/amber blocks is always ink; text on violet is always cream.
  */
 :root {
@@ -14,7 +14,7 @@
   --on-amber: var(--ink);
   --on-violet: var(--cream);
 
-  /* semantic — light theme */
+  /* semantic: light theme */
   --bg: #faf6ef;
   --bg-alt: #f2ebdf;
   --surface: #fffdf9;

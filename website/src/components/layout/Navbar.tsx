@@ -34,7 +34,7 @@ export function Navbar() {
   return (
     <header className="navbar">
       <Container className="navbar__inner">
-        <Link className="navbar__brand" to="/" aria-label="Numsy — home">
+        <Link className="navbar__brand" to="/" aria-label="Numsy home">
           <LogoMark size={36} />
           <Wordmark height={18} className="navbar__wordmark" />
         </Link>

@@ -5,7 +5,7 @@ import './BuiltWithClaude.css';
 const ICONS = ['ph:sparkle-duotone', 'ph:robot-duotone', 'ph:code-duotone'] as const;
 
 /**
- * Poster-style "Built with Claude" credit. Text + Phosphor icons only — no third-party
+ * Poster-style "Built with Claude" credit. Text + Phosphor icons only, no third-party
  * logo artwork. Used at the top of /credits and near the end of the home page.
  */
 export function BuiltWithClaude({ headingLevel = 2, id }: { headingLevel?: 2 | 3; id?: string }) {

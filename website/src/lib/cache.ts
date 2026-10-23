@@ -25,7 +25,7 @@ function writeCache<T>(key: string, v: T): void {
   try {
     sessionStorage.setItem(key, JSON.stringify({ t: Date.now(), v } satisfies Entry<T>));
   } catch {
-    // storage full or blocked — caching is best effort
+    // storage full or blocked: caching is best effort
   }
 }
 

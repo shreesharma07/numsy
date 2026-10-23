@@ -9,7 +9,7 @@ export function Footer() {
       <Container>
         <div className="footer__top">
           <div className="footer__brand">
-            <Link to="/" className="footer__logo" aria-label="Numsy — home">
+            <Link to="/" className="footer__logo" aria-label="Numsy home">
               <LogoMark size={40} className="footer__mark" />
               <Wordmark height={22} />
             </Link>

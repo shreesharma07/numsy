@@ -262,7 +262,7 @@ export const credits: Credit[] = [
     url: 'https://github.com/shreesharma07/numsy/tree/main/assets/brand',
     license: 'Inspiration only',
     usedFor:
-      'Colour template — coral #FF4D6D, amber #FFB703, violet #8338EC and ink #111111 on cream paper — and the Swiss/Bauhaus poster style.',
+      'Colour template (coral #FF4D6D, amber #FFB703, violet #8338EC and ink #111111 on cream paper) and the Swiss/Bauhaus poster style.',
     category: 'Design',
   },
 ];

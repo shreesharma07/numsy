@@ -13,7 +13,7 @@ export function FormatsPage() {
         label="Docs / Output formats"
         num="-f, --format"
         title="Six ways out."
-        lede="Pick one format or several. Samples are illustrative — exact columns depend on the command."
+        lede="Pick one format or several. Samples are illustrative; exact columns depend on the command."
         art={false}
       />
       <Section id="formats" num="01" label="Formats" title="Pick your output.">

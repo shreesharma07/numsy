@@ -18,7 +18,7 @@ export interface Feature {
 export const features: Feature[] = [
   {
     title: 'Strict Indian mobile rules',
-    body: '10 digits, 6–9 prefix, and rejection of repeated, sequential and dummy patterns — with a human-readable reason for every failure.',
+    body: '10 digits, 6–9 prefix, and rejection of repeated, sequential and dummy patterns, with a human-readable reason for every failure.',
     icon: 'ph:seal-check-bold',
     tone: 'coral',
   },
@@ -36,7 +36,7 @@ export const features: Feature[] = [
   },
   {
     title: 'Six output formats',
-    body: 'Table, JSON, CSV, Markdown, Excel and TXT — pick several at once with `-f json,csv,xlsx`.',
+    body: 'Table, JSON, CSV, Markdown, Excel and TXT. Pick several at once with `-f json,csv,xlsx`.',
     icon: 'ph:export-bold',
     tone: 'ink',
   },

@@ -8,7 +8,7 @@ try {
 }
 
 /** 1234 → "1.2K"; anything that isn't a finite non-negative number → fallback. */
-export function formatCount(n: unknown, fallback = '—'): string {
+export function formatCount(n: unknown, fallback = '-'): string {
   if (!isCount(n)) return fallback;
   return compact ? compact.format(n) : String(n);
 }

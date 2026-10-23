@@ -16,7 +16,7 @@ export interface StatProps {
 export function Stat({
   label,
   value,
-  fallback = '—',
+  fallback = '-',
   prefix = '',
   href,
   tone = 'surface',

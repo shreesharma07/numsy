@@ -9,7 +9,7 @@ export function NotFoundPage() {
     <PageHeader
       label="Error / 404"
       num="Not found"
-      title="404 — Number not found."
+      title="404: Number not found."
       lede="This page didn't pass validation. It may have moved, or the link has a typo."
     >
       <div className="row">

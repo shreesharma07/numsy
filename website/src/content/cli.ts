@@ -46,7 +46,7 @@ export const optionGroups: CliOptionGroup[] = [
         flag: '-o, --output <path>',
         description:
           'Output file. The format is inferred from the extension when `--format` is omitted.',
-        defaultValue: '—',
+        defaultValue: 'none',
       },
       {
         flag: '-d, --out-dir <dir>',
@@ -112,7 +112,7 @@ export const optionGroups: CliOptionGroup[] = [
       {
         flag: '--keep <first|last>',
         description: 'Drop repeats, keeping the first or the last occurrence.',
-        defaultValue: '—',
+        defaultValue: 'none',
       },
       {
         flag: '--loose',
@@ -139,7 +139,7 @@ export const optionGroups: CliOptionGroup[] = [
       {
         flag: '-i, --input <file>',
         description: 'Read values from a text file (validate/extract).',
-        defaultValue: '—',
+        defaultValue: 'none',
       },
       {
         flag: '-c, --column <name>',
@@ -179,7 +179,7 @@ export const optionGroups: CliOptionGroup[] = [
       {
         flag: '-v, --version · -h, --help',
         description: 'Print version / help.',
-        defaultValue: '—',
+        defaultValue: 'none',
       },
     ],
   },

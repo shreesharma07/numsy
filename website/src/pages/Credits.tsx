@@ -13,7 +13,7 @@ export function CreditsPage() {
         label="Credits / Standing on shoulders"
         num="Thanks"
         title="Credits."
-        lede="Every external library, font, icon set, API and inspiration this site uses — with licenses."
+        lede="Every external library, font, icon set, API and inspiration this site uses, with licenses."
       />
       <Section id="credits">
         <div className="mb-6">

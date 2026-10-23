@@ -24,7 +24,7 @@ export function HomePage() {
         num="01"
         label="Features / What's inside"
         title="Small package. Serious cleanup."
-        lede="Phone columns in real spreadsheets are chaos. Numsy turns them into clean 10-digit Indian mobile numbers — and tells you exactly why the rest were rejected."
+        lede="Phone columns in real spreadsheets are chaos. Numsy turns them into clean 10-digit Indian mobile numbers and tells you exactly why the rest were rejected."
         tone="alt"
       >
         <FeatureGrid />
@@ -42,7 +42,7 @@ export function HomePage() {
         num="03"
         label="Playground / Runs in your browser"
         title="Paste. Validate. Download."
-        lede="Try the rules on your own data without installing anything — nothing you paste leaves the page."
+        lede="Try the rules on your own data without installing anything. Nothing you add leaves the page."
         tone="alt"
       >
         <div className="row">

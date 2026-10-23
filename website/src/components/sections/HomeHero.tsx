@@ -47,7 +47,7 @@ export function HomeHero() {
             <p className="lede hero__lede">
               <strong>Numsy</strong> is a lightweight TypeScript toolkit and CLI that validates,
               sanitizes, extracts and de-duplicates Indian mobile numbers in CSV, Excel and free
-              text — locally, in seconds.
+              text, locally and in seconds.
             </p>
             <CodeBlock
               code={`$ ${pkg.install.npm}`}

@@ -107,7 +107,7 @@ export const community: { label: string; href: string; blurb: string; icon: `ph:
   {
     label: 'License',
     href: repo.file('LICENSE'),
-    blurb: 'MIT — free for commercial use.',
+    blurb: 'MIT, free for commercial use.',
     icon: 'ph:scales-bold',
   },
   {
@@ -184,7 +184,7 @@ export const sitemap: SitemapGroup[] = [
   },
 ];
 
-/** "Built with Claude" credit — shown on Home, Credits, About and in the footer. */
+/** "Built with Claude" credit, shown on Home, Credits, About and in the footer. */
 export const builtWithClaude = {
   claudeUrl: 'https://claude.ai',
   claudeCodeUrl: 'https://claude.com/claude-code',
@@ -193,7 +193,7 @@ export const builtWithClaude = {
   body: "Numsy's v1.2 work was vibe-coded with **Claude** via **Claude Code**, directed by Shri Kumar Sharma.",
   built: ['The new CLI', 'Exporters', 'Biome migration', 'Docs', 'Brand assets', 'This website'],
   aboutLine:
-    'Numsy 1.2 — the CLI, exporters, docs, brand and this website — was built in collaboration with Claude, an AI assistant, via Claude Code.',
+    'Numsy 2.x (the CLI, shared engine, local dashboard, playground, exporters, docs, brand and this website) was built in collaboration with Claude, an AI assistant, via Claude Code.',
   disclaimer:
     'Claude and Claude Code are products of Anthropic. This is a credit for how the project was made, not an endorsement by Anthropic.',
 } as const;

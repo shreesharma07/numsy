@@ -9,14 +9,14 @@ export interface OutputFormat {
   sample: string;
 }
 
-/** Samples are illustrative — exact columns may vary by command. */
+/** Samples are illustrative; exact columns may vary by command. */
 export const formats: OutputFormat[] = [
   {
     id: 'table',
     name: 'Table',
     ext: 'default',
     tone: 'ink',
-    description: 'Readable summary in the terminal — great for quick checks.',
+    description: 'Readable summary in the terminal, good for quick checks.',
     sample: `#  INPUT            SANITIZED   STATUS
 1  +91 98765 01234  9876501234  valid
 2  98765 43210      9876543210  sequential`,
@@ -58,7 +58,7 @@ export const formats: OutputFormat[] = [
     ext: '.xlsx',
     tone: 'amber',
     description:
-      'A real workbook for people who live in Excel — one row per number with status columns.',
+      'A real workbook for people who live in Excel: one row per number, with status columns.',
     sample: 'numsy process leads.csv -f xlsx',
   },
   {
@@ -66,7 +66,7 @@ export const formats: OutputFormat[] = [
     name: 'TXT',
     ext: '.txt',
     tone: 'coral',
-    description: 'One number per line — the simplest input for SMS tools and other CLIs.',
+    description: 'One number per line, the simplest input for SMS tools and other CLIs.',
     sample: `9876501234
 9123456789`,
   },

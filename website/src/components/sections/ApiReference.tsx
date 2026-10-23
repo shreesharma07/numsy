@@ -4,7 +4,7 @@ import { CodeBlock, RichText, Table } from '../ui';
 export function ApiMethods() {
   return (
     <Table
-      caption="Numsy class — new Numsy(options?)"
+      caption="Numsy class: new Numsy(options?)"
       columns={[
         { key: 'sig', header: 'Method', rowHeader: true },
         { key: 'ret', header: 'Returns' },

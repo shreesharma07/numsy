@@ -24,7 +24,7 @@ const pillars: { k: string; title: string; body: string }[] = [
   {
     k: 'B',
     title: 'Extract',
-    body: 'Every number out of free text or a crowded cell — commas, slashes, pipes, “or”, “and”.',
+    body: 'Every number out of free text or a crowded cell: commas, slashes, pipes, “or”, “and”.',
   },
   {
     k: 'C',
@@ -34,7 +34,7 @@ const pillars: { k: string; title: string; body: string }[] = [
   {
     k: 'D',
     title: 'Export',
-    body: 'Table, JSON, CSV, Markdown, Excel or TXT — or the classic ZIP report bundle.',
+    body: 'Table, JSON, CSV, Markdown, Excel or TXT, or the classic ZIP report bundle.',
   },
 ];
 
@@ -64,7 +64,7 @@ export function GettingStartedPage() {
             </p>
             <p className="muted">
               Numsy normalises all of them into clean 10-digit Indian mobile numbers, explains every
-              rejection, and exports the result in the format your next tool expects — as a{' '}
+              rejection, and exports the result in the format your next tool expects, as a{' '}
               <strong>CLI</strong>, a <strong>TypeScript library</strong> or a{' '}
               <strong>local dashboard and REST API</strong>.
             </p>
@@ -141,7 +141,7 @@ export function GettingStartedPage() {
         <Callout tone="note" title="Supported inputs">
           <p>
             <code>.csv</code> and <code>.xlsx</code> files, stdin and plain strings. Legacy binary{' '}
-            <code>.xls</code> is not supported — re-save it as .xlsx or .csv.
+            <code>.xls</code> is not supported. Re-save it as .xlsx or .csv.
           </p>
         </Callout>
       </Section>

@@ -1,5 +1,5 @@
 /**
- * Route manifest — the single source of truth for every page's path and meta.
+ * Route manifest: the single source of truth for every page's path and meta.
  * Used at runtime (usePageMeta) and at build time (vite/route-shells.ts) to emit
  * per-route HTML shells, 404.html and sitemap.xml. Keep this file free of React/CSS imports.
  */
@@ -67,7 +67,7 @@ export const pages = {
     path: '/docs/formats',
     title: 'Output formats',
     description:
-      'Export cleaned numbers as a terminal table, JSON, CSV, Markdown, Excel (.xlsx) or plain text — one format or several at once.',
+      'Export cleaned numbers as a terminal table, JSON, CSV, Markdown, Excel (.xlsx) or plain text, one format or several at once.',
     priority: 0.8,
   },
   webui: {

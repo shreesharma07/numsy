@@ -33,7 +33,7 @@ export function LocalApp() {
   return (
     <div className="local">
       <header className="local__bar">
-        <a className="local__brand" href="/" aria-label="Numsy Dashboard — reload">
+        <a className="local__brand" href="/" aria-label="Reload Numsy Dashboard">
           <LogoMark size={34} />
           <span className="local__title">
             Numsy <span>Dashboard</span>

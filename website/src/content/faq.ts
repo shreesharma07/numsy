@@ -6,7 +6,7 @@ export const faq: { q: string; a: string }[] = [
   },
   {
     q: 'Can I process .xls files?',
-    a: 'Use **.xlsx** or **.csv**. Legacy binary `.xls` (Excel 97–2003) is not supported — open it in Excel, LibreOffice or Google Sheets and save it as .xlsx or .csv first.',
+    a: 'Use **.xlsx** or **.csv**. Legacy binary `.xls` (Excel 97–2003) is not supported. Open it in Excel, LibreOffice or Google Sheets and save it as .xlsx or .csv first.',
   },
   {
     q: 'Does my data leave my machine?',

@@ -1,5 +1,5 @@
 {
-  "name": "Numsy — Indian mobile number toolkit",
+  "name": "Numsy: Indian mobile number toolkit",
   "short_name": "Numsy",
   "description": "Validate, sanitize, extract and de-duplicate Indian mobile numbers from CSV/Excel datasets.",
   "start_url": "./",

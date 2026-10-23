@@ -114,8 +114,8 @@ export const exporters: { name: string; output: string }[] = [
   },
   { name: 'toMarkdown(rows, { columns?, title?, summary? })', output: 'Markdown table string' },
   { name: 'toText(values)', output: 'One value per line' },
-  { name: 'writeXlsx(sheets, filePath)', output: 'Writes an Excel workbook — Promise<void>' },
-  { name: 'toXlsxBuffer(sheets)', output: 'Excel workbook as a Buffer — Promise<Buffer>' },
+  { name: 'writeXlsx(sheets, filePath)', output: 'Writes an Excel workbook: Promise<void>' },
+  { name: 'toXlsxBuffer(sheets)', output: 'Excel workbook as a Buffer: Promise<Buffer>' },
 ];
 
 export const exportersExample = `import { Numsy, toCSV, toMarkdown, writeXlsx } from 'numsy';
@@ -123,7 +123,7 @@ export const exportersExample = `import { Numsy, toCSV, toMarkdown, writeXlsx } 
 const numsy = new Numsy({ enableLogging: false });
 const report = await numsy.analyzeFile('leads.csv');
 
-const csv = toCSV(report.validRows); // string — write it wherever you like
+const csv = toCSV(report.validRows); // a string: write it wherever you like
 const md = toMarkdown(report.unique, { title: 'Unique leads' });
 await writeXlsx(
   [
@@ -144,7 +144,7 @@ export const constructorOptions: { name: string; type: string; defaultValue: str
   {
     name: 'normalizeColumns',
     type: '`boolean`',
-    defaultValue: '`true` — the CLI keeps original headers unless `--normalize` is passed',
+    defaultValue: '`true` (the CLI keeps original headers unless `--normalize` is passed)',
   },
 ];
 

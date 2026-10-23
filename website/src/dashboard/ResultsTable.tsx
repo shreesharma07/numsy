@@ -109,7 +109,7 @@ export function ResultsTable({
                       className={NUMERIC.has(column.key) ? 'results__mono' : undefined}
                     >
                       {row.cells[column.key] === '' ? (
-                        <span className="muted">—</span>
+                        <span className="muted">-</span>
                       ) : (
                         row.cells[column.key]
                       )}

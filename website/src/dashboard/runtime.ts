@@ -17,8 +17,8 @@ export interface ExportedFile {
 
 /**
  * Where the dashboard does its work.
- * - local:   `numsy dashboard` — the Node server parses, analyses and exports
- * - browser: the website — a Web Worker does the same with the same engine
+ * - local:   `numsy dashboard`; the Node server parses, analyses and exports
+ * - browser: the website; a Web Worker does the same with the same engine
  */
 export interface Runtime {
   kind: 'local' | 'browser';

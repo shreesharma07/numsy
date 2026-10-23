@@ -14,7 +14,7 @@ import {
  * GitHub Pages has no SPA rewrites. Instead of the "?/" redirect hack we emit a real
  * HTML shell per route (dist/docs/cli/index.html, ...) with that route's <title> and meta
  * baked in, so deep links return HTTP 200 with correct social previews. Unknown URLs get
- * dist/404.html — the same SPA shell — and React Router renders the NotFound page.
+ * dist/404.html (the same SPA shell), and React Router renders the NotFound page.
  * Also writes sitemap.xml from the same route manifest.
  */
 
@@ -43,7 +43,7 @@ export function renderHead(meta: PageMeta, opts: { noindex?: boolean } = {}): st
     `<meta property="og:image" content="${OG_IMAGE}" />`,
     `<meta property="og:image:width" content="1200" />`,
     `<meta property="og:image:height" content="630" />`,
-    `<meta property="og:image:alt" content="Numsy — Validate. Extract. De-dupe." />`,
+    `<meta property="og:image:alt" content="Numsy: Validate. Extract. De-dupe." />`,
     `<meta property="og:locale" content="en_IN" />`,
     `<meta name="twitter:card" content="summary_large_image" />`,
     `<meta name="twitter:title" content="${title}" />`,

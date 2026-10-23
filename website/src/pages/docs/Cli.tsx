@@ -18,7 +18,7 @@ export function CliPage() {
         label="Docs / CLI reference"
         num="New in 1.2.0"
         title="The numsy command."
-        lede="Validate, extract and process files from your terminal or CI — with one or many output formats."
+        lede="Validate, extract and process files from your terminal or CI, with one or many output formats."
         art={false}
       >
         <CodeBlock code={synopsis} lang="text" label="Synopsis" copy={false} />

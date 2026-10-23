@@ -27,7 +27,8 @@ export function ContributorGrid() {
       </ul>
       {state === 'error' && (
         <p className="muted">
-          Live contributor list unavailable right now (GitHub API limit) — showing the maintainer.
+          Live contributor list unavailable right now (GitHub API limit), so only the maintainer is
+          shown.
         </p>
       )}
     </>
