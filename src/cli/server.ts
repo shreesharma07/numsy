@@ -2,17 +2,23 @@
 
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from '../app.module';
-import * as net from 'net';
+import * as net from 'node:net';
 import { Logger } from '@nestjs/common';
 
 const logger = new Logger('ServerCLI');
 
 /**
- * CLI Options interface
+ * Options accepted by startServer
  */
-interface CLIOptions {
+export interface ServerOptions {
   port?: number;
   page?: boolean;
+}
+
+/**
+ * CLI Options interface
+ */
+interface CLIOptions extends ServerOptions {
   help?: boolean;
 }
 
@@ -54,6 +60,14 @@ async function findAvailablePort(preferredPort: number): Promise<number> {
 }
 
 /**
+ * Parse a port value, returning undefined when it is out of range
+ */
+export function parsePort(value: string | undefined): number | undefined {
+  const port = parseInt(String(value), 10);
+  return !Number.isNaN(port) && port >= 1024 && port <= 65535 ? port : undefined;
+}
+
+/**
  * Parse command line arguments
  */
 function parseCLIArgs(): CLIOptions {
@@ -65,14 +79,15 @@ function parseCLIArgs(): CLIOptions {
 
     switch (arg) {
       case '--port':
-      case '-p':
-        const portValue = parseInt(args[++i]);
-        if (!isNaN(portValue) && portValue >= 1024 && portValue <= 65535) {
-          options.port = portValue;
+      case '-p': {
+        const port = parsePort(args[++i]);
+        if (port) {
+          options.port = port;
         } else {
           logger.error('Invalid port number. Using default.');
         }
         break;
+      }
 
       case '--page':
       case '--serve':
@@ -95,114 +110,90 @@ function parseCLIArgs(): CLIOptions {
  */
 function displayHelp(): void {
   console.log(`
-╔═══════════════════════════════════════════════════════════════╗
-║                    NUMSY SERVER CLI                           ║
-╚═══════════════════════════════════════════════════════════════╝
+Numsy server — web UI + REST API
 
-Usage: numsy-serve [options]
+Usage: numsy serve [options]      (or: numsy-serve [options])
 
 Options:
-  -p, --port <number>     Specify port number (default: 3000)
-  -s, --page, --serve     Serve the HTML utility page
+  -p, --port <number>     Port to listen on (default: 3000, next free port is used if busy)
   -h, --help              Display this help message
-
-Examples:
-  $ numsy-serve                    # Start server on default port
-  $ numsy-serve --port 3000        # Start server on port 3000
-  $ numsy-serve --page             # Serve HTML utility page
-  $ numsy-serve -p 8080 --page     # Custom port with HTML page
 
 Environment Variables:
   PORT                    Override default port
   NODE_ENV                Set environment (development/production)
 
-For more information, visit:
-  https://github.com/shreesharma07/numsy
+Docs: https://shreesharma07.github.io/numsy/
 `);
 }
 
 /**
- * Bootstrap the NestJS application
+ * Start the NestJS server (web UI on "/", API under "/api")
  */
-async function bootstrap(): Promise<void> {
-  try {
-    // * // Parse command line arguments to get options for port and whether to serve the HTML utility page. This allows users to customize the server behavior directly from the command line when starting the server. //
-    const options = parseCLIArgs();
+export async function startServer(options: ServerOptions = {}): Promise<void> {
+  const preferredPort = options.port || parsePort(process.env.PORT) || 3000;
 
-    // ! // Check if help flag is present and display help if it is. This allows users to easily access usage information without needing to refer to external documentation. //
-    if (options.help) {
-      displayHelp();
-      process.exit(0);
-    }
+  logger.log(`Looking for available port starting from ${preferredPort}...`);
+  const port = await findAvailablePort(preferredPort);
 
-    // * // Determine preferred port //
-    const preferredPort = options.port || parseInt(process.env.PORT || '3000') || 3000;
+  if (port !== preferredPort) {
+    logger.warn(`Port ${preferredPort} is in use. Using port ${port} instead.`);
+  }
 
-    // * // Log the preferred port and start looking for an available port. This will help users understand which port the server is trying to use and why it might switch to a different one if the preferred port is in use. //
-    logger.log(`Looking for available port starting from ${preferredPort}...`);
+  const app = await NestFactory.create(AppModule, {
+    logger: ['log', 'error', 'warn'],
+  });
 
-    // * // This will check if the preferred port is available, and if not, it will increment the port number until it finds an available one. It will also log a warning if the preferred port is in use and a different port is being used instead. //
-    const port = await findAvailablePort(preferredPort);
+  app.enableCors({
+    origin: '*',
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
+  });
 
-    if (port !== preferredPort) {
-      logger.warn(`Port ${preferredPort} is in use. Using port ${port} instead.`);
-    }
+  // Routes are already namespaced by @Controller('api'), so no global prefix here
+  await app.listen(port);
 
-    // Create NestJS application
-    const app = await NestFactory.create(AppModule, {
-      logger: ['log', 'error', 'warn', 'debug', 'verbose'],
-    });
+  const url = `http://localhost:${port}`;
 
-    // Enable CORS
-    app.enableCors({
-      origin: '*',
-      methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
-      credentials: true,
-    });
+  logger.log(`
+  Numsy server is running
 
-    // Set global prefix
-    app.setGlobalPrefix('api');
+  Web UI         ${url}
+  API            ${url}/api
+  Health check   ${url}/api/health
+  Environment    ${process.env.NODE_ENV || 'development'}
+  Process ID     ${process.pid}
 
-    // Start listening
-    await app.listen(port);
-
-    const url = `http://localhost:${port}`;
-    const apiUrl = `${url}/api`;
-    const healthUrl = `${url}/api/health`;
-    const pageUrl = options.page ? `${url}` : null;
-
-    logger.log(`
-╔═══════════════════════════════════════════════════════════════╗
-║                  ✅ Server Started Successfully                ║
-╚═══════════════════════════════════════════════════════════════╝
-
-🚀 Server running on:      ${url}
-📡 API endpoint:           ${apiUrl}
-💚 Health check:           ${healthUrl}
-${pageUrl ? `🌐 Utility page:          ${pageUrl}\n` : ''}
-📝 Environment:            ${process.env.NODE_ENV || 'development'}
-⚡ Process ID:             ${process.pid}
-
-Press Ctrl+C to stop the server
+  Press Ctrl+C to stop the server
     `);
 
-    // Graceful shutdown
-    process.on('SIGTERM', async () => {
-      logger.log('SIGTERM signal received: closing HTTP server');
-      await app.close();
-      process.exit(0);
-    });
+  const shutdown = async (signal: string) => {
+    logger.log(`${signal} received: closing HTTP server`);
+    await app.close();
+    process.exit(0);
+  };
 
-    process.on('SIGINT', async () => {
-      logger.log('\nSIGINT signal received: closing HTTP server');
-      await app.close();
-      process.exit(0);
-    });
+  process.on('SIGTERM', () => shutdown('SIGTERM'));
+  process.on('SIGINT', () => shutdown('SIGINT'));
+}
+
+/**
+ * Bootstrap when executed directly as the numsy-serve binary
+ */
+async function bootstrap(): Promise<void> {
+  const options = parseCLIArgs();
+
+  if (options.help) {
+    displayHelp();
+    process.exit(0);
+  }
+
+  try {
+    await startServer(options);
   } catch (error) {
     logger.error('Failed to start server:', error);
     process.exit(1);
   }
 }
 
-// Start the server
-bootstrap();
+if (require.main === module) {
+  bootstrap();
+}
