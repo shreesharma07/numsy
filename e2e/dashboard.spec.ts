@@ -184,12 +184,76 @@ test('the local dashboard makes no requests outside this machine', async ({ page
 test('the playground never uploads data', async ({ page }, info) => {
   test.skip(info.project.name !== 'website', 'website only');
   const writes: string[] = [];
+  const beacons: string[] = [];
   page.on('request', (request) => {
-    if (request.method() !== 'GET') writes.push(`${request.method()} ${request.url()}`);
+    if (request.method() === 'GET') return;
+    // Cookieless Cloudflare Web Analytics is the only allowed write; its payload is checked below
+    if (new URL(request.url()).hostname.endsWith('cloudflareinsights.com')) {
+      beacons.push(request.postData() ?? '');
+    } else writes.push(`${request.method()} ${request.url()}`);
   });
   await openDashboard(page, info);
   await page.getByRole('button', { name: 'Use sample data' }).click();
   await download(page, 'CSV');
   await download(page, 'Excel');
   expect(writes).toEqual([]);
+  const numbers = report.validRows.slice(0, 50).map((r) => String(r.sanitizedPhone));
+  for (const body of beacons) {
+    for (const number of numbers) expect(body).not.toContain(number);
+  }
+});
+
+test.describe('local server pages', () => {
+  // biome-ignore lint/correctness/noEmptyPattern: Playwright needs a destructuring pattern to resolve fixtures
+  test.beforeEach(({}, info) => {
+    test.skip(info.project.name !== 'local', 'local server only');
+  });
+
+  test('REST API reference lists every endpoint and calls them live', async ({ page }) => {
+    await page.goto('/api');
+    await expect(page).toHaveTitle('Numsy: REST API');
+    const nav = page.getByRole('navigation', { name: 'Local server' });
+    await expect(nav.getByRole('link', { name: 'REST API' })).toHaveAttribute(
+      'aria-current',
+      'page',
+    );
+    for (const group of [
+      'Sessions',
+      'One-shot analysis',
+      'Server',
+      'Legacy 1.x',
+      'Settings',
+      'Errors',
+    ]) {
+      await expect(page.getByRole('heading', { name: group, level: 2 })).toBeVisible();
+    }
+    await expect(page.locator('article.endpoint')).toHaveCount(11);
+
+    await page.locator('#status').getByRole('button', { name: 'Try it' }).click();
+    const live = page.locator('#status .endpoint__live');
+    await expect(live).toContainText('200');
+    await expect(live).toContainText('"status": "OK"');
+  });
+
+  test('health page shows live status and endpoint checks', async ({ page }) => {
+    await page.goto('/api/health-page');
+    await expect(page).toHaveTitle('Numsy: Health');
+    await expect(
+      page.getByRole('status').filter({ hasText: 'All systems operational' }),
+    ).toBeVisible();
+    await expect(page.locator('.hp-tile', { hasText: 'Version' }).locator('dd')).toHaveText(
+      /^v\d+\.\d+\.\d+$/,
+    );
+    await expect(page.locator('.hp-endpoints li')).toHaveCount(4);
+    for (const badge of await page.locator('.hp-endpoints .badge').all()) {
+      await expect(badge).toHaveText('200');
+    }
+    await page.getByText('Show the checks as a table').click();
+    await expect(page.locator('.hp-table tbody tr').first()).toContainText('OK');
+    await page.getByRole('button', { name: 'Pause' }).click();
+    await expect(page.getByRole('button', { name: 'Resume' })).toHaveAttribute(
+      'aria-pressed',
+      'false',
+    );
+  });
 });

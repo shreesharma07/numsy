@@ -99,3 +99,10 @@
     margin-left: 0;
   }
 }
+
+.local__nav a.is-current {
+  text-decoration: underline;
+  text-decoration-thickness: 3px;
+  text-decoration-color: var(--coral);
+  text-underline-offset: 6px;
+}

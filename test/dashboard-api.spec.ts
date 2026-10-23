@@ -48,6 +48,22 @@ describe('Dashboard API', () => {
     ]);
   });
 
+  it('reports live server status', async () => {
+    const res = await request(app.getHttpServer()).get('/api/status').expect(200);
+    expect(res.body).toMatchObject({ status: 'OK', sessions: expect.any(Number) });
+    expect(res.body.uptimeSeconds).toBeGreaterThanOrEqual(0);
+    expect(res.body.memory.heapUsedMb).toBeGreaterThan(0);
+    expect(res.body.runtime.node).toBe(process.version);
+  });
+
+  it('serves the REST API and health pages as HTML', async () => {
+    for (const path of ['/api', '/api/health-page']) {
+      const res = await request(app.getHttpServer()).get(path).expect(200);
+      expect(res.headers['content-type']).toMatch(/text\/html/);
+      expect(res.text).toMatch(/<title>Numsy/);
+    }
+  });
+
   it('parses an upload in memory and detects columns', async () => {
     const res = await request(app.getHttpServer())
       .post('/api/parse')
@@ -175,6 +191,14 @@ describe('Dashboard API', () => {
     expect(res.body.validRows).toHaveLength(3);
     expect(res.body.invalidRows).toHaveLength(0);
     expect(res.body.analytics.emptyRecords).toBe(1);
+  });
+
+  it('rejects uploads over 50 MB with 413', async () => {
+    const big = Buffer.alloc(50 * 1024 * 1024 + 1024, 'a');
+    await request(app.getHttpServer())
+      .post('/api/parse')
+      .attach('file', big, 'big.csv')
+      .expect(413);
   });
 
   it('rejects bad input with clear messages', async () => {

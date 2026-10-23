@@ -108,6 +108,34 @@ export class DashboardController {
   }
 
   /**
+   * Live server status for the health page: uptime, memory, open sessions and runtime
+   */
+  @Get('status')
+  status() {
+    const memory = process.memoryUsage();
+    const mb = (bytes: number) => Math.round((bytes / 1048576) * 10) / 10;
+    return {
+      status: 'OK',
+      version: readVersion(),
+      timestamp: new Date().toISOString(),
+      startedAt: new Date(Date.now() - process.uptime() * 1000).toISOString(),
+      uptimeSeconds: Math.round(process.uptime()),
+      sessions: this.sessions.count(),
+      memory: {
+        rssMb: mb(memory.rss),
+        heapUsedMb: mb(memory.heapUsed),
+        heapTotalMb: mb(memory.heapTotal),
+      },
+      runtime: {
+        node: process.version,
+        platform: process.platform,
+        arch: process.arch,
+        pid: process.pid,
+      },
+    };
+  }
+
+  /**
    * Parse an upload in memory and open a session for it
    */
   @Post('parse')

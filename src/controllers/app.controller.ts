@@ -14,7 +14,7 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { Response } from 'express';
 import { diskStorage } from 'multer';
 import * as path from 'node:path';
-import { workDir } from '../common/functions/paths';
+import { dashboardDir, workDir } from '../common/functions/paths';
 import * as fs from 'node:fs';
 import { FileProcessorService } from '../services/file-processor.service';
 
@@ -22,6 +22,15 @@ import { FileProcessorService } from '../services/file-processor.service';
  * HTML pages shipped in the package (resolved from dist/ or src/, not the working directory)
  */
 const PAGES_DIR = path.join(__dirname, '..', '..', 'public', 'pages');
+
+/**
+ * Serves the dashboard app (which renders the REST API and health pages) when it is built,
+ * otherwise the static fallback page from public/pages
+ */
+const sendPage = (res: Response, fallback: string): void => {
+  const app = dashboardDir();
+  res.sendFile(app ? path.join(app, 'index.html') : path.join(PAGES_DIR, fallback));
+};
 
 /**
  * Controller for handling file upload and download operations
@@ -54,8 +63,7 @@ export class AppController {
    */
   @Get()
   getApiDocs(@Res() res: Response): void {
-    const apiDocsPath = path.join(PAGES_DIR, 'api-info.html');
-    res.sendFile(apiDocsPath);
+    sendPage(res, 'api-info.html');
   }
 
   /**
@@ -63,8 +71,7 @@ export class AppController {
    */
   @Get('health-page')
   getHealthPage(@Res() res: Response): void {
-    const healthPagePath = path.join(PAGES_DIR, 'health.html');
-    res.sendFile(healthPagePath);
+    sendPage(res, 'health.html');
   }
 
   /**

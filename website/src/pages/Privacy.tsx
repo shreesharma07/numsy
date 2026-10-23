@@ -35,8 +35,9 @@ export function PrivacyPage() {
                 evaluate any AI or machine-learning model, by us or by anyone we work with.
               </li>
               <li>
-                <strong>No tracking.</strong> No analytics, advertising or telemetry, on the website
-                or in the npm package.
+                <strong>No tracking of you.</strong> The npm package, CLI and local dashboard send
+                no analytics or telemetry. This website counts visits with cookieless Cloudflare Web
+                Analytics, which never sees your files and collects no personal data.
               </li>
             </ul>
           </Callout>
@@ -74,6 +75,14 @@ export function PrivacyPage() {
             is hosted on Cloudflare Pages, which, like any web host, processes standard request data
             such as IP addresses to deliver pages. None of these requests contain your files or
             numbers.
+          </p>
+          <p>
+            The site also uses{' '}
+            <a href="https://www.cloudflare.com/web-analytics/">Cloudflare Web Analytics</a> to
+            count page views and measure page speed. It sets no cookies, does not fingerprint
+            browsers, does not follow you across sites and does not collect personal data. It runs
+            only on this website, never inside the local dashboard or the npm package, and it has no
+            access to the files or text you add to the playground.
           </p>
 
           <h2 id="responsibility">Your responsibilities</h2>

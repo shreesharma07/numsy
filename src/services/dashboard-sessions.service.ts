@@ -40,6 +40,12 @@ export class DashboardSessions {
     return entry?.session;
   }
 
+  /** Sessions currently held in memory */
+  count(): number {
+    this.prune();
+    return this.entries.size;
+  }
+
   delete(id: string): boolean {
     return this.entries.delete(id);
   }

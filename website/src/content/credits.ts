@@ -250,6 +250,15 @@ export const credits: Credit[] = [
     category: 'Hosting',
   },
   {
+    name: 'Cloudflare Web Analytics',
+    url: 'https://www.cloudflare.com/web-analytics/',
+    license: 'Cloudflare Website and Online Services Terms of Use',
+    licenseUrl: 'https://www.cloudflare.com/website-terms/',
+    usedFor:
+      'Cookieless page-view and page-speed analytics for this website only. No personal data, and never loaded by the local dashboard or the npm package.',
+    category: 'Hosting',
+  },
+  {
     name: 'GitHub Pages & Actions',
     url: 'https://pages.github.com',
     license: 'GitHub Terms of Service',
