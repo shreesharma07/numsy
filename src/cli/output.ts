@@ -8,15 +8,19 @@ import * as path from 'node:path';
 import {
   OUTPUT_FORMATS,
   OutputFormat,
-  XlsxSheet,
   collectColumns,
-  toCSV,
-  toJSON,
-  toMarkdown,
-  toText,
   writeXlsx,
 } from '../common/functions/export.functions';
 import { ensureDirectory } from '../common/helpers';
+import {
+  Dataset,
+  OutputOptions,
+  datasetSheets,
+  serializeDataset,
+  shapeDataset,
+} from '../engine/dataset';
+
+export type { Dataset } from '../engine/dataset';
 
 /**
  * Minimal writable stream used by the CLI (lets tests capture output)
@@ -24,25 +28,6 @@ import { ensureDirectory } from '../common/helpers';
 export interface OutStream {
   write(chunk: string): unknown;
   isTTY?: boolean;
-}
-
-/**
- * Everything a command produces, ready to be rendered in any format
- */
-export interface Dataset {
-  title: string;
-  /** Rows exported to json/csv/md */
-  rows: Record<string, any>[];
-  /** Columns shown in the terminal table (defaults to every column) */
-  tableColumns?: string[];
-  /** Key figures shown above tables and in md/json/xlsx */
-  summary: Record<string, string | number>;
-  /** Values written by the txt format */
-  lines: Array<string | number>;
-  /** Workbook sheets for the xlsx format (defaults to a single sheet of rows) */
-  sheets?: XlsxSheet[];
-  /** Extra top-level fields merged into the json document */
-  json?: Record<string, unknown>;
 }
 
 /**
@@ -57,6 +42,8 @@ export interface OutputTarget {
   pretty: boolean;
   limit: number;
   cwd: string;
+  /** Header row, number column name, row cap and columns for file formats */
+  shape?: OutputOptions;
 }
 
 // ==================== Colours ====================
@@ -198,46 +185,6 @@ export function formatSummary(summary: Record<string, string | number>, paint: P
 
 // ==================== Serialisation ====================
 
-/**
- * Serialises a dataset into a text format
- */
-export function serialise(
-  dataset: Dataset,
-  format: Exclude<OutputFormat, 'xlsx' | 'table'>,
-  pretty: boolean,
-): string {
-  switch (format) {
-    case 'json':
-      return `${toJSON(
-        {
-          title: dataset.title,
-          generatedAt: new Date().toISOString(),
-          summary: dataset.summary,
-          ...dataset.json,
-          rows: dataset.rows,
-        },
-        { pretty },
-      )}\n`;
-    case 'csv':
-      return toCSV(dataset.rows);
-    case 'md':
-      return toMarkdown(dataset.rows, {
-        title: dataset.title,
-        summary: dataset.summary,
-      });
-    case 'txt':
-      return toText(dataset.lines);
-  }
-}
-
-const sheetsFor = (dataset: Dataset): XlsxSheet[] => {
-  const summary: XlsxSheet = {
-    name: 'Summary',
-    rows: Object.entries(dataset.summary).map(([metric, value]) => ({ metric, value })),
-  };
-  return [summary, ...(dataset.sheets ?? [{ name: 'Results', rows: dataset.rows }])];
-};
-
 const withExtension = (file: string, format: OutputFormat) =>
   path.extname(file) ? file : file + OUTPUT_FORMATS[format].extension;
 
@@ -278,6 +225,9 @@ export async function emit(
   paint: Paint,
 ): Promise<string[]> {
   const written: string[] = [];
+  // The terminal table always shows the full result; file formats follow the output options
+  const shaped = shapeDataset(dataset, target.shape);
+  const header = { header: target.shape?.header };
 
   for (const { format, file } of planOutputs(target)) {
     if (format === 'table') {
@@ -286,12 +236,12 @@ export async function emit(
     }
 
     if (format === 'xlsx') {
-      await writeXlsx(sheetsFor(dataset), file!);
+      await writeXlsx(datasetSheets(shaped), file!, header);
       written.push(file!);
       continue;
     }
 
-    const content = serialise(dataset, format, target.pretty);
+    const content = serializeDataset(shaped, format, target.pretty, header);
     if (file) {
       ensureDirectory(path.dirname(file));
       fs.writeFileSync(file, content, 'utf-8');

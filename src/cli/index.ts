@@ -2,7 +2,7 @@
 
 /**
  * Numsy CLI
- * validate · extract · process · serve · formats
+ * validate · extract · process · dashboard · formats
  */
 
 import * as fs from 'node:fs';
@@ -16,10 +16,19 @@ import {
   formatFromExtension,
   resolveOutputFormat,
 } from '../common/functions/export.functions';
-import { formatPhoneWithCountryCode } from '../common/functions/phone.functions';
-import { AnalysisReport, ProcessedRow } from '../common/interfaces';
+import { DedupeMode } from '../common/interfaces';
+import { PORT_CONSTANTS } from '../common/types/enums';
 import {
   Dataset,
+  OutputOptions,
+  ROW_SETS,
+  RowSet,
+  extractDataset,
+  reportDataset,
+  validateDataset,
+} from '../engine/dataset';
+import { NUMBER_STYLES, NumberStyle } from '../engine/rules';
+import {
   OutStream,
   OutputTarget,
   Paint,
@@ -28,14 +37,16 @@ import {
   shouldUseColor,
   toTerminalSafe,
 } from './output';
+import { readVersion } from './version';
 
 /**
  * Process exit codes
  */
 export const EXIT = { OK: 0, ERROR: 1, INVALID_FOUND: 2 } as const;
 
-type Only = 'all' | 'valid' | 'invalid' | 'unique';
-const ONLY_VALUES: Only[] = ['all', 'valid', 'invalid', 'unique'];
+/** Commands that start the local dashboard */
+const DEFAULT_PORT = PORT_CONSTANTS.DEFAULT;
+const DASHBOARD_COMMANDS = ['dashboard', 'serve', 'ui'];
 
 /**
  * Injectable IO so the CLI can be driven from tests
@@ -58,6 +69,17 @@ const OPTIONS = {
   only: { type: 'string' },
   column: { type: 'string', short: 'c' },
   'country-code': { type: 'boolean' },
+  'number-style': { type: 'string' },
+  dedupe: { type: 'boolean' },
+  keep: { type: 'string' },
+  loose: { type: 'boolean' },
+  'first-only': { type: 'boolean' },
+  'skip-empty': { type: 'boolean' },
+  'name-column': { type: 'string' },
+  'no-header': { type: 'boolean' },
+  'header-name': { type: 'string' },
+  'max-rows': { type: 'string' },
+  columns: { type: 'string' },
   pretty: { type: 'boolean' },
   'no-pretty': { type: 'boolean' },
   bundle: { type: 'boolean' },
@@ -67,6 +89,8 @@ const OPTIONS = {
   quiet: { type: 'boolean', short: 'q' },
   'no-color': { type: 'boolean' },
   port: { type: 'string', short: 'p' },
+  host: { type: 'string' },
+  open: { type: 'boolean' },
   version: { type: 'boolean', short: 'v' },
   help: { type: 'boolean', short: 'h' },
 } as const;
@@ -76,19 +100,7 @@ type Flags = ReturnType<typeof parse>['values'];
 const parse = (argv: string[]) =>
   parseArgs({ args: argv, options: OPTIONS, allowPositionals: true, strict: true });
 
-/**
- * Reads the package version from package.json (works from src/ and dist/)
- */
-export function readVersion(): string {
-  try {
-    const pkg = JSON.parse(
-      fs.readFileSync(path.join(__dirname, '..', '..', 'package.json'), 'utf-8'),
-    );
-    return pkg.version;
-  } catch {
-    return '0.0.0';
-  }
-}
+export { readVersion } from './version';
 
 const HELP = (p: Paint) => `
 ${p.bold(p.coral('NUM') + p.amber('SY'))} ${p.dim('· validate, clean and export Indian phone numbers')}
@@ -100,7 +112,8 @@ ${p.bold('Commands')}
   validate [numbers...]   Validate numbers (args, --input file, or one-per-line on stdin)
   extract  [text...]      Pull every phone number out of free text (args, --input or stdin)
   process  <file>         Parse a CSV/XLSX file, detect the phone column, validate, de-dupe, export
-  serve                   Start the web UI + REST API (alias: numsy-serve)
+  dashboard               Open the local dashboard + REST API on http://localhost:${DEFAULT_PORT}
+                          (aliases: serve, ui)
   formats                 List output formats
 
 ${p.bold('Output')}
@@ -108,30 +121,48 @@ ${p.bold('Output')}
   -o, --output <path>     Output file; format is inferred from the extension when -f is omitted
   -d, --out-dir <dir>     Directory for generated files (default: current directory)
   -n, --name <basename>   Base filename for generated files (default: <input>-numsy / numsy-<command>)
-      --only <set>        all | valid | invalid | unique  (rows to export; default: all)
-      --country-code      Output valid numbers as +91XXXXXXXXXX
+      --only <set>        all | valid | invalid | unique | duplicates  (rows to export; default: all)
+      --number-style <s>  plain | e164 | spaced  (9876501234 | +919876501234 | +91 98765 01234)
+      --country-code      Shorthand for --number-style e164
+      --columns <c>       full | numbers  (every column, or only name + number; default: full)
+      --header-name <h>   Rename the number column in exports, e.g. "Mobile"
+      --no-header         Leave the header row out of CSV and Excel output
+      --max-rows <n>      Export at most n rows (default: 0 = all)
       --no-pretty         Compact JSON
       --limit <n>         Max rows in the terminal table (default: 50, 0 = all)
+
+${p.bold('Filters')}
+      --dedupe            Drop repeat occurrences of a number, keeping the first
+      --keep <first|last> Drop repeats, keeping the first or the last occurrence
+      --loose             Accept dummy patterns such as 9999999999 (shape check only)
+      --first-only        (process) keep only the first valid number of each cell
+      --skip-empty        (process) leave rows with an empty phone cell out of the invalid set
 
 ${p.bold('Input & behaviour')}
   -i, --input <file>      (validate/extract) read input from a text file
   -c, --column <name>     (process) phone column, auto-detected by default
+      --name-column <c>   (process) contact-name column, auto-detected; "none" to disable
       --bundle            (process) also write the classic ZIP report bundle
       --normalize         (process) rename known headers, e.g. "Mobile Number" -> phone
       --fail-on-invalid   Exit with code 2 if any invalid number is found (CI friendly)
   -q, --quiet             Only print the requested output
       --no-color          Disable colours (also honours NO_COLOR)
-  -p, --port <n>          (serve) port, default 3000
   -v, --version           Print version
   -h, --help              Print this help
 
+${p.bold('Dashboard')}
+  -p, --port <n>          Port (default: ${DEFAULT_PORT}; the next free port is used when busy)
+      --host <addr>       Interface to listen on (default: 127.0.0.1, this machine only)
+      --open              Open the dashboard in your browser
+
 ${p.bold('Examples')}
   ${p.dim('$')} numsy validate 9876501234 "+91 98765 43210"
-  ${p.dim('$')} cat numbers.txt | numsy validate -f json
+  ${p.dim('$')} cat numbers.txt | numsy validate -f json --dedupe
   ${p.dim('$')} numsy extract "Call 98765-01234 or 0 91234 56789" -f md
   ${p.dim('$')} numsy process contacts.xlsx -f json,csv,xlsx -d reports -n contacts-clean
-  ${p.dim('$')} numsy process leads.csv --only unique -o unique.csv
-  ${p.dim('$')} numsy process leads.csv -f xlsx --country-code --fail-on-invalid
+  ${p.dim('$')} numsy process leads.csv --dedupe --only valid -o clean.csv
+  ${p.dim('$')} numsy process leads.csv -f xlsx --number-style spaced --fail-on-invalid
+  ${p.dim('$')} numsy dashboard --open
 
 ${p.dim('Docs: https://numsy.pages.dev/')}
 `;
@@ -164,12 +195,45 @@ const parseFormats = (flags: Flags): OutputFormat[] => {
   return ['table'];
 };
 
-const parseOnly = (flags: Flags): Only => {
-  const only = (flags.only ?? 'all').toLowerCase() as Only;
-  if (!ONLY_VALUES.includes(only)) {
-    throw new UsageError(`--only must be one of: ${ONLY_VALUES.join(', ')}`);
+const parseOnly = (flags: Flags): RowSet => {
+  const only = (flags.only ?? 'all').toLowerCase() as RowSet;
+  if (!ROW_SETS.includes(only)) {
+    throw new UsageError(`--only must be one of: ${ROW_SETS.join(', ')}`);
   }
   return only;
+};
+
+const parseNumberStyle = (flags: Flags): NumberStyle => {
+  if (flags['number-style'] === undefined) return flags['country-code'] ? 'e164' : 'plain';
+  const style = flags['number-style'].toLowerCase() as NumberStyle;
+  if (!NUMBER_STYLES.includes(style)) {
+    throw new UsageError(`--number-style must be one of: ${NUMBER_STYLES.join(', ')}`);
+  }
+  return style;
+};
+
+const parseDedupe = (flags: Flags): DedupeMode => {
+  if (flags.keep === undefined) return flags.dedupe ? 'first' : 'off';
+  const keep = flags.keep.toLowerCase();
+  if (keep !== 'first' && keep !== 'last') throw new UsageError('--keep must be first or last');
+  return keep;
+};
+
+const parseShape = (flags: Flags): OutputOptions => {
+  const maxRows = flags['max-rows'] === undefined ? 0 : Number(flags['max-rows']);
+  if (!Number.isInteger(maxRows) || maxRows < 0) {
+    throw new UsageError('--max-rows must be a whole number (0 = all)');
+  }
+  const columns = (flags.columns ?? 'full').toLowerCase();
+  if (columns !== 'full' && columns !== 'numbers') {
+    throw new UsageError('--columns must be full or numbers');
+  }
+  return {
+    header: !flags['no-header'],
+    numberHeader: flags['header-name'],
+    maxRows,
+    columns,
+  };
 };
 
 const parseLimit = (flags: Flags): number => {
@@ -205,184 +269,6 @@ const toLines = (chunks: string[]) =>
     .map((line) => line.trim())
     .filter(Boolean);
 
-const display = (phone: string, countryCode: boolean) =>
-  countryCode && phone ? formatPhoneWithCountryCode(phone) : phone;
-
-// ==================== Commands ====================
-
-/**
- * validate: one result per input value
- */
-function validateDataset(
-  numsy: Numsy,
-  values: string[],
-  only: Only,
-  countryCode: boolean,
-): Dataset {
-  const results = values.map((value) => numsy.validate(value));
-  const valid = results.filter((r) => r.isValid);
-  const unique = Array.from(new Set(valid.map((r) => r.sanitized)));
-
-  const all = results.map((r) => ({
-    input: r.original,
-    sanitized: r.isValid ? display(r.sanitized, countryCode) : r.sanitized,
-    valid: r.isValid,
-    reason: r.reason ?? '',
-  }));
-
-  const rows =
-    only === 'valid'
-      ? all.filter((r) => r.valid)
-      : only === 'invalid'
-        ? all.filter((r) => !r.valid)
-        : only === 'unique'
-          ? unique.map((phone) => ({ phone: display(phone, countryCode) }))
-          : all;
-
-  return {
-    title: 'Numsy · validate',
-    rows,
-    summary: {
-      Total: results.length,
-      Valid: valid.length,
-      Invalid: results.length - valid.length,
-      Unique: unique.length,
-    },
-    lines:
-      only === 'invalid'
-        ? all.filter((r) => !r.valid).map((r) => r.input)
-        : (only === 'unique' ? unique : valid.map((r) => r.sanitized)).map((p) =>
-            display(p, countryCode),
-          ),
-  };
-}
-
-/**
- * extract: every number found in free text
- */
-function extractDataset(numsy: Numsy, text: string, only: Only, countryCode: boolean): Dataset {
-  const result = numsy.extractMultiple(text);
-  const all = [
-    ...result.validNumbers.map((n) => ({
-      number: display(n.sanitized, countryCode),
-      valid: true,
-      reason: '',
-    })),
-    ...result.invalidNumbers.map((n) => ({
-      number: n.sanitized,
-      valid: false,
-      reason: n.reason ?? '',
-    })),
-  ];
-  const unique = Array.from(new Set(result.validNumbers.map((n) => n.sanitized)));
-
-  const rows =
-    only === 'valid'
-      ? all.filter((r) => r.valid)
-      : only === 'invalid'
-        ? all.filter((r) => !r.valid)
-        : only === 'unique'
-          ? unique.map((phone) => ({ phone: display(phone, countryCode) }))
-          : all;
-
-  return {
-    title: 'Numsy · extract',
-    rows,
-    summary: {
-      Found: result.totalFound,
-      Valid: result.validCount,
-      Invalid: result.invalidCount,
-      Unique: unique.length,
-    },
-    lines:
-      only === 'invalid'
-        ? result.invalidNumbers.map((n) => n.sanitized)
-        : (only === 'unique' ? unique : result.validNumbers.map((n) => n.sanitized)).map((p) =>
-            display(p, countryCode),
-          ),
-  };
-}
-
-/**
- * process: analyse a CSV/XLSX file
- */
-function processDataset(report: AnalysisReport, only: Only, countryCode: boolean): Dataset {
-  // The library adds a `name` field to every row; drop it when the file already has its own name column
-  const dropName = Boolean(report.nameColumn) && report.nameColumn !== 'name';
-
-  const fmt = (source: ProcessedRow): ProcessedRow => {
-    const row = { ...source };
-    if (dropName) delete row.name;
-    if (countryCode && row.validationStatus === 'VALID') {
-      row[report.phoneColumn] = display(row.sanitizedPhone ?? '', true);
-      row.sanitizedPhone = display(row.sanitizedPhone ?? '', true);
-    }
-    return row;
-  };
-
-  const all = report.rows.map(fmt);
-  const valid = report.validRows.map(fmt);
-  const invalid = report.invalidRows.map(fmt);
-  const unique = report.unique.map((u) => ({
-    ...(report.nameColumn ? { name: u.name ?? '' } : {}),
-    phone: display(u.phone, countryCode),
-    occurrences: u.occurrences,
-  }));
-
-  const rows = { all, valid, invalid, unique }[only];
-  const tableColumns =
-    only === 'unique'
-      ? Object.keys(unique[0] ?? { phone: '' })
-      : [
-          ...(report.nameColumn ? [report.nameColumn] : []),
-          'originalPhone',
-          'sanitizedPhone',
-          'validationStatus',
-          'validationReason',
-        ];
-
-  const { analytics } = report;
-  const sheets = {
-    all: [
-      { name: 'All rows', rows: all },
-      { name: 'Valid', rows: valid },
-      { name: 'Invalid', rows: invalid },
-      { name: 'Unique', rows: unique },
-    ],
-    valid: [{ name: 'Valid', rows: valid }],
-    invalid: [{ name: 'Invalid', rows: invalid }],
-    unique: [{ name: 'Unique', rows: unique }],
-  }[only];
-
-  return {
-    title: `Numsy · ${path.basename(report.source ?? 'data')}`,
-    rows,
-    tableColumns,
-    summary: {
-      Records: report.totalRecords,
-      Valid: analytics.totalValidNumbers,
-      Invalid: analytics.totalInvalidNumbers,
-      Unique: analytics.uniqueValidNumbers,
-      Duplicates: analytics.duplicateNumbers,
-      'Phone column': report.phoneColumn,
-    },
-    lines:
-      only === 'invalid'
-        ? invalid.map((r) => r.originalPhone ?? '')
-        : only === 'unique'
-          ? unique.map((u) => u.phone)
-          : valid.map((r) => r.sanitizedPhone ?? ''),
-    sheets,
-    json: {
-      source: report.source,
-      phoneColumn: report.phoneColumn,
-      nameColumn: report.nameColumn ?? null,
-      analytics,
-      ...(only === 'all' ? { unique } : {}),
-    },
-  };
-}
-
 /**
  * Runs the CLI and resolves with the exit code
  */
@@ -415,12 +301,12 @@ export async function run(argv: string[], io: CliIO): Promise<number> {
       return EXIT.OK;
     }
 
-    if (command === 'serve') {
+    if (DASHBOARD_COMMANDS.includes(command)) {
       const { startServer, parsePort } = await import('./server');
       const port = flags.port === undefined ? undefined : parsePort(flags.port);
       if (flags.port !== undefined && !port)
         throw new UsageError('--port must be between 1024 and 65535');
-      await startServer({ port });
+      await startServer({ port, host: flags.host, open: Boolean(flags.open) });
       return EXIT.OK;
     }
 
@@ -429,8 +315,14 @@ export async function run(argv: string[], io: CliIO): Promise<number> {
     }
 
     const formats = parseFormats(flags);
-    const only = parseOnly(flags);
-    const countryCode = Boolean(flags['country-code']);
+    const shape = parseShape(flags);
+    const dedupe = parseDedupe(flags);
+    const view = {
+      only: parseOnly(flags),
+      numberStyle: parseNumberStyle(flags),
+      strict: !flags.loose,
+      dedupe: dedupe !== 'off',
+    };
     const numsy = new Numsy({ enableLogging: false, normalizeColumns: Boolean(flags.normalize) });
     const outDir = flags['out-dir'];
 
@@ -443,26 +335,35 @@ export async function run(argv: string[], io: CliIO): Promise<number> {
       const filePath = path.resolve(io.cwd, file);
       if (!fs.existsSync(filePath)) throw new UsageError(`File not found: ${file}`);
 
-      const report = await numsy.analyzeFile(filePath, { phoneColumn: flags.column });
+      const nameColumn = flags['name-column'];
+      const analyzeOptions = {
+        phoneColumn: flags.column,
+        nameColumn:
+          nameColumn === undefined ? undefined : nameColumn === 'none' ? null : nameColumn,
+        dedupe,
+        strict: view.strict,
+        multiple: flags['first-only'] ? ('first' as const) : ('all' as const),
+        skipEmpty: Boolean(flags['skip-empty']),
+      };
+      const report = await numsy.analyzeFile(filePath, analyzeOptions);
       report.source = file;
-      dataset = processDataset(report, only, countryCode);
+      dataset = reportDataset(report, view);
       defaultName = `${path.basename(file, path.extname(file))}-numsy`;
 
       if (flags.bundle) {
-        const result = await numsy.processFile(filePath, path.resolve(io.cwd, outDir ?? '.'));
+        const result = await numsy.processFile(
+          filePath,
+          path.resolve(io.cwd, outDir ?? '.'),
+          analyzeOptions,
+        );
         if (!flags.quiet) io.stderr.write(`${paint.ok('✔')} bundle  ${result.zipFilePath}\n`);
       }
     } else {
       const input = await readInput(args, flags, io);
       dataset =
         command === 'validate'
-          ? validateDataset(
-              numsy,
-              flags.input || args.length === 0 ? toLines(input) : input,
-              only,
-              countryCode,
-            )
-          : extractDataset(numsy, input.join('\n'), only, countryCode);
+          ? validateDataset(flags.input || args.length === 0 ? toLines(input) : input, view)
+          : extractDataset(input.join('\n'), view);
     }
 
     const target: OutputTarget = {
@@ -474,6 +375,7 @@ export async function run(argv: string[], io: CliIO): Promise<number> {
       pretty: !flags['no-pretty'],
       limit: parseLimit(flags),
       cwd: io.cwd,
+      shape,
     };
 
     const written = await emit(dataset, target, io.stdout, outPaint);
@@ -528,7 +430,7 @@ if (require.main === module) {
     cwd: process.cwd(),
     env: process.env,
   }).then((code) => {
-    // `serve` keeps the event loop alive, so this only takes effect once the server stops
+    // `dashboard` keeps the event loop alive, so this only takes effect once the server stops
     process.exitCode = code;
   });
 }

@@ -169,6 +169,7 @@ describe('numsy CLI', () => {
         'Valid',
         'Invalid',
         'Unique',
+        'Duplicates',
       ]);
     });
 
@@ -196,6 +197,78 @@ describe('numsy CLI', () => {
       });
       expect(controls).toEqual([]);
       expect(stdout()).toContain('Eve');
+    });
+  });
+
+  describe('filters', () => {
+    const json = async (args: string[]) => {
+      const { io, stdout } = createIO(dir);
+      expect(await run(['process', 'leads.csv', '-f', 'json', ...args], io)).toBe(EXIT.OK);
+      return JSON.parse(stdout());
+    };
+
+    it('drops repeats with --dedupe and keeps the last one with --keep last', async () => {
+      const kept = await json(['--only', 'valid']);
+      expect(kept.rows.map((r: any) => r.Name)).toEqual(['Asha', 'Asha', 'Ravi']);
+
+      const first = await json(['--only', 'valid', '--dedupe']);
+      expect(first.rows.map((r: any) => r.Name)).toEqual(['Asha', 'Asha']);
+      expect(first.summary['Duplicates removed']).toBe(1);
+
+      const last = await json(['--only', 'valid', '--keep', 'last']);
+      expect(last.rows.map((r: any) => r.Name)).toEqual(['Asha', 'Ravi']);
+    });
+
+    it('exports the duplicates set in the chosen number style', async () => {
+      const dupes = await json(['--only', 'duplicates', '--number-style', 'spaced']);
+      expect(dupes.rows.map((r: any) => r.sanitizedPhone)).toEqual(['+91 98765 01234']);
+    });
+
+    it('supports --first-only, --skip-empty and --name-column none', async () => {
+      expect((await json(['--only', 'valid', '--first-only'])).rows).toHaveLength(2);
+      const invalid = await json(['--only', 'invalid', '--skip-empty']);
+      expect(invalid.rows.map((r: any) => r.Name)).toEqual(['Meera']);
+      expect((await json(['--name-column', 'none'])).nameColumn).toBeNull();
+    });
+
+    it('accepts dummy patterns with --loose', async () => {
+      const strict = createIO(dir);
+      await run(['validate', '9999999999', '-f', 'txt'], strict.io);
+      expect(strict.stdout()).toBe('');
+      const loose = createIO(dir);
+      await run(['validate', '9999999999', '-f', 'txt', '--loose'], loose.io);
+      expect(loose.stdout()).toBe('9999999999\n');
+    });
+
+    it('shapes exports with --columns, --header-name, --no-header and --max-rows', async () => {
+      const { io, stdout } = createIO(dir);
+      const args = ['process', 'leads.csv', '-f', 'csv', '--only', 'valid', '--columns', 'numbers'];
+      await run([...args, '--header-name', 'Mobile', '--max-rows', '2'], io);
+      expect(stdout()).toBe('Name,Mobile\r\nAsha,9876501234\r\nAsha,9123456789\r\n');
+
+      const bare = createIO(dir);
+      await run([...args, '--no-header'], bare.io);
+      expect(bare.stdout().split('\r\n')[0]).toBe('Asha,9876501234');
+    });
+
+    it('rejects bad filter values', async () => {
+      for (const args of [
+        ['--keep', 'middle'],
+        ['--number-style', 'fancy'],
+        ['--only', 'some'],
+        ['--columns', 'few'],
+        ['--max-rows', '-1'],
+      ]) {
+        const { io, stderr } = createIO(dir);
+        expect(await run(['process', 'leads.csv', ...args], io)).toBe(EXIT.ERROR);
+        expect(stderr()).toContain(args[0]);
+      }
+    });
+
+    it('validates the dashboard port', async () => {
+      const { io, stderr } = createIO(dir);
+      expect(await run(['dashboard', '--port', '80'], io)).toBe(EXIT.ERROR);
+      expect(stderr()).toContain('--port must be between 1024 and 65535');
     });
   });
 });
