@@ -51,6 +51,7 @@ numsy.validate('+91 98765 01234'); // → { sanitized: '9876501234', isValid: tr
 
 Guides, the full CLI and API reference, output formats, a browser-only playground and the FAQ live on
 **[shreesharma07.github.io/numsy](https://shreesharma07.github.io/numsy/)**.
+Plain-markdown references are in [`docs/`](docs/README.md): [CLI](docs/guides/cli.md) · [Library](docs/guides/library.md) · [REST API](docs/guides/rest-api.md).
 
 ## <img src="assets/icons/community.svg" width="22" alt="" /> Community
 
