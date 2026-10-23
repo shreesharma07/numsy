@@ -1,8 +1,8 @@
 {
   "displayName": "Numsy",
-  "name": "@numsy/numsy",
+  "name": "numsy",
   "version": "2.0.0",
-  "description": "Validate, sanitize, extract and de-duplicate Indian mobile numbers from text, CSV and Excel — as a typed TypeScript library, a CLI with JSON/CSV/Markdown/Excel output, and a local web UI.",
+  "description": "Validate, sanitize, extract and de-duplicate Indian mobile numbers from text, CSV and Excel — as a typed TypeScript library, a CLI with JSON/CSV/Markdown/Excel output, and a local dashboard on localhost:6789.",
   "author": {
     "name": "Shri Kumar Sharma",
     "url": "https://shrikumarsharma.in"
@@ -12,8 +12,7 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "bin": {
-    "numsy": "./dist/cli/index.js",
-    "numsy-serve": "./dist/cli/server.js"
+    "numsy": "./dist/cli/index.js"
   },
   "exports": {
     ".": {
@@ -34,6 +33,10 @@
     "LICENSE",
     "CHANGELOG.md"
   ],
+  "publishConfig": {
+    "access": "public",
+    "tag": "latest"
+  },
   "keywords": [
     "phone-number",
     "validator",
@@ -55,7 +58,10 @@
     "markdown",
     "json",
     "data-cleaning",
-    "deduplication"
+    "deduplication",
+    "dashboard",
+    "phone-validator",
+    "indian-mobile"
   ],
   "repository": {
     "type": "git",
@@ -70,7 +76,8 @@
   },
   "packageManager": "pnpm@12.15.0",
   "scripts": {
-    "build": "rimraf dist && swc src -d dist --copy-files --strip-leading-paths && tsc -p tsconfig.build.json --emitDeclarationOnly --incremental false",
+    "build": "rimraf dist && swc src -d dist --copy-files --strip-leading-paths && tsc -p tsconfig.build.json --emitDeclarationOnly --incremental false && pnpm run build:dashboard",
+    "build:dashboard": "pnpm --filter @numsy/website build:dashboard",
     "build:nest": "nest build",
     "dev": "nodemon",
     "dev:server": "nodemon --exec ts-node src/server.ts",
@@ -113,7 +120,8 @@
     "cli": "ts-node src/cli/index.ts",
     "check": "biome check --write .",
     "check:ci": "biome ci .",
-    "verify:package": "node scripts/verify-package.js"
+    "verify:package": "node scripts/verify-package.js",
+    "test:ui": "playwright test"
   },
   "dependencies": {
     "@nestjs/common": "^11.2.7",
@@ -140,6 +148,7 @@
     "@nestjs/cli": "^11.0.24",
     "@nestjs/schematics": "^11.1.0",
     "@nestjs/testing": "^11.2.7",
+    "@playwright/test": "1.64.1",
     "@semantic-release/changelog": "^7.0.0",
     "@semantic-release/commit-analyzer": "^13.0.1",
     "@semantic-release/git": "^11.0.1",

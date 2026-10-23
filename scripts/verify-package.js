@@ -18,13 +18,26 @@ const REQUIRED = [
   'dist/cli/server.js',
   'dist/core/Parser.js',
   'dist/core/Parser.d.ts',
+  'dist/engine/index.js',
+  'dist/engine/index.d.ts',
+  'dist/dashboard/index.html',
   'public/index.html',
+  'public/pages/api-info.html',
+  'public/pages/health.html',
+  'public/assets/css/pages.css',
+];
+
+/** Built dashboard assets (hashed names) that must ship with index.html */
+const REQUIRED_PATTERNS = [
+  { pattern: /^dist\/dashboard\/app\/index-[\w-]+\.js$/, label: 'dist/dashboard/app/index-*.js' },
+  { pattern: /^dist\/dashboard\/app\/index-[\w-]+\.css$/, label: 'dist/dashboard/app/index-*.css' },
 ];
 
 const FORBIDDEN = [
   { pattern: /^website\//, reason: 'documentation website' },
   { pattern: /^src\//, reason: 'TypeScript sources' },
   { pattern: /^test\//, reason: 'tests' },
+  { pattern: /^e2e\//, reason: 'end-to-end tests' },
   { pattern: /^docs\//, reason: 'repository docs' },
   { pattern: /^assets\//, reason: 'brand assets' },
   { pattern: /^scripts\//, reason: 'maintainer scripts' },
@@ -38,7 +51,12 @@ const [pack] = JSON.parse(
 );
 const files = pack.files.map((file) => file.path.replace(/\\/g, '/'));
 
-const missing = REQUIRED.filter((file) => !files.includes(file));
+const missing = [
+  ...REQUIRED.filter((file) => !files.includes(file)),
+  ...REQUIRED_PATTERNS.filter(({ pattern }) => !files.some((file) => pattern.test(file))).map(
+    ({ label }) => label,
+  ),
+];
 const leaked = files.flatMap((file) => {
   const rule = FORBIDDEN.find(({ pattern }) => pattern.test(file));
   return rule ? [`${file} (${rule.reason})`] : [];
@@ -54,4 +72,6 @@ if (missing.length || leaked.length) {
   process.exit(1);
 }
 
-console.log('✔ tarball contains the build output and nothing from website/, src/, test/ or docs/');
+console.log(
+  '✔ tarball has the library, CLI, engine and dashboard, and nothing from website/, src/, test/, e2e/ or docs/',
+);

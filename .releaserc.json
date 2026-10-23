@@ -82,7 +82,7 @@
             "label": "Distribution tarball"
           }
         ],
-        "successComment": "🎉 This ${issue.pull_request ? 'PR is included' : 'issue has been resolved'} in version ${nextRelease.version} 🎉\n\nThe release is available on:\n\n- [npm package (@latest dist-tag)](https://www.npmjs.com/package/@numsy/numsy/v/${nextRelease.version})\n- [GitHub release](${releases[0].url})\n\nYour **semantic-release** bot 📦🚀"
+        "successComment": "🎉 This ${issue.pull_request ? 'PR is included' : 'issue has been resolved'} in version ${nextRelease.version} 🎉\n\nThe release is available on:\n\n- [npm package (@latest dist-tag)](https://www.npmjs.com/package/numsy/v/${nextRelease.version})\n- [GitHub release](${releases[0].url})\n\nYour **semantic-release** bot 📦🚀"
       }
     ]
   ]
