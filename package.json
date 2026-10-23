@@ -1,7 +1,7 @@
 {
   "displayName": "Numsy",
   "name": "numsy",
-  "version": "2.1.0",
+  "version": "2.1.1",
   "description": "Validate, sanitize, extract and de-duplicate Indian mobile numbers from text, CSV and Excel — as a typed TypeScript library, a CLI with JSON/CSV/Markdown/Excel output, and a local dashboard on localhost:6789.",
   "author": {
     "name": "Shri Kumar Sharma",

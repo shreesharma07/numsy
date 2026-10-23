@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file. See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.1.1](https://github.com/shreesharma07/numsy/compare/v2.1.0...v2.1.1) (2026-10-23)
+
+### 🐛 Bug Fixes
+
+* **website:** create `src/generated` before writing the icon subset ([1409469](https://github.com/shreesharma07/numsy/commit/140946957f44a76e5f5d31f7c9f1811b774c5b30))
+
+### 📚 Documentation
+
+* **credits:** credit Cloudflare for hosting and deployments ([a48f7ff](https://github.com/shreesharma07/numsy/commit/a48f7ffd47983385e9c4eeaaf28a61865f8c5472))
+* **readme:** show live Badgen badges for npm, GitHub and the project ([d7f80bc](https://github.com/shreesharma07/numsy/commit/d7f80bc20ba032d32788ab6cf7acb45c1c806c4e))
+
+### 🏗️ Build System
+
+* **deps:** refresh dependencies within their ranges ([56ded5e](https://github.com/shreesharma07/numsy/commit/56ded5eed044424b65b7ebac302f1aa7697ebca6))
+
 ## [2.1.0](https://github.com/shreesharma07/numsy/compare/v2.0.0...v2.1.0) (2026-10-23)
 
 ### ✨ Features
