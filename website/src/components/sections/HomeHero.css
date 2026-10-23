@@ -1,0 +1,72 @@
+.hero {
+  padding: clamp(28px, 5vw, 56px) 0 clamp(48px, 7vw, 88px);
+  border-bottom: var(--border);
+  overflow: hidden;
+}
+.hero__rule {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-4);
+  flex-wrap: wrap;
+  padding-bottom: 0.8rem;
+  border-bottom: var(--border);
+  margin-bottom: clamp(24px, 4vw, 48px);
+}
+.hero__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
+  gap: clamp(24px, 4vw, 56px);
+  align-items: center;
+}
+.hero__title {
+  font-size: clamp(3rem, 8vw, 7rem);
+  margin-bottom: var(--space-5);
+}
+.hero__line {
+  display: block;
+}
+/* React Bits RotatingText, themed: coral poster block with ink text */
+.hero__title .hero__rotator {
+  display: inline-flex;
+  overflow: hidden;
+  background: var(--coral);
+  color: var(--ink);
+  padding: 0 0.12em;
+  margin-left: -0.06em;
+  line-height: 1;
+}
+.hero__rotator-char {
+  display: inline-block;
+}
+.hero__lede {
+  margin-bottom: var(--space-5);
+}
+.hero__lede strong {
+  color: var(--fg);
+}
+.hero__install {
+  max-width: 520px;
+  margin-bottom: var(--space-5);
+}
+.hero__install .code__pre {
+  font-size: 1rem;
+}
+.hero__art {
+  width: 100%;
+  max-width: 460px;
+  justify-self: end;
+}
+@media (max-width: 900px) {
+  .hero__grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .hero__art {
+    max-width: 340px;
+    justify-self: start;
+  }
+}
+@media (max-width: 560px) {
+  .hero__art {
+    display: none;
+  }
+}

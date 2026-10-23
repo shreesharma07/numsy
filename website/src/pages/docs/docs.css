@@ -1,0 +1,79 @@
+/* Shared bits for docs pages (About block, requirements list). */
+.docs-two {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: clamp(24px, 4vw, 56px);
+}
+@media (max-width: 1000px) {
+  .docs-two {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin: var(--space-3) 0 0;
+  padding: 0;
+  list-style: none;
+}
+.chips li {
+  padding: 0.35rem 0.7rem;
+  border: var(--border);
+  background: var(--surface);
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+.pillars {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border-top: var(--border);
+}
+.pillars li {
+  display: grid;
+  grid-template-columns: 48px minmax(0, 1fr);
+  gap: var(--space-4);
+  padding: 1.1rem 0;
+  border-bottom: 1px solid var(--rule-soft);
+}
+.pillars__k {
+  font: 400 1.6rem / 1 var(--f-display);
+}
+.pillars p {
+  margin: 0;
+  color: var(--muted);
+}
+.pillars strong {
+  display: block;
+  color: var(--fg);
+  margin-bottom: 0.2rem;
+}
+.req {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3) var(--space-5);
+  margin: 0 0 var(--space-5);
+  padding: 0;
+  list-style: none;
+}
+.req li {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-weight: 600;
+}
+.req__dot {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+}
+.req__dot--coral {
+  background: var(--coral);
+}
+.req__dot--amber {
+  background: var(--amber);
+}
+.req__dot--violet {
+  background: var(--violet);
+}

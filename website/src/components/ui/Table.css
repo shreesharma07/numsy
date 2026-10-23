@@ -1,0 +1,91 @@
+.table-wrap {
+  overflow: auto;
+  border: var(--border);
+  background: var(--surface);
+  margin-bottom: var(--space-5);
+}
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.93rem;
+}
+.table caption {
+  text-align: left;
+  padding: 0.8rem 1rem;
+  font: 700 0.74rem / 1.3 var(--f-mono);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  border-bottom: var(--border);
+}
+.table th,
+.table td {
+  text-align: left;
+  vertical-align: top;
+  padding: 0.7rem 1rem;
+  border-bottom: 1px solid var(--rule-soft);
+}
+.table thead th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  font: 700 0.72rem / 1.3 var(--f-mono);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  background: var(--bg-alt);
+  box-shadow: inset 0 -2px 0 var(--rule);
+}
+.table tbody th {
+  font-weight: 600;
+}
+.table tbody tr:last-child > * {
+  border-bottom: 0;
+}
+.table th code {
+  white-space: nowrap;
+}
+
+/* stacked rows on phones */
+@media (max-width: 640px) {
+  .table-wrap--stack .table thead {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+  }
+  .table-wrap--stack .table,
+  .table-wrap--stack .table tbody,
+  .table-wrap--stack .table tr,
+  .table-wrap--stack .table th,
+  .table-wrap--stack .table td {
+    display: block;
+    width: 100%;
+  }
+  .table-wrap--stack .table tbody tr {
+    padding: 0.6rem 0;
+    border-bottom: 1px solid var(--rule-soft);
+  }
+  .table-wrap--stack .table tbody tr:last-child {
+    border-bottom: 0;
+  }
+  .table-wrap--stack .table th,
+  .table-wrap--stack .table td {
+    border: 0;
+    padding: 0.25rem 1rem;
+  }
+  .table-wrap--stack .table caption {
+    display: block;
+  }
+  .table-wrap--stack .table td::before {
+    content: attr(data-label);
+    display: block;
+    font: 700 0.66rem / 1.4 var(--f-mono);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .table-wrap--stack .table th code,
+  .table-wrap--stack .table td code {
+    white-space: normal;
+  }
+}

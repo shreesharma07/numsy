@@ -1,0 +1,65 @@
+.card {
+  position: relative;
+  min-width: 0;
+  height: 100%;
+  border: var(--border);
+  padding: clamp(18px, 2.4vw, 28px);
+  background: var(--surface);
+  color: var(--fg);
+}
+.card-spot {
+  min-width: 0;
+  display: block;
+}
+/* SpotlightCard ships rounded + padded; square it off for the poster look */
+.card.spotlight-card {
+  border-radius: 0;
+  padding: clamp(18px, 2.4vw, 28px);
+  overflow: hidden;
+}
+.card--coral {
+  background: var(--coral);
+  color: var(--on-coral);
+  border-color: var(--ink);
+}
+.card--amber {
+  background: var(--amber);
+  color: var(--on-amber);
+  border-color: var(--ink);
+}
+.card--violet {
+  background: var(--violet);
+  color: var(--on-violet);
+  border-color: var(--ink);
+}
+.card--ink {
+  background: var(--ink);
+  color: var(--cream);
+  border-color: var(--ink);
+}
+.card--coral .muted,
+.card--amber .muted {
+  color: var(--ink);
+}
+.card--violet .muted,
+.card--ink .muted {
+  color: var(--cream);
+}
+.card[class*="card--band-"] {
+  border-top-width: 12px;
+}
+.card--band-coral {
+  border-top-color: var(--coral);
+}
+.card--band-amber {
+  border-top-color: var(--amber);
+}
+.card--band-violet {
+  border-top-color: var(--violet);
+}
+.card--band-ink {
+  border-top-color: var(--rule);
+}
+.card > :last-child {
+  margin-bottom: 0;
+}

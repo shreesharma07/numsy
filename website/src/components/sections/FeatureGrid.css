@@ -1,0 +1,27 @@
+.feature__icon {
+  display: inline-grid;
+  place-items: center;
+  width: 52px;
+  height: 52px;
+  margin-bottom: var(--space-4);
+  border: 2px solid var(--ink);
+  color: var(--ink);
+}
+.feature__icon--coral {
+  background: var(--coral);
+  border-radius: 50%;
+}
+.feature__icon--amber {
+  background: var(--amber);
+  border-radius: 0 50% 0 0;
+}
+.feature__icon--violet {
+  background: var(--violet);
+  color: var(--cream);
+  border-radius: 50% 0 0 0;
+}
+.feature__icon--ink {
+  background: var(--ink);
+  color: var(--amber);
+  border-color: var(--rule);
+}

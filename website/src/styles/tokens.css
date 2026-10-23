@@ -1,0 +1,105 @@
+/*
+ * Numsy design tokens — the only place colours, type and spacing are defined.
+ * Palette: "Creative Energy" poster — coral, amber, violet, ink on cream paper.
+ * Rule: text on coral/amber blocks is always ink; text on violet is always cream.
+ */
+:root {
+  /* brand palette (theme-independent) */
+  --coral: #ff4d6d;
+  --amber: #ffb703;
+  --violet: #8338ec;
+  --ink: #111111;
+  --cream: #faf6ef;
+  --on-coral: var(--ink);
+  --on-amber: var(--ink);
+  --on-violet: var(--cream);
+
+  /* semantic — light theme */
+  --bg: #faf6ef;
+  --bg-alt: #f2ebdf;
+  --surface: #fffdf9;
+  --fg: #111111;
+  --muted: #4a4640;
+  --rule: #111111;
+  --rule-soft: rgb(17 17 17 / 0.14);
+  --code-bg: #111111;
+  --code-fg: #f3eee5;
+  --code-muted: #a39c90;
+  --code-key: #ffb703;
+  --code-str: #ff8fa3;
+  --focus: #8338ec;
+  --tile: #111111;
+  --on-tile: #faf6ef;
+  --hard-shadow: 5px 5px 0 #111111;
+  --ok: #0b7a4b;
+  --bad: #c2183b;
+  --footer-bg: #111111;
+  --footer-fg: #faf6ef;
+  --footer-muted: #cfc8bc;
+
+  /* type */
+  --f-display: "Anton", "Archivo Black", Impact, "Arial Narrow Bold", sans-serif;
+  --f-body: "Space Grotesk", Inter, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --f-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  --fs-display-xl: clamp(3.4rem, 10.5vw, 8.6rem);
+  --fs-display-l: clamp(2.6rem, 7vw, 5.6rem);
+  --fs-display-m: clamp(2.1rem, 5.4vw, 4.2rem);
+  --fs-lede: clamp(1.05rem, 1.6vw, 1.25rem);
+
+  /* layout */
+  --wrap: 1200px;
+  --gutter: clamp(16px, 4vw, 40px);
+  --nav-h: 64px;
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.5rem;
+  --space-6: 2rem;
+  --space-7: 3rem;
+  --section-y: clamp(56px, 9vw, 112px);
+  --border: 2px solid var(--rule);
+  --ease: cubic-bezier(0.2, 0.7, 0.2, 1);
+
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #111111;
+    --bg-alt: #191816;
+    --surface: #1d1c1a;
+    --fg: #faf6ef;
+    --muted: #c9c2b6;
+    --rule: #faf6ef;
+    --rule-soft: rgb(250 246 239 / 0.16);
+    --code-bg: #0a0a0a;
+    --focus: #ffb703;
+    --tile: #faf6ef;
+    --on-tile: #111111;
+    --hard-shadow: 5px 5px 0 #ff4d6d;
+    --ok: #5bd69b;
+    --bad: #ff8fa3;
+    --footer-bg: #0a0a0a;
+    color-scheme: dark;
+  }
+}
+
+:root[data-theme="dark"] {
+  --bg: #111111;
+  --bg-alt: #191816;
+  --surface: #1d1c1a;
+  --fg: #faf6ef;
+  --muted: #c9c2b6;
+  --rule: #faf6ef;
+  --rule-soft: rgb(250 246 239 / 0.16);
+  --code-bg: #0a0a0a;
+  --focus: #ffb703;
+  --tile: #faf6ef;
+  --on-tile: #111111;
+  --hard-shadow: 5px 5px 0 #ff4d6d;
+  --ok: #5bd69b;
+  --bad: #ff8fa3;
+  --footer-bg: #0a0a0a;
+  color-scheme: dark;
+}

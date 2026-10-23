@@ -1,0 +1,94 @@
+.docs__grid {
+  display: grid;
+  grid-template-columns: 220px minmax(0, 1fr);
+  gap: clamp(24px, 4vw, 56px);
+}
+.docs__nav {
+  position: sticky;
+  top: calc(var(--nav-h) + 24px);
+  align-self: start;
+  padding: clamp(28px, 5vw, 56px) 0 var(--space-6);
+  max-height: calc(100vh - var(--nav-h) - 24px);
+  overflow-y: auto;
+}
+.docs__group + .docs__group {
+  margin-top: var(--space-5);
+}
+.docs__group-title {
+  padding-bottom: var(--space-2);
+  border-bottom: var(--border);
+  margin-bottom: var(--space-2);
+}
+.docs__nav ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.docs__link {
+  display: block;
+  padding: 0.4rem 0.6rem;
+  text-decoration: none;
+  font-weight: 600;
+  border-left: 4px solid transparent;
+}
+.docs__link:hover {
+  border-left-color: var(--rule-soft);
+}
+.docs__link[aria-current="page"] {
+  border-left-color: var(--coral);
+  background: var(--surface);
+}
+.docs__content {
+  min-width: 0;
+  border-left: var(--border);
+}
+/* docs content sits in a narrower column: let sections/headers use the column, not the page */
+.docs__content .container {
+  padding: 0 0 0 clamp(20px, 3vw, 40px);
+  max-width: none;
+}
+.docs__content .section:last-child {
+  border-bottom: 0;
+}
+
+@media (max-width: 900px) {
+  .docs__grid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0;
+  }
+  .docs__nav {
+    position: static;
+    max-height: none;
+    overflow: visible;
+    padding: var(--space-4) 0;
+    border-bottom: var(--border);
+    display: flex;
+    gap: var(--space-2) var(--space-5);
+    flex-wrap: wrap;
+  }
+  .docs__group {
+    flex: 1 1 100%;
+  }
+  .docs__group + .docs__group {
+    margin-top: 0;
+  }
+  .docs__nav ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+  }
+  .docs__link {
+    border: 2px solid var(--rule-soft);
+    padding: 0.35rem 0.6rem;
+    font-size: 0.9rem;
+  }
+  .docs__link[aria-current="page"] {
+    border-color: var(--coral);
+  }
+  .docs__content {
+    border-left: 0;
+  }
+  .docs__content .container {
+    padding: 0;
+  }
+}

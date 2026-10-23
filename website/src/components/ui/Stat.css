@@ -1,0 +1,51 @@
+.stat-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  border: var(--border);
+  overflow: hidden;
+}
+.stat {
+  display: block;
+  min-width: 0;
+  padding: 1rem 1.1rem;
+  text-decoration: none;
+  background: var(--surface);
+  color: var(--fg);
+  /* rule grid: each tile draws its right + bottom rule; the wrapper clips the outer edges */
+  box-shadow:
+    2px 0 0 var(--rule),
+    0 2px 0 var(--rule);
+}
+.stat__value {
+  display: block;
+  margin-top: 0.35rem;
+  font: 400 clamp(1.9rem, 3.6vw, 2.8rem) / 1.1 var(--f-display);
+  overflow-wrap: anywhere;
+}
+a.stat:hover .stat__value {
+  text-decoration: underline;
+  text-decoration-thickness: 3px;
+  text-underline-offset: 4px;
+}
+.stat--coral {
+  background: var(--coral);
+  color: var(--on-coral);
+}
+.stat--amber {
+  background: var(--amber);
+  color: var(--on-amber);
+}
+.stat--violet {
+  background: var(--violet);
+  color: var(--on-violet);
+}
+.stat--ink {
+  background: var(--ink);
+  color: var(--cream);
+}
+/* two-column phones: let an odd last tile span the row instead of leaving a hole */
+@media (max-width: 560px) {
+  .stat-grid > :last-child:nth-child(odd) {
+    grid-column: 1 / -1;
+  }
+}

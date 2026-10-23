@@ -1,0 +1,107 @@
+.footer {
+  margin-top: auto;
+  background: var(--footer-bg);
+  color: var(--footer-fg);
+  padding: clamp(48px, 7vw, 88px) 0 28px;
+  /* the footer is always dark: re-point tokens for anything rendered inside */
+  --tile: var(--cream);
+  --focus: var(--amber);
+}
+.footer__top {
+  display: grid;
+  grid-template-columns: minmax(0, 1.3fr) repeat(4, minmax(0, 1fr));
+  gap: var(--space-6);
+  padding-bottom: 2.5rem;
+  border-bottom: 2px solid rgb(250 246 239 / 0.35);
+}
+.footer__logo {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  color: var(--footer-fg);
+  text-decoration: none;
+}
+.footer__tag {
+  font-size: clamp(2rem, 4vw, 3rem);
+  margin: 1.2rem 0 0.6rem;
+}
+.footer__tag span {
+  color: var(--amber);
+}
+.footer__blurb {
+  color: var(--footer-muted);
+  max-width: 34ch;
+}
+.footer__heading {
+  color: var(--amber);
+  margin: 0 0 var(--space-4);
+}
+.footer__col ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.55rem;
+}
+.footer__col a {
+  color: var(--footer-fg);
+  text-decoration: none;
+}
+.footer__col a:hover {
+  text-decoration: underline;
+  text-decoration-color: var(--coral);
+}
+.footer__bottom {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: var(--space-4);
+  padding-top: 1.4rem;
+  font-size: 0.9rem;
+  color: var(--footer-muted);
+}
+.footer__flag {
+  display: inline-flex;
+  vertical-align: -2px;
+  flex-direction: column;
+  width: 18px;
+  height: 12px;
+  border: 1px solid rgb(250 246 239 / 0.5);
+}
+.footer__flag i {
+  flex: 1;
+}
+.footer__flag i:nth-child(1) {
+  background: #ff9933;
+}
+.footer__flag i:nth-child(2) {
+  background: #ffffff;
+}
+.footer__flag i:nth-child(3) {
+  background: #138808;
+}
+@media (max-width: 980px) {
+  .footer__top {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .footer__brand {
+    grid-column: 1 / -1;
+  }
+}
+@media (max-width: 360px) {
+  .footer__top {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+.footer__claude {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  color: var(--amber);
+  font-weight: 700;
+  text-decoration: none;
+}
+.footer__claude:hover {
+  text-decoration: underline;
+  text-decoration-color: var(--coral);
+}

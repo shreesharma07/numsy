@@ -1,0 +1,25 @@
+.ticker {
+  background: var(--amber);
+  color: var(--ink);
+  border-bottom: var(--border);
+  border-color: var(--ink);
+  padding: 0.6rem 0;
+  overflow: hidden;
+}
+.ticker__row {
+  position: relative;
+  overflow: hidden;
+}
+.ticker__scroller {
+  display: flex;
+  white-space: nowrap;
+  font: 400 clamp(1.8rem, 4.5vw, 3.4rem) / 1.1 var(--f-display);
+  text-transform: uppercase;
+  letter-spacing: 0.01em;
+}
+.ticker__scroller span {
+  flex-shrink: 0;
+}
+.ticker__row + .ticker__row {
+  margin-top: 0.2rem;
+}

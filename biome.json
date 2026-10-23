@@ -6,7 +6,19 @@
     "useIgnoreFile": true
   },
   "files": {
-    "includes": ["src/**", "test/**", "scripts/**", "*.json", "*.js", "!**/dist", "!**/coverage"]
+    "includes": [
+      "src/**",
+      "test/**",
+      "scripts/**",
+      "website/**",
+      "*.json",
+      "*.js",
+      "!**/dist",
+      "!**/coverage",
+      "!website/public/brand",
+      "!website/src/generated",
+      "!website/src/components/reactbits"
+    ]
   },
   "formatter": {
     "enabled": true,

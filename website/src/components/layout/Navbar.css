@@ -1,0 +1,103 @@
+.navbar {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: var(--bg);
+  border-bottom: var(--border);
+}
+.navbar__inner {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  height: var(--nav-h);
+}
+.navbar__brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  color: var(--fg);
+  text-decoration: none;
+  flex: none;
+}
+.navbar__nav {
+  margin-left: auto;
+}
+.navbar__links {
+  display: flex;
+  align-items: center;
+  gap: 0.1rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.navbar__link {
+  display: block;
+  padding: 0.45rem 0.55rem;
+  text-decoration: none;
+  font: 600 0.8rem / 1 var(--f-body);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  border-bottom: 3px solid transparent;
+}
+.navbar__link:hover,
+.navbar__link[aria-current="page"] {
+  border-bottom-color: var(--coral);
+}
+.navbar__actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex: none;
+}
+.navbar__stars {
+  font-family: var(--f-mono);
+  padding-left: 0.5rem;
+  border-left: 2px solid currentColor;
+}
+.navbar__menu {
+  display: none;
+}
+
+@media (max-width: 1140px) {
+  .navbar__menu {
+    display: inline-flex;
+  }
+  .navbar__nav {
+    margin-left: 0;
+  }
+  .navbar__actions {
+    margin-left: auto;
+  }
+  .navbar__links {
+    display: none;
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 100%;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0;
+    padding: var(--space-2) var(--gutter) var(--space-4);
+    background: var(--bg);
+    border-bottom: var(--border);
+    max-height: calc(100vh - var(--nav-h));
+    overflow-y: auto;
+  }
+  .navbar__links.is-open {
+    display: flex;
+  }
+  .navbar__link {
+    padding: 0.85rem 0.25rem;
+    font-size: 0.92rem;
+    border-bottom: 1px solid var(--rule-soft);
+  }
+  .navbar__link[aria-current="page"] {
+    border-bottom: 3px solid var(--coral);
+  }
+}
+@media (max-width: 520px) {
+  .navbar__star-label,
+  .navbar__wordmark {
+    display: none;
+  }
+}

@@ -1,0 +1,32 @@
+.community {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border: var(--border);
+  overflow: hidden;
+}
+.community__link {
+  display: grid;
+  gap: var(--space-1);
+  height: 100%;
+  padding: 1.2rem;
+  background: var(--surface);
+  text-decoration: none;
+  box-shadow:
+    2px 0 0 var(--rule),
+    0 2px 0 var(--rule);
+  transition: background-color 0.15s var(--ease);
+}
+.community__link b {
+  font-size: 1.1rem;
+  margin-top: var(--space-2);
+}
+.community__link:hover {
+  background: var(--amber);
+  color: var(--ink);
+}
+.community__link:hover .muted {
+  color: var(--ink);
+}

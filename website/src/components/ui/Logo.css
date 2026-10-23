@@ -1,0 +1,9 @@
+.logo-mark {
+  flex: none;
+}
+.logo-mark__tile {
+  fill: var(--tile);
+}
+.logo-wordmark {
+  flex: none;
+}

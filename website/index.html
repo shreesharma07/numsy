@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en-IN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <!-- route-meta:start -->
+    <title>Numsy</title>
+    <!-- route-meta:end -->
+    <meta name="author" content="Shri Kumar Sharma" />
+    <meta name="color-scheme" content="light dark" />
+    <meta name="theme-color" content="#FAF6EF" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#111111" media="(prefers-color-scheme: dark)" />
+    <link rel="icon" href="/brand/favicon.svg" type="image/svg+xml" />
+    <link rel="icon" href="/brand/favicon-32.png" sizes="32x32" type="image/png" />
+    <link rel="icon" href="/brand/favicon-16.png" sizes="16x16" type="image/png" />
+    <link rel="apple-touch-icon" href="/brand/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Anton&family=JetBrains+Mono:wght@400;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap"
+    />
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "SoftwareSourceCode",
+        "name": "Numsy",
+        "alternateName": "@numsy/numsy",
+        "description": "A lightweight TypeScript toolkit and CLI for validating, sanitizing, extracting and de-duplicating Indian mobile numbers from CSV/Excel datasets.",
+        "url": "https://shreesharma07.github.io/numsy/",
+        "codeRepository": "https://github.com/shreesharma07/numsy",
+        "programmingLanguage": ["TypeScript", "JavaScript"],
+        "runtimePlatform": "Node.js >= 18",
+        "license": "https://opensource.org/licenses/MIT",
+        "image": "https://shreesharma07.github.io/numsy/brand/og-image.png",
+        "sameAs": ["https://www.npmjs.com/package/@numsy/numsy", "https://github.com/shreesharma07/numsy"],
+        "author": {
+          "@type": "Person",
+          "name": "Shri Kumar Sharma",
+          "url": "https://shrikumarsharma.in",
+          "image": "https://github.com/shreesharma07.png",
+          "sameAs": [
+            "https://shrikumarsharma.in",
+            "https://www.linkedin.com/in/shreesharma07/",
+            "https://github.com/shreesharma07"
+          ]
+        }
+      }
+    </script>
+    <script>
+      // Apply the saved theme before first paint; otherwise CSS follows prefers-color-scheme.
+      (() => {
+        try {
+          const t = localStorage.getItem('numsy-theme');
+          if (t === 'light' || t === 'dark') document.documentElement.setAttribute('data-theme', t);
+        } catch {}
+      })();
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <noscript>
+      <p style="padding:16px;font-family:sans-serif">
+        Numsy validates, extracts and de-duplicates Indian mobile numbers.
+        Install with <code>npm i @numsy/numsy</code> — docs on
+        <a href="https://github.com/shreesharma07/numsy">GitHub</a>.
+      </p>
+    </noscript>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

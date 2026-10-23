@@ -1,0 +1,21 @@
+.docs-index__link {
+  display: grid;
+  gap: var(--space-2);
+  text-decoration: none;
+}
+/* whole card is the hit area */
+.docs-index__link::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+}
+.docs-index__title {
+  font: 400 1.7rem / 1 var(--f-display);
+  text-transform: uppercase;
+  margin-top: var(--space-2);
+}
+.docs-index__link:hover .docs-index__title {
+  text-decoration: underline;
+  text-decoration-color: var(--coral);
+  text-decoration-thickness: 3px;
+}

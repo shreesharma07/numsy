@@ -1,0 +1,27 @@
+.usage__step {
+  display: inline-grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  margin-bottom: var(--space-3);
+  font: 400 1.3rem / 1 var(--f-display);
+  border: 2px solid var(--ink);
+}
+.usage__step--amber {
+  background: var(--amber);
+  color: var(--ink);
+}
+.usage__step--coral {
+  background: var(--coral);
+  color: var(--ink);
+}
+.usage__step--violet {
+  background: var(--violet);
+  color: var(--cream);
+}
+.usage__link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-weight: 700;
+}

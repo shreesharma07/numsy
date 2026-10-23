@@ -1,0 +1,38 @@
+.callout {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: var(--space-4);
+  padding: var(--space-4) var(--space-5) var(--space-4) var(--space-4);
+  border: var(--border);
+  background: var(--surface);
+  margin: 0 0 var(--space-5);
+}
+.callout__icon {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border: 2px solid var(--ink);
+  color: var(--ink);
+}
+.callout--note .callout__icon {
+  background: var(--amber);
+}
+.callout--tip .callout__icon {
+  background: var(--coral);
+}
+.callout--warn .callout__icon {
+  background: var(--violet);
+  color: var(--cream);
+}
+.callout__title {
+  font-weight: 700;
+  color: var(--fg);
+  margin-bottom: var(--space-1);
+}
+.callout__body {
+  color: var(--muted);
+}
+.callout__body > :last-child {
+  margin-bottom: 0;
+}

@@ -1,0 +1,121 @@
+/* Violet poster panel: cream text on violet, ink rules, coral/amber geometric accents. */
+.bwc {
+  position: relative;
+  overflow: hidden;
+  padding: clamp(28px, 5vw, 64px);
+  background: var(--violet);
+  color: var(--cream);
+  border: 2px solid var(--ink);
+  isolation: isolate;
+}
+/* big geometric blocks, Bauhaus style */
+.bwc::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  right: -90px;
+  top: -90px;
+  width: 300px;
+  height: 300px;
+  border-radius: 50%;
+  background: var(--coral);
+}
+.bwc::after {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  right: 0;
+  bottom: 0;
+  width: 220px;
+  height: 220px;
+  background: var(--amber);
+  clip-path: polygon(100% 0, 100% 100%, 0 100%);
+}
+.bwc__icons {
+  display: flex;
+  gap: var(--space-2);
+  margin-bottom: var(--space-5);
+}
+.bwc__icon {
+  display: grid;
+  place-items: center;
+  width: 64px;
+  height: 64px;
+  border: 2px solid var(--ink);
+  color: var(--ink);
+}
+.bwc__icon--0 {
+  background: var(--amber);
+}
+.bwc__icon--1 {
+  background: var(--coral);
+  border-radius: 50%;
+}
+.bwc__icon--2 {
+  background: var(--cream);
+  border-radius: 0 50% 0 0;
+}
+.bwc__label {
+  padding-bottom: 0.8rem;
+  border-bottom: 2px solid var(--cream);
+  margin-bottom: var(--space-5);
+  max-width: 720px;
+}
+.bwc__title {
+  font-size: clamp(3rem, 9vw, 7.5rem);
+  margin-bottom: var(--space-5);
+}
+.bwc__body {
+  font-size: var(--fs-lede);
+  max-width: 46ch;
+}
+.bwc__body strong {
+  background: var(--cream);
+  color: var(--violet);
+  padding: 0 0.2em;
+  white-space: nowrap;
+}
+.bwc__built {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin: 0 0 var(--space-5);
+  padding: 0;
+  list-style: none;
+  max-width: 720px;
+}
+.bwc__built li {
+  padding: 0.35rem 0.7rem;
+  border: 2px solid var(--cream);
+  font: 700 0.78rem / 1.2 var(--f-mono);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.bwc .btn {
+  border-color: var(--ink);
+}
+.bwc .btn--ghost {
+  background: var(--cream);
+  color: var(--ink);
+}
+.bwc__note {
+  margin: var(--space-5) 0 0;
+  max-width: 60ch;
+  font-size: 0.85rem;
+  opacity: 0.9;
+}
+@media (max-width: 640px) {
+  .bwc::before {
+    width: 180px;
+    height: 180px;
+    right: -70px;
+    top: -70px;
+  }
+  .bwc {
+    padding-bottom: 96px;
+  }
+  .bwc::after {
+    width: 80px;
+    height: 80px;
+  }
+}

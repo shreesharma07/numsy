@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://shreesharma07.github.io/numsy/sitemap.xml
