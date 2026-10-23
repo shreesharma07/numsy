@@ -63,15 +63,27 @@ jobs:
         uses: github/codeql-action/analyze@v3
 
       - name: Run tests with coverage
-        run: pnpm test:cov
+        run: pnpm test:ci
 
       - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v4
+        if: ${{ !cancelled() }}
+        uses: codecov/codecov-action@v5
         with:
+          token: ${{ secrets.CODECOV_TOKEN }}
           files: ./coverage/lcov.info
+          flags: unit
           fail_ci_if_error: false
 
-      - name: Build package
+      - name: Upload test results to Codecov
+        if: ${{ !cancelled() }}
+        uses: codecov/test-results-action@v1
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: ./coverage/junit.xml
+
+      - name: Build package (bundle analysis uploads when CODECOV_TOKEN is set)
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
         run: pnpm run build
 
       - name: Verify package contents

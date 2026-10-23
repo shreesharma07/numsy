@@ -25,7 +25,7 @@
 | `GITHUB_TOKEN` | automatic | semantic-release (tags, releases, changelog commit) |
 | `NPM_TOKEN` | ✅ | npm publish: an npm **automation** token with publish rights to `numsy` |
 | `SNYK_TOKEN` | optional | Snyk scans (steps continue on error) |
-| `CODECOV_TOKEN` | optional | Coverage upload |
+| `CODECOV_TOKEN` | optional | Codecov uploads: coverage, test results and bundle analysis. Locally, put it in the git-ignored `.env` and run `pnpm test:ci && pnpm codecov` |
 
 Add them under **Settings → Secrets and variables → Actions**.
 

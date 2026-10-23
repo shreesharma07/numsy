@@ -23,6 +23,7 @@
     "react-router-dom": "7.18.4"
   },
   "devDependencies": {
+    "@codecov/vite-plugin": "2.0.1",
     "@iconify-json/ph": "1.2.2",
     "@types/node": "22.20.4",
     "@types/react": "19.3.0",
