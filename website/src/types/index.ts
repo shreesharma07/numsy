@@ -48,12 +48,3 @@ export interface TableColumn {
 }
 
 export type TableRow = Record<string, ReactNode>;
-
-export interface PlaygroundRow {
-  original: string;
-  sanitized: string;
-  formatted: string;
-  isValid: boolean;
-  duplicate: boolean;
-  reason: string | null;
-}

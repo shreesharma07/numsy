@@ -12,20 +12,20 @@ export const repo = {
 } as const;
 
 export const pkg = {
-  name: '@numsy/numsy',
-  npmUrl: 'https://www.npmjs.com/package/@numsy/numsy',
+  name: 'numsy',
+  npmUrl: 'https://www.npmjs.com/package/numsy',
   /** Shown until the npm registry answers */
   fallbackVersion: '2.0.0',
   /** Socket supply-chain score badge and report for a published version */
-  socketBadge: (version: string) => `https://badge.socket.dev/npm/package/@numsy/numsy/${version}`,
+  socketBadge: (version: string) => `https://badge.socket.dev/npm/package/numsy/${version}`,
   license: 'MIT',
   node: '20',
   install: {
-    npm: 'npm i @numsy/numsy',
-    pnpm: 'pnpm add @numsy/numsy',
-    yarn: 'yarn add @numsy/numsy',
-    npx: 'npx @numsy/numsy --help',
-    global: 'npm i -g @numsy/numsy',
+    npm: 'npm i numsy',
+    pnpm: 'pnpm add numsy',
+    yarn: 'yarn add numsy',
+    npx: 'npx numsy --help',
+    global: 'npm i -g numsy',
   },
 } as const;
 
@@ -71,7 +71,8 @@ export const docsNav: { title: string; links: NavLink[] }[] = [
       { label: 'CLI', to: pages.cli.path },
       { label: 'Library API', to: pages.api.path },
       { label: 'Output formats', to: pages.formats.path },
-      { label: 'Web UI & REST API', to: pages.webui.path },
+      { label: 'Local dashboard', to: pages.webui.path },
+      { label: 'Privacy & data', to: pages.privacy.path },
     ],
   },
   {
@@ -130,7 +131,7 @@ export const community: { label: string; href: string; blurb: string; icon: `ph:
   {
     label: 'npm package',
     href: pkg.npmUrl,
-    blurb: '@numsy/numsy on the registry.',
+    blurb: 'numsy on the registry.',
     icon: 'ph:package-bold',
   },
 ];
@@ -141,7 +142,8 @@ export const sitemap: SitemapGroup[] = [
     links: [
       { label: 'Home', to: pages.home.path },
       { label: 'Playground', to: pages.playground.path },
-      { label: 'Web UI & REST API', to: pages.webui.path },
+      { label: 'Local dashboard', to: pages.webui.path },
+      { label: 'Privacy & data', to: pages.privacy.path },
       { label: 'npm', href: pkg.npmUrl },
       { label: 'GitHub', href: repo.url },
     ],

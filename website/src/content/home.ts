@@ -48,7 +48,7 @@ export const features: Feature[] = [
   },
   {
     title: 'Local & typed',
-    body: 'Pure TypeScript with full typings; runs entirely on your machine. Plus a web UI and REST API via `numsy serve`.',
+    body: 'Pure TypeScript with full typings; runs entirely on your machine. Plus a local dashboard and REST API via `numsy dashboard`.',
     icon: 'ph:lock-key-bold',
     tone: 'amber',
   },
@@ -70,7 +70,7 @@ export const usageWays: UsageWay[] = [
     step: '1',
     title: 'From the terminal',
     body: 'Validate a few numbers, or clean a whole spreadsheet into several formats.',
-    code: 'npx @numsy/numsy validate 9876501234\nnumsy process leads.csv -f json,xlsx',
+    code: 'npx numsy validate 9876501234\nnumsy process leads.csv -f json,xlsx',
     lang: 'sh',
     label: 'CLI',
     link: { label: 'CLI reference', to: pages.cli.path },
@@ -89,11 +89,11 @@ export const usageWays: UsageWay[] = [
   {
     step: '3',
     title: 'From the browser',
-    body: 'Start the bundled web UI, drop in a file, download the report.',
-    code: 'numsy serve --port 3000\n# open http://localhost:3000',
+    body: 'Start the local dashboard, drop in a file, filter and export.',
+    code: 'numsy dashboard --open\n# → http://localhost:6789',
     lang: 'sh',
     label: 'CLI',
-    link: { label: 'Web UI & REST API', to: pages.webui.path },
+    link: { label: 'Local dashboard', to: pages.webui.path },
     tone: 'violet',
   },
 ];
@@ -124,8 +124,8 @@ export const docsCards: { title: string; body: string; to: string; icon: `ph:${s
     icon: 'ph:file-text-bold',
   },
   {
-    title: 'Web UI & REST',
-    body: 'numsy serve and its endpoints.',
+    title: 'Local dashboard',
+    body: 'numsy dashboard and its REST API.',
     to: pages.webui.path,
     icon: 'ph:browser-bold',
   },

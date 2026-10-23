@@ -10,11 +10,11 @@ export const faq: { q: string; a: string }[] = [
   },
   {
     q: 'Does my data leave my machine?',
-    a: 'No. The library, the CLI and `numsy serve` all run locally — there are no external API calls or telemetry. The playground on this site also runs entirely in your browser.',
+    a: 'No. The library, the CLI and `numsy dashboard` all run on your machine with no external API calls or telemetry, and the playground on this site runs entirely in your browser. Numsy never stores, sells or shares your files and never uses them for AI training: see the privacy & data disclaimer at /privacy.',
   },
   {
     q: 'How do I use it in CI?',
-    a: 'Add `--fail-on-invalid`: the command exits with code `2` when any invalid number is found, failing the job. Pair it with `-q` for quiet logs, e.g. `npx @numsy/numsy process data/leads.csv -q --fail-on-invalid`.',
+    a: 'Add `--fail-on-invalid`: the command exits with code `2` when any invalid number is found, failing the job. Pair it with `-q` for quiet logs, e.g. `npx numsy process data/leads.csv -q --fail-on-invalid`.',
   },
   {
     q: 'How does it find the phone column?',

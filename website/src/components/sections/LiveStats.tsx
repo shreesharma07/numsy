@@ -22,7 +22,7 @@ export function LiveStats() {
       <p className="live-stats__badges">
         <span className="label">Supply-chain security</span>
         <a href={socket} rel="noopener">
-          <img src={socket} alt={`Socket security score for @numsy/numsy ${version}`} height="20" />
+          <img src={socket} alt={`Socket security score for numsy ${version}`} height="20" />
         </a>
       </p>
     </>

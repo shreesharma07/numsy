@@ -65,8 +65,8 @@ export function GettingStartedPage() {
             <p className="muted">
               Numsy normalises all of them into clean 10-digit Indian mobile numbers, explains every
               rejection, and exports the result in the format your next tool expects — as a{' '}
-              <strong>CLI</strong>, a <strong>TypeScript library</strong> or a local{' '}
-              <strong>web UI and REST API</strong>.
+              <strong>CLI</strong>, a <strong>TypeScript library</strong> or a{' '}
+              <strong>local dashboard and REST API</strong>.
             </p>
             <p className="label mt-6">Built for</p>
             <ul className="chips">
@@ -117,8 +117,8 @@ export function GettingStartedPage() {
           <div>
             <h3>Global CLI</h3>
             <p className="muted">
-              Install globally for the <code>numsy</code> command (and the <code>numsy-serve</code>{' '}
-              alias) on your PATH.
+              Install globally for the <code>numsy</code> command on your PATH. It includes the
+              local dashboard: <code>numsy dashboard</code>.
             </p>
             <CodeBlock
               code={`$ ${pkg.install.global}\n$ numsy --version\n$ numsy --help`}
@@ -131,7 +131,7 @@ export function GettingStartedPage() {
             <p className="muted">Import the class or the standalone helpers.</p>
             <CodeBlock
               code={
-                "import { Numsy } from '@numsy/numsy';\n// CommonJS: const { Numsy } = require('@numsy/numsy');\nconst numsy = new Numsy({ enableLogging: false });"
+                "import { Numsy } from 'numsy';\n// CommonJS: const { Numsy } = require('numsy');\nconst numsy = new Numsy({ enableLogging: false });"
               }
               lang="ts"
               label="TypeScript"

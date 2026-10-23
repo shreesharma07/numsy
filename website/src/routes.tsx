@@ -13,6 +13,7 @@ import { WebUiPage } from './pages/docs/WebUi';
 import { HomePage } from './pages/Home';
 import { NotFoundPage } from './pages/NotFound';
 import { PlaygroundPage } from './pages/Playground';
+import { PrivacyPage } from './pages/Privacy';
 
 export function AppRoutes() {
   return (
@@ -28,6 +29,7 @@ export function AppRoutes() {
           <Route path="faq" element={<FaqPage />} />
         </Route>
         <Route path="playground" element={<PlaygroundPage />} />
+        <Route path="privacy" element={<PrivacyPage />} />
         <Route path="about" element={<AboutPage />} />
         <Route path="contributors" element={<ContributorsPage />} />
         <Route path="credits" element={<CreditsPage />} />

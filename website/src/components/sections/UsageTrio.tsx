@@ -3,7 +3,7 @@ import { usageWays } from '../../content/home';
 import { Card, CodeBlock, Icon, RichText } from '../ui';
 import './UsageTrio.css';
 
-/** "Three ways in": CLI, library, web UI. */
+/** "Three ways in": CLI, library, local dashboard. */
 export function UsageTrio() {
   return (
     <div className="grid grid-3">

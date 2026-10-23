@@ -46,14 +46,14 @@ export const pages = {
     path: '/docs',
     title: 'Getting started',
     description:
-      'What Numsy is, who it is for, how to install it with npm, pnpm, yarn or npx, and a three-step quick start for the CLI, library and web UI.',
+      'What Numsy is, who it is for, how to install it with npm, pnpm, yarn or npx, and a three-step quick start for the CLI, library and local dashboard.',
     priority: 0.9,
   },
   cli: {
     path: '/docs/cli',
     title: 'CLI reference',
     description:
-      'Every numsy command and option: validate, extract, process, serve and formats, output flags, --only, --country-code, --normalize and --fail-on-invalid.',
+      'Every numsy command and option: validate, extract, process, dashboard and formats; output, filter and dashboard flags such as --dedupe, --number-style, --columns, --header-name and --fail-on-invalid.',
     priority: 0.9,
   },
   api: {
@@ -72,9 +72,9 @@ export const pages = {
   },
   webui: {
     path: '/docs/web-ui',
-    title: 'Web UI & REST API',
+    title: 'Local dashboard & REST API',
     description:
-      'Run numsy serve for a local drag-and-drop web UI and a REST API with /api/health, /api/upload and /api/download/:id.',
+      'Run numsy dashboard for a local dashboard on localhost:6789 with file upload, filters, de-duplication and exports, plus a REST API for scripts.',
     priority: 0.7,
   },
   faq: {
@@ -88,8 +88,15 @@ export const pages = {
     path: '/playground',
     title: 'Playground',
     description:
-      'Paste numbers or free text and validate Indian mobile numbers in your browser. Download results as JSON, CSV or Markdown. Nothing leaves the page.',
+      'Upload a CSV or Excel file or paste text, then validate, de-duplicate and filter Indian mobile numbers in your browser. Export CSV, Excel, JSON, Markdown or text. Nothing leaves the page.',
     priority: 0.8,
+  },
+  privacy: {
+    path: '/privacy',
+    title: 'Privacy & data disclaimer',
+    description:
+      'Numsy never stores, sells or shares the Excel, CSV or text you process, and never uses it for AI training. The playground runs in your browser; the CLI and local dashboard run on your machine.',
+    priority: 0.6,
   },
   about: {
     path: '/about',

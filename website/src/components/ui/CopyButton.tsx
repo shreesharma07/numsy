@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { copyText } from '../../lib/download';
+import { copyText } from '../../lib/clipboard';
 import { Icon } from './Icon';
 import './CopyButton.css';
 

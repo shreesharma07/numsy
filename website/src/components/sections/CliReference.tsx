@@ -1,4 +1,4 @@
-import { commands, examples, exitCodes, options } from '../../content/cli';
+import { commands, examples, exitCodes, optionGroups } from '../../content/cli';
 import { Badge, CodeBlock, RichText, Table } from '../ui';
 
 export function CliCommands() {
@@ -18,15 +18,16 @@ export function CliCommands() {
 }
 
 export function CliOptions() {
-  return (
+  return optionGroups.map((group) => (
     <Table
-      caption="Options"
+      key={group.title}
+      caption={group.title}
       columns={[
         { key: 'flag', header: 'Option', rowHeader: true },
         { key: 'desc', header: 'Description' },
         { key: 'def', header: 'Default' },
       ]}
-      rows={options.map((o) => ({
+      rows={group.options.map((o) => ({
         flag: (
           <>
             <code>{o.flag}</code>
@@ -42,7 +43,7 @@ export function CliOptions() {
         def: <RichText text={o.defaultValue} />,
       }))}
     />
-  );
+  ));
 }
 
 export function CliExamples() {
