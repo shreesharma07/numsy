@@ -4,6 +4,7 @@ import { App } from './App';
 import './styles/tokens.css';
 import './styles/base.css';
 import './styles/utilities.css';
+import 'lenis/dist/lenis.css';
 
 const root = document.getElementById('root');
 if (!root) throw new Error('#root missing');

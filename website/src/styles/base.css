@@ -5,9 +5,13 @@
 }
 
 html {
+  /* Lenis drives smooth scrolling when it runs (html.lenis); this is the no-JS fallback */
   scroll-behavior: smooth;
   scroll-padding-top: calc(var(--nav-h) + 12px);
   -webkit-text-size-adjust: 100%;
+}
+html.lenis {
+  scroll-behavior: auto;
 }
 
 body {
