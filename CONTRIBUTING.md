@@ -1,161 +1,111 @@
-# Contributing to 🔢 Numsy
+<div align="center">
+  <img src="assets/brand/numsy-mark.svg" width="64" alt="Numsy" />
+  <h1>Contributing to Numsy</h1>
+  <p>Bug reports, fixes, docs and ideas are all welcome. Here's how to make them land smoothly.</p>
+  <p>
+    <a href="README.md">README</a> ·
+    <a href="CONTRIBUTING.md"><b>Contributing</b></a> ·
+    <a href="CODE_OF_CONDUCT.md">Code of Conduct</a> ·
+    <a href="SECURITY.md">Security</a> ·
+    <a href="https://shreesharma07.github.io/numsy/">Website</a>
+  </p>
+</div>
 
-Thank you for your interest in contributing to 🔢 Numsy! We welcome contributions from the community.
+---
 
-## Code of Conduct
+## <img src="assets/icons/contribute.svg" width="22" alt="" /> Ways to contribute
 
-By participating in this project, you agree to maintain a respectful and inclusive environment for everyone.
+| | You want to… | Do this |
+| :-: | --- | --- |
+| <img src="assets/icons/bug.svg" width="18" alt="" /> | Report a bug | [Open an issue](https://github.com/shreesharma07/numsy/issues/new) with version, OS, the command or code you ran, expected vs. actual output |
+| <img src="assets/icons/idea.svg" width="18" alt="" /> | Suggest a feature | Open an issue describing the *problem* before writing code |
+| <img src="assets/icons/docs.svg" width="18" alt="" /> | Improve docs | Send a PR directly. Typos and examples are always welcome |
+| <img src="assets/icons/commits.svg" width="18" alt="" /> | Fix an issue | Comment on it first so work isn't duplicated |
+| <img src="assets/icons/report.svg" width="18" alt="" /> | Report a vulnerability | **Don't open an issue.** Follow [SECURITY.md](SECURITY.md) |
 
-## How to Contribute
+> [!IMPORTANT]
+> Never paste real people's phone numbers into issues, tests or fixtures. Use fake ones like `9876501234`.
 
-### Reporting Bugs
+## <img src="assets/icons/setup.svg" width="22" alt="" /> Setup
 
-If you find a bug, please create an issue with:
+Requires **Node.js ≥ 18.3** and **pnpm 8**.
 
-- A clear, descriptive title
-- Steps to reproduce the issue
-- Expected behavior
-- Actual behavior
-- Screenshots (if applicable)
-- Your environment (OS, Node version, etc.)
-
-### Suggesting Enhancements
-
-Enhancement suggestions are welcome! Please provide:
-
-- A clear description of the enhancement
-- Why this enhancement would be useful
-- Any implementation ideas you have
-
-### Pull Requests
-
-1. **Fork the repository**
-
-   ```bash
-   git clone https://github.com/yourusername/number-processor.git
-   ```
-
-2. **Create a feature branch**
-
-   ```bash
-   git checkout -b feature/your-feature-name
-   ```
-
-3. **Make your changes**
-   - Follow the existing code style
-   - Use camelCase for function names
-   - Add JSDoc comments for all public methods
-   - Write tests for new functionality
-
-4. **Test your changes**
-
-   ```bash
-   npm run test
-   npm run test:e2e
-   npm run lint
-   ```
-
-5. **Commit your changes**
-
-   ```bash
-   git commit -m "feat: add amazing feature"
-   ```
-
-   Use conventional commit messages:
-   - `feat:` for new features
-   - `fix:` for bug fixes
-   - `docs:` for documentation changes
-   - `style:` for formatting changes
-   - `refactor:` for code refactoring
-   - `test:` for adding tests
-   - `chore:` for maintenance tasks
-
-6. **Push to your fork**
-
-   ```bash
-   git push origin feature/your-feature-name
-   ```
-
-7. **Create a Pull Request**
-   - Provide a clear description of the changes
-   - Reference any related issues
-   - Ensure all tests pass
-
-## Development Setup
-
-1. Install dependencies:
-
-   ```bash
-   npm install
-   ```
-
-2. Start development server:
-
-   ```bash
-   npm run start:dev
-   ```
-
-3. Run tests:
-
-   ```bash
-   npm test
-   ```
-
-## Code Style Guidelines
-
-### TypeScript
-
-- Use TypeScript for all code
-- Define interfaces for all data structures
-- Use strict type checking
-- Avoid `any` types when possible
-
-### Naming Conventions
-
-- **Files**: kebab-case (e.g., `phone-validator.service.ts`)
-- **Classes**: PascalCase (e.g., `PhoneValidatorService`)
-- **Functions/Methods**: camelCase (e.g., `validateAndSanitize`)
-- **Constants**: UPPER_SNAKE_CASE (e.g., `MAX_FILE_SIZE`)
-- **Interfaces**: PascalCase (e.g., `PhoneValidationResult`)
-
-### Documentation
-
-- Add JSDoc comments to all public methods
-- Include parameter descriptions and return types
-- Add inline comments for complex logic
-
-Example:
-
-```typescript
-/**
- * Validates and sanitizes a phone number
- * @param phoneNumber - The phone number to validate
- * @returns PhoneValidationResult object with validation details
- */
-validateAndSanitize(phoneNumber: string): PhoneValidationResult {
-  // Implementation
-}
+```bash
+git clone https://github.com/shreesharma07/numsy.git && cd numsy
+pnpm install
+pnpm validate        # Biome + type-check + tests (the same gate CI runs)
 ```
 
-### Testing
+| Command | Purpose |
+| --- | --- |
+| `pnpm build` | Compile `src/` → `dist/` |
+| `pnpm cli -- validate 9876501234` | Run the CLI from source |
+| `pnpm serve` | Start the web UI + REST API |
+| `pnpm test` · `pnpm test:cov` | Jest, optionally with coverage |
+| `pnpm check` | Biome lint + format, with fixes applied |
+| `pnpm --filter @numsy/website dev` | Run the docs website locally |
 
-- Write unit tests for all services
-- Write E2E tests for API endpoints
-- Aim for high code coverage
-- Test both success and error cases
+## <img src="assets/icons/layout.svg" width="22" alt="" /> Project layout
 
-## Project Structure
-
+```text
+src/cli        numsy CLI · terminal output · server launcher
+src/core       Numsy facade · Parser · PhoneValidator · FileProcessor
+src/common     pure functions · helpers · interfaces · types
+src/controllers, src/services   NestJS web server
+public/        web UI served by `numsy serve`
+test/          Jest specs
+website/       documentation site (GitHub Pages)
+assets/        brand assets and doc icons
 ```
-src/
-├── controllers/     # API controllers
-├── services/        # Business logic services
-├── app.module.ts    # Root module
-└── main.ts          # Entry point
+
+## <img src="assets/icons/style.svg" width="22" alt="" /> Code style
+
+[Biome](https://biomejs.dev) formats and lints everything, and the pre-commit hook runs it on staged files.
+
+- Give public APIs explicit types, and avoid `any` in new code.
+- Keep `src/common/functions` pure; I/O belongs in `core/` or `cli/`.
+- Give every exported symbol a short JSDoc comment.
+- Naming: `PascalCase` for classes and types, `camelCase` for functions and variables, `UPPER_SNAKE_CASE` for constants.
+
+## <img src="assets/icons/tests.svg" width="22" alt="" /> Tests
+
+- **Fixes** need a test that fails without the fix.
+- **Features** need happy-path and main error-path tests.
+- **CLI** behaviour is tested in-process through `run()` in `test/cli.spec.ts`.
+
+## <img src="assets/icons/commits.svg" width="22" alt="" /> Commits & pull requests
+
+Commits follow [Conventional Commits](https://www.conventionalcommits.org); they drive versioning and the changelog.
+
+```text
+feat(cli): add --only unique option
+fix(parser): read hyperlink cells in xlsx files
+docs: clarify country-code formatting
 ```
 
-## Questions?
+| Type | Releases | Use for |
+| --- | :-: | --- |
+| `feat` | minor | New capability |
+| `fix` · `perf` · `refactor` · `docs` | patch | Bug fixes, speed-ups, restructuring, published docs |
+| `chore` · `ci` · `test` · `style` | none | Tooling, pipelines, tests, formatting |
 
-Feel free to open an issue for any questions or concerns.
+Breaking change? Add a `BREAKING CHANGE:` footer, which triggers a major release.
 
-Thank you for contributing! 🎉
+1. Fork, then branch off `main`: `feat/…` or `fix/…`
+2. Make the change, add tests, and run `pnpm validate`
+3. Open a focused PR that explains **what** and **why**, and links the issue
+
+## <img src="assets/icons/release.svg" width="22" alt="" /> Releases
+
+Merges to `main` run CI. Then [semantic-release](https://semantic-release.gitbook.io) publishes to npm, tags the release and updates [CHANGELOG.md](CHANGELOG.md). Never bump versions by hand.
+
+## <img src="assets/icons/questions.svg" width="22" alt="" /> Questions
+
+Ask in [issues](https://github.com/shreesharma07/numsy/issues) or reach the maintainer via [shrikumarsharma.in](https://shrikumarsharma.in).
+
+---
+
+<p align="center">
+  <img src="assets/brand/numsy-mark.svg" width="28" alt="" /><br />
+  <sub>Built by <a href="https://shrikumarsharma.in">Shri Kumar Sharma</a> · <a href="https://github.com/shreesharma07">GitHub</a> · <a href="https://www.linkedin.com/in/shreesharma07/">LinkedIn</a></sub>
+</p>
