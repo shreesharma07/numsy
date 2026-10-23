@@ -13,6 +13,7 @@
   <a href="https://github.com/shreesharma07/numsy/actions/workflows/main.yml"><img src="https://img.shields.io/github/actions/workflow/status/shreesharma07/numsy/main.yml?branch=main&style=flat-square&label=CI" alt="CI status" /></a>
   <a href="https://github.com/shreesharma07/numsy/stargazers"><img src="https://img.shields.io/github/stars/shreesharma07/numsy?style=flat-square&color=8338EC" alt="GitHub stars" /></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-111111?style=flat-square" alt="MIT license" /></a>
+  <a href="#built-with-claude"><img src="https://img.shields.io/badge/built%20with-Claude%20Code-8338EC?style=flat-square" alt="Built with Claude Code" /></a>
 </p>
 
 <p align="center">
@@ -61,6 +62,30 @@ Contributions are welcome. Start with [CONTRIBUTING.md](CONTRIBUTING.md), follow
   </a>
 </p>
 
+## <img src="assets/icons/ai.svg" width="22" alt="" /> Built with Claude
+
+<table>
+  <tr>
+    <td>
+      <h3>Vibe-coded with Claude ✨</h3>
+      <p>
+        The Numsy v1.2 work was built in collaboration with
+        <a href="https://claude.ai"><b>Claude</b></a>, Anthropic's AI, through
+        <a href="https://claude.com/claude-code"><b>Claude Code</b></a>. That covers the <code>numsy</code> CLI,
+        the JSON / CSV / Markdown / Excel exporters, the phone-extraction and security fixes,
+        the Biome migration, these docs, the brand identity and the website.
+      </p>
+      <p>
+        Shri Kumar Sharma set the direction, made the product calls and owns the result.
+        Claude wrote the code, tests and docs alongside him.
+      </p>
+      <p>
+        <a href="https://claude.com/claude-code">Try Claude Code →</a>
+      </p>
+    </td>
+  </tr>
+</table>
+
 ## <img src="assets/icons/license.svg" width="22" alt="" /> License
 
 [MIT](LICENSE) © [Shri Kumar Sharma](https://shrikumarsharma.in)
@@ -69,5 +94,5 @@ Contributions are welcome. Start with [CONTRIBUTING.md](CONTRIBUTING.md), follow
 
 <p align="center">
   <img src="assets/brand/numsy-mark.svg" width="28" alt="" /><br />
-  <sub>Built by <a href="https://shrikumarsharma.in">Shri Kumar Sharma</a> · <a href="https://github.com/shreesharma07">GitHub</a> · <a href="https://www.linkedin.com/in/shreesharma07/">LinkedIn</a></sub>
+  <sub>Built by <a href="https://shrikumarsharma.in">Shri Kumar Sharma</a> with <a href="https://claude.com/claude-code">Claude Code</a> · <a href="https://github.com/shreesharma07">GitHub</a> · <a href="https://www.linkedin.com/in/shreesharma07/">LinkedIn</a></sub>
 </p>
