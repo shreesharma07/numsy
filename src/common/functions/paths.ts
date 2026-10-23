@@ -24,9 +24,20 @@ export function dashboardDir(): string | null {
   return fs.existsSync(path.join(dir, 'index.html')) ? dir : null;
 }
 
+let privateDir: string | undefined;
+
 /**
- * Scratch space for the legacy upload/ZIP endpoints: <os tmp>/numsy, or NUMSY_WORK_DIR.
- * Kept out of the working directory so `numsy dashboard` never litters the folder it runs in.
+ * Scratch space for the legacy upload/ZIP endpoints, kept out of the working directory so
+ * `numsy dashboard` never litters the folder it runs in. NUMSY_WORK_DIR when set; otherwise a
+ * private directory created once per process by fs.mkdtempSync (mode 0700, unpredictable name),
+ * so other users of a shared machine can't pre-create or symlink it. It is removed on exit.
  */
-export const workDir = (...parts: string[]): string =>
-  path.join(process.env.NUMSY_WORK_DIR || path.join(os.tmpdir(), 'numsy'), ...parts);
+export function workDir(...parts: string[]): string {
+  if (process.env.NUMSY_WORK_DIR) return path.join(process.env.NUMSY_WORK_DIR, ...parts);
+  if (!privateDir) {
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'numsy-'));
+    privateDir = dir;
+    process.once('exit', () => fs.rmSync(dir, { recursive: true, force: true }));
+  }
+  return path.join(privateDir, ...parts);
+}

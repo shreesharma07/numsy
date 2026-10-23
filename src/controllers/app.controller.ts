@@ -387,7 +387,7 @@ export class AppController {
               continue;
             }
 
-            const stats = fs.statSync(filePath);
+            const stats = fs.lstatSync(filePath);
 
             // Only delete regular files, not directories or special files
             if (!stats.isFile()) {

@@ -7,9 +7,14 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { Logger } from '@nestjs/common';
 import { FileCleanupService } from '../src/services/file-cleanup.service';
 import * as fs from 'node:fs';
+import * as os from 'node:os';
+import * as path from 'node:path';
 import { workDir } from '../src/common/functions/paths';
 
 // Mock fs module
+// A fixed work dir keeps paths.ts away from the mocked fs
+process.env.NUMSY_WORK_DIR = path.join(os.tmpdir(), 'numsy-test');
+
 jest.mock('node:fs');
 
 describe('FileCleanupService', () => {
@@ -107,7 +112,7 @@ describe('FileCleanupService', () => {
       // Mock directory exists with files
       mockFs.existsSync.mockReturnValue(true);
       mockFs.readdirSync.mockReturnValue(mockFiles as any);
-      mockFs.statSync.mockReturnValue({ isFile: () => true } as any);
+      mockFs.lstatSync.mockReturnValue({ isFile: () => true } as any);
       mockFs.unlinkSync.mockImplementation(() => undefined);
 
       await service.onModuleInit();
@@ -130,7 +135,7 @@ describe('FileCleanupService', () => {
       mockFs.readdirSync
         .mockReturnValueOnce(uploadFiles as any)
         .mockReturnValueOnce(tempFiles as any);
-      mockFs.statSync.mockReturnValue({ isFile: () => true } as any);
+      mockFs.lstatSync.mockReturnValue({ isFile: () => true } as any);
       mockFs.unlinkSync.mockImplementation(() => undefined);
 
       await (service as any).flushAllFiles();
@@ -159,7 +164,7 @@ describe('FileCleanupService', () => {
 
       mockFs.existsSync.mockReturnValue(true);
       mockFs.readdirSync.mockReturnValue(items as any);
-      mockFs.statSync
+      mockFs.lstatSync
         .mockReturnValueOnce({ isFile: () => true } as any) // file.csv in uploads
         .mockReturnValueOnce({ isFile: () => false } as any) // subfolder in uploads
         .mockReturnValueOnce({ isFile: () => true } as any) // file.csv in temp
@@ -229,7 +234,7 @@ describe('FileCleanupService', () => {
 
       mockFs.existsSync.mockReturnValue(true);
       mockFs.readdirSync.mockReturnValue(['old-file.csv', 'recent-file.csv'] as any);
-      mockFs.statSync
+      mockFs.lstatSync
         .mockReturnValueOnce({
           isFile: () => true,
           mtimeMs: oldFileTime,
@@ -263,7 +268,7 @@ describe('FileCleanupService', () => {
 
       mockFs.existsSync.mockReturnValue(true);
       mockFs.readdirSync.mockReturnValue(['recent-file.csv'] as any);
-      mockFs.statSync.mockReturnValue({
+      mockFs.lstatSync.mockReturnValue({
         isFile: () => true,
         mtimeMs: recentFileTime,
       } as any);
@@ -305,7 +310,7 @@ describe('FileCleanupService', () => {
 
       mockFs.existsSync.mockReturnValue(true);
       mockFs.readdirSync.mockReturnValue(['old-file.csv'] as any);
-      mockFs.statSync.mockReturnValue({
+      mockFs.lstatSync.mockReturnValue({
         isFile: () => true,
         mtimeMs: fileTime,
       } as any);
@@ -357,7 +362,7 @@ describe('FileCleanupService', () => {
 
       mockFs.existsSync.mockReturnValue(true);
       mockFs.readdirSync.mockReturnValue(['old-file.csv'] as any);
-      mockFs.statSync.mockReturnValue({
+      mockFs.lstatSync.mockReturnValue({
         isFile: () => true,
         mtimeMs: oldFileTime,
       } as any);
@@ -374,7 +379,7 @@ describe('FileCleanupService', () => {
       mockFs.readdirSync
         .mockReturnValueOnce(['file1.csv', 'file2.xlsx'] as any) // uploads
         .mockReturnValueOnce(['temp1.txt'] as any); // temp
-      mockFs.statSync.mockReturnValue({ isFile: () => true } as any);
+      mockFs.lstatSync.mockReturnValue({ isFile: () => true } as any);
 
       const stats = service.getCleanupStats();
 
@@ -413,7 +418,7 @@ describe('FileCleanupService', () => {
     it('should only count files, not directories', () => {
       mockFs.existsSync.mockReturnValue(true);
       mockFs.readdirSync.mockReturnValue(['file1.csv', 'subfolder', 'file2.xlsx'] as any);
-      mockFs.statSync
+      mockFs.lstatSync
         .mockReturnValueOnce({ isFile: () => true } as any)
         .mockReturnValueOnce({ isFile: () => false } as any)
         .mockReturnValueOnce({ isFile: () => true } as any);
@@ -434,7 +439,7 @@ describe('FileCleanupService', () => {
         .mockReturnValueOnce(['initial1.csv'] as any) // flush uploads
         .mockReturnValueOnce(['initial2.txt'] as any) // flush temp
         .mockReturnValue(['old-file.csv'] as any); // cleanup iterations
-      mockFs.statSync.mockReturnValue({
+      mockFs.lstatSync.mockReturnValue({
         isFile: () => true,
         mtimeMs: oldFileTime,
       } as any);
@@ -493,7 +498,7 @@ describe('FileCleanupService', () => {
 
       mockFs.existsSync.mockReturnValue(true);
       mockFs.readdirSync.mockReturnValue(['threshold-file.csv'] as any);
-      mockFs.statSync.mockReturnValue({
+      mockFs.lstatSync.mockReturnValue({
         isFile: () => true,
         mtimeMs: exactThreshold,
       } as any);
@@ -510,7 +515,7 @@ describe('FileCleanupService', () => {
 
       mockFs.existsSync.mockReturnValue(true);
       mockFs.readdirSync.mockReturnValue(['just-over.csv'] as any);
-      mockFs.statSync.mockReturnValue({
+      mockFs.lstatSync.mockReturnValue({
         isFile: () => true,
         mtimeMs: justOver,
       } as any);
@@ -526,7 +531,7 @@ describe('FileCleanupService', () => {
 
       mockFs.existsSync.mockReturnValue(true);
       mockFs.readdirSync.mockReturnValue(largeFileList as any);
-      mockFs.statSync.mockReturnValue({
+      mockFs.lstatSync.mockReturnValue({
         isFile: () => true,
         mtimeMs: Date.now() - 10 * 60 * 1000, // 10 minutes old
       } as any);
@@ -542,7 +547,7 @@ describe('FileCleanupService', () => {
 
       mockFs.existsSync.mockReturnValue(true);
       mockFs.readdirSync.mockReturnValue(mixedFiles as any);
-      mockFs.statSync.mockReturnValue({
+      mockFs.lstatSync.mockReturnValue({
         isFile: () => true,
         mtimeMs: Date.now() - 6 * 60 * 1000,
       } as any);

@@ -729,7 +729,7 @@ Thank you for using 🔢 Numsy!
 
         // Additional security: Verify it's a file, not a directory
         if (fs.existsSync(normalizedPath)) {
-          const stats = fs.statSync(normalizedPath);
+          const stats = fs.lstatSync(normalizedPath);
           if (!stats.isFile()) {
             this.logger.warn(`Skipping non-file deletion: ${normalizedPath}`);
             continue;

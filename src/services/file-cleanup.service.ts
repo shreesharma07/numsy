@@ -52,7 +52,7 @@ export class FileCleanupService implements OnModuleInit {
 
         for (const file of files) {
           const filePath = path.join(dir, file);
-          const stats = fs.statSync(filePath);
+          const stats = fs.lstatSync(filePath);
 
           if (stats.isFile()) {
             fs.unlinkSync(filePath);
@@ -110,7 +110,7 @@ export class FileCleanupService implements OnModuleInit {
 
         for (const file of files) {
           const filePath = path.join(dir, file);
-          const stats = fs.statSync(filePath);
+          const stats = fs.lstatSync(filePath);
 
           if (stats.isFile()) {
             const fileAge = now - stats.mtimeMs;
@@ -167,7 +167,7 @@ export class FileCleanupService implements OnModuleInit {
       try {
         return fs.readdirSync(dir).filter((file) => {
           const filePath = path.join(dir, file);
-          return fs.statSync(filePath).isFile();
+          return fs.lstatSync(filePath).isFile();
         }).length;
       } catch {
         return 0;
