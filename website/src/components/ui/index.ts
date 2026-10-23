@@ -6,6 +6,7 @@ export { Card } from './Card';
 export { CodeBlock } from './CodeBlock';
 export { Container } from './Container';
 export { CopyButton } from './CopyButton';
+export { FlagIndia } from './FlagIndia';
 export { Icon } from './Icon';
 export { LogoMark, Wordmark } from './Logo';
 export { RichText } from './RichText';

@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import { author, builtWithClaude, sitemap } from '../../content/site';
-import { Container, Icon, LogoMark, Wordmark } from '../ui';
+import { Container, FlagIndia, Icon, LogoMark, Wordmark } from '../ui';
 import './Footer.css';
 
 export function Footer() {
@@ -47,12 +47,7 @@ export function Footer() {
             <Icon name="ph:sparkle-duotone" /> Built with Claude Code
           </a>
           <span>
-            Made in India{' '}
-            <span className="footer__flag" role="img" aria-label="Indian flag">
-              <i />
-              <i />
-              <i />
-            </span>
+            Made in India <FlagIndia className="footer__flag" />
           </span>
         </div>
       </Container>
