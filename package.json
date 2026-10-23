@@ -7,28 +7,28 @@
   "private": false,
   "license": "MIT",
   "main": "dist/index.js",
-  "module": "dist/index.mjs",
   "types": "dist/index.d.ts",
   "bin": {
     "numsy-serve": "./dist/cli/server.js"
   },
   "exports": {
     ".": {
-      "require": "./dist/index.js",
-      "import": "./dist/index.mjs",
-      "types": "./dist/index.d.ts"
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
     },
     "./parser": {
-      "require": "./dist/core/Parser.js",
-      "import": "./dist/core/Parser.mjs",
-      "types": "./dist/core/Parser.d.ts"
-    }
+      "types": "./dist/core/Parser.d.ts",
+      "default": "./dist/core/Parser.js"
+    },
+    "./package.json": "./package.json"
   },
   "files": [
     "dist",
+    "!dist/**/*.map",
     "public",
     "README.md",
-    "LICENSE"
+    "LICENSE",
+    "CHANGELOG.md"
   ],
   "keywords": [
     "phone-number",
@@ -53,8 +53,7 @@
   },
   "homepage": "https://github.com/shreesharma07/numsy#readme",
   "engines": {
-    "node": ">=18.0.0",
-    "pnpm": ">=8.0.0"
+    "node": ">=18.3.0"
   },
   "packageManager": "pnpm@8.15.0",
   "scripts": {
