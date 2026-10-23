@@ -285,6 +285,8 @@ export const PHONE_PATTERNS = {
   INDIAN_MOBILE: /^[6-9]\d{9}$/,
   WITH_COUNTRY_CODE: /^(?:\+91|91|0)?[6-9]\d{9}$/,
   EXTRACT_DIGITS: /\d+/g,
+  /** Digit runs that may contain spaces, dashes, dots or brackets, e.g. "+91 (98765) 01-234" */
+  EXTRACT_CANDIDATES: /\+?\d[\d\s().-]*\d|\d/g,
 };
 
 /**

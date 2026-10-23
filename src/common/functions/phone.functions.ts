@@ -28,7 +28,7 @@ export function sanitizePhoneNumber(phone: string): string {
     }
 
     return sanitizedValue;
-  } catch (error) {
+  } catch (_error) {
     return '';
   }
 }
@@ -44,7 +44,7 @@ export function isValidIndianMobile(phone: string): boolean {
 
     const sanitized = sanitizePhoneNumber(phone);
     return PHONE_PATTERNS.INDIAN_MOBILE.test(sanitized);
-  } catch (error) {
+  } catch (_error) {
     return false;
   }
 }
@@ -92,10 +92,49 @@ export function validatePhoneNumber(phone: string): PhoneValidationResult {
     result.isValid = true;
     result.reason = undefined;
     return result;
-  } catch (error) {
+  } catch (_error) {
     result.reason = 'Error during validation';
     return result;
   }
+}
+
+/**
+ * True when a digit string is a complete number: 10 digits, or 11 with a leading 0, or 12 with 91
+ */
+const isCompleteNumber = (digits: string): boolean =>
+  digits.length === 10 ||
+  (digits.length === 11 && digits.startsWith('0')) ||
+  (digits.length === 12 && digits.startsWith('91'));
+
+/**
+ * Finds phone number candidates in free text, keeping formatted numbers such as
+ * "+91 98765 01234" or "98765-01234" intact and splitting runs like
+ * "98765 01234 91234 56789" into separate numbers
+ */
+export function findPhoneCandidates(text: string): string[] {
+  const candidates: string[] = [];
+  if (!isNonEmptyString(text)) return candidates;
+
+  for (const raw of String(text).match(PHONE_PATTERNS.EXTRACT_CANDIDATES) ?? []) {
+    const digits = raw.replace(/\D/g, '');
+    if (digits.length <= 12) {
+      candidates.push(digits);
+      continue;
+    }
+
+    // Several numbers separated only by spaces/dashes: rebuild them group by group
+    let buffer = '';
+    for (const group of raw.split(/\D+/).filter(Boolean)) {
+      buffer += group;
+      if (isCompleteNumber(buffer) || buffer.length > 12) {
+        candidates.push(buffer);
+        buffer = '';
+      }
+    }
+    if (buffer) candidates.push(buffer);
+  }
+
+  return candidates;
 }
 
 /**
@@ -110,7 +149,7 @@ export function extractPhoneNumbers(text: string): string[] {
     }
 
     const textStr = String(text).trim();
-    const potentialNumbers = textStr.match(PHONE_PATTERNS.EXTRACT_DIGITS);
+    const potentialNumbers = findPhoneCandidates(textStr);
 
     if (!potentialNumbers) {
       return extractedNumbers;
@@ -126,7 +165,7 @@ export function extractPhoneNumbers(text: string): string[] {
     }
 
     return [...new Set(extractedNumbers)]; // Remove duplicates
-  } catch (error) {
+  } catch (_error) {
     return extractedNumbers;
   }
 }
@@ -138,7 +177,7 @@ export function hasMultiplePhoneNumbers(text: string): boolean {
   try {
     const numbers = extractPhoneNumbers(text);
     return numbers.length > 1;
-  } catch (error) {
+  } catch (_error) {
     return false;
   }
 }
@@ -153,7 +192,7 @@ export function formatPhoneWithCountryCode(phone: string): string {
       return `+91${sanitized}`;
     }
     return phone;
-  } catch (error) {
+  } catch (_error) {
     return phone;
   }
 }
@@ -169,7 +208,7 @@ export function hasValidIndianPrefix(phone: string): boolean {
     }
     const firstDigit = parseInt(sanitized[0], 10);
     return firstDigit >= 6 && firstDigit <= 9;
-  } catch (error) {
+  } catch (_error) {
     return false;
   }
 }
@@ -273,7 +312,7 @@ export function finalRegexValidation(phone: string): {
     result.isValid = true;
     result.reason = undefined;
     return result;
-  } catch (error) {
+  } catch (_error) {
     result.reason = 'Error during final validation';
     return result;
   }
@@ -300,7 +339,7 @@ export function extractAndValidatePhoneNumbers(text: string): {
     }
 
     const textStr = String(text).trim();
-    const potentialNumbers = textStr.match(PHONE_PATTERNS.EXTRACT_DIGITS);
+    const potentialNumbers = findPhoneCandidates(textStr);
 
     if (!potentialNumbers) {
       return resultData;
@@ -336,7 +375,7 @@ export function extractAndValidatePhoneNumbers(text: string): {
     }
 
     return resultData;
-  } catch (error) {
+  } catch (_error) {
     return resultData;
   }
 }
