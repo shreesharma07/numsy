@@ -6,7 +6,14 @@ echo ""
 
 # Check conventional commit format
 echo "📝 Checking commit messages..."
-pnpm commitlint --from=origin/$(git rev-parse --abbrev-ref HEAD) --to=HEAD
+# A new branch has no remote counterpart yet, so lint everything since it forked from main
+BRANCH=$(git rev-parse --abbrev-ref HEAD)
+if git rev-parse --verify --quiet "origin/$BRANCH" >/dev/null; then
+  BASE="origin/$BRANCH"
+else
+  BASE=$(git merge-base HEAD origin/main)
+fi
+pnpm commitlint --from="$BASE" --to=HEAD
 
 # Run lint check
 echo ""
