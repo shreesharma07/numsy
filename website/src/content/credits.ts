@@ -188,6 +188,15 @@ export const credits: Credit[] = [
     category: 'Data & APIs',
   },
   {
+    name: 'Socket',
+    url: 'https://socket.dev',
+    license: 'Free hosted badge service (Socket terms)',
+    licenseUrl: 'https://socket.dev',
+    usedFor:
+      'Supply-chain security score badge for each published npm version (README and home page).',
+    category: 'Data & APIs',
+  },
+  {
     name: 'contrib.rocks',
     url: 'https://contrib.rocks',
     license: 'Free hosted service (no license declared)',

@@ -26,7 +26,7 @@ export const OG_IMAGE = `${SITE_URL}/brand/og-image.png`;
 export interface PageMeta {
   /** Router path relative to the base (no trailing slash except home). */
   path: string;
-  /** Document title (site name is appended automatically except on home). */
+  /** Page title; the site name is prefixed automatically ("Numsy: <title>"). */
   title: string;
   description: string;
   /** Exclude from sitemap.xml */
@@ -37,7 +37,7 @@ export interface PageMeta {
 export const pages = {
   home: {
     path: '/',
-    title: 'Numsy — Validate, extract & de-dupe Indian mobile numbers',
+    title: 'Validate, extract & de-dupe Indian mobile numbers',
     description:
       'Numsy is a lightweight TypeScript toolkit and CLI that validates, sanitizes, extracts and de-duplicates Indian mobile numbers from CSV, Excel and free text.',
     priority: 1,
@@ -122,8 +122,7 @@ export const pages = {
 
 export type PageKey = keyof typeof pages;
 
-export const fullTitle = (meta: PageMeta): string =>
-  meta.path === '/' ? meta.title : `${meta.title} · ${SITE_NAME}`;
+export const fullTitle = (meta: PageMeta): string => `${SITE_NAME}: ${meta.title}`;
 
 export const canonicalUrl = (meta: PageMeta): string =>
   meta.path === '/' ? `${SITE_URL}/` : `${SITE_URL}${meta.path}/`;

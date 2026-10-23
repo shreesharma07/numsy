@@ -15,7 +15,9 @@ export const pkg = {
   name: '@numsy/numsy',
   npmUrl: 'https://www.npmjs.com/package/@numsy/numsy',
   /** Shown until the npm registry answers */
-  fallbackVersion: '1.2.0',
+  fallbackVersion: '2.0.0',
+  /** Socket supply-chain score badge and report for a published version */
+  socketBadge: (version: string) => `https://badge.socket.dev/npm/package/@numsy/numsy/${version}`,
   license: 'MIT',
   node: '20',
   install: {

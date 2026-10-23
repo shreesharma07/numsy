@@ -1,0 +1,12 @@
+.live-stats__badges {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3);
+  margin-top: var(--space-4);
+}
+.live-stats__badges img {
+  display: block;
+  height: 20px;
+  width: auto;
+}
