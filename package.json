@@ -1,14 +1,18 @@
 {
-  "displayName": "🔢 Numsy - A light-weight number processor",
+  "displayName": "Numsy",
   "name": "@numsy/numsy",
   "version": "1.1.0",
-  "description": "A professional TypeScript-based phone number processor with CSV/Excel parsing capabilities for Indian phone numbers. Class-based architecture with comprehensive error handling and logging.",
-  "author": "Shri Kumar Sharma",
+  "description": "Validate, sanitize, extract and de-duplicate Indian mobile numbers from text, CSV and Excel — as a typed TypeScript library, a CLI with JSON/CSV/Markdown/Excel output, and a local web UI.",
+  "author": {
+    "name": "Shri Kumar Sharma",
+    "url": "https://shrikumarsharma.in"
+  },
   "private": false,
   "license": "MIT",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "bin": {
+    "numsy": "./dist/cli/index.js",
     "numsy-serve": "./dist/cli/server.js"
   },
   "exports": {
@@ -42,7 +46,16 @@
     "phone-sanitizer",
     "contact-processor",
     "class-based",
-    "phone-validation"
+    "phone-validation",
+    "cli",
+    "india",
+    "mobile-number",
+    "excel",
+    "xlsx",
+    "markdown",
+    "json",
+    "data-cleaning",
+    "deduplication"
   ],
   "repository": {
     "type": "git",
@@ -51,7 +64,7 @@
   "bugs": {
     "url": "https://github.com/shreesharma07/numsy/issues"
   },
-  "homepage": "https://github.com/shreesharma07/numsy#readme",
+  "homepage": "https://shreesharma07.github.io/numsy/",
   "engines": {
     "node": ">=18.3.0"
   },
@@ -98,6 +111,7 @@
     "release:preview": "node scripts/release-preview.js",
     "npm:check": "node scripts/check-npm-status.js",
     "npm:fix-cooldown": "node scripts/fix-npm-cooldown.js",
+    "cli": "ts-node src/cli/index.ts",
     "check": "biome check --write .",
     "check:ci": "biome ci ."
   },
@@ -202,5 +216,11 @@
       "ajv@>=7.0.0-alpha.0 <8.18.0": ">=8.18.0",
       "multer@<2.1.1": ">=2.1.1"
     }
-  }
+  },
+  "contributors": [
+    {
+      "name": "Shri Kumar Sharma",
+      "url": "https://github.com/shreesharma07"
+    }
+  ]
 }
