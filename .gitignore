@@ -49,3 +49,5 @@ codecov.exe
 
 
 .env
+# release tarballs written by semantic-release (tarballDir)
+/release
