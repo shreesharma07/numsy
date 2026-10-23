@@ -48,6 +48,9 @@ jobs:
 
       - name: Build website
         run: pnpm --filter @numsy/website build
+        env:
+          # GitHub Pages serves the site under /numsy/ (Cloudflare Pages uses the default root URL)
+          SITE_URL: https://shreesharma07.github.io/numsy
 
       # No actions/configure-pages: it needs a Pages API token and its outputs (base path)
       # are unused — the base is fixed in website/vite.config.ts.

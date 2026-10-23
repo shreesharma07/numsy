@@ -4,7 +4,22 @@
  * per-route HTML shells, 404.html and sitemap.xml. Keep this file free of React/CSS imports.
  */
 
-export const SITE_URL = 'https://shreesharma07.github.io/numsy';
+declare const __SITE_URL__: string | undefined;
+
+/** Primary deployment (Cloudflare Pages). Override with the SITE_URL env var at build time. */
+const DEFAULT_SITE_URL = 'https://numsy.pages.dev';
+
+/**
+ * Absolute site URL without a trailing slash. In the browser bundle it is injected by
+ * vite.config.ts (`__SITE_URL__`); when the build plugins load this file in Node it is read
+ * from process.env. GitHub Pages builds set SITE_URL=https://shreesharma07.github.io/numsy.
+ */
+export const SITE_URL = (
+  typeof __SITE_URL__ === 'string'
+    ? __SITE_URL__
+    : ((globalThis as { process?: { env: Record<string, string | undefined> } }).process?.env
+        .SITE_URL ?? DEFAULT_SITE_URL)
+).replace(/\/$/, '');
 export const SITE_NAME = 'Numsy';
 export const OG_IMAGE = `${SITE_URL}/brand/og-image.png`;
 

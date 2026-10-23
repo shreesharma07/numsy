@@ -1,7 +1,14 @@
 import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import type { Plugin, ResolvedConfig } from 'vite';
-import { canonicalUrl, fullTitle, OG_IMAGE, type PageMeta, pages } from '../src/content/pages.ts';
+import {
+  canonicalUrl,
+  fullTitle,
+  OG_IMAGE,
+  type PageMeta,
+  pages,
+  SITE_URL,
+} from '../src/content/pages.ts';
 
 /**
  * GitHub Pages has no SPA rewrites. Instead of the "?/" redirect hack we emit a real
@@ -91,7 +98,17 @@ export function routeShells(): Plugin {
         join(out, 'sitemap.xml'),
         `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls}\n</urlset>\n`,
       );
-      config.logger.info(`[route-shells] ${all.length - 2} route shells, 404.html, sitemap.xml`);
+      writeFileSync(
+        join(out, 'robots.txt'),
+        `User-agent: *
+Allow: /
+
+Sitemap: ${SITE_URL}/sitemap.xml
+`,
+      );
+      config.logger.info(
+        `[route-shells] ${all.length - 2} route shells, 404.html, sitemap.xml, robots.txt for ${SITE_URL}`,
+      );
     },
   };
 }

@@ -10,7 +10,8 @@
     "build": "node scripts/sync-brand.mjs && node scripts/build-icons.mjs && tsc -b && vite build",
     "typecheck": "tsc -b",
     "preview": "vite preview",
-    "check": "biome check ."
+    "check": "biome check .",
+    "deploy:cloudflare": "pnpm run build && pnpm dlx wrangler@4 pages deploy dist --project-name numsy --branch main"
   },
   "dependencies": {
     "@iconify/react": "6.0.3",
