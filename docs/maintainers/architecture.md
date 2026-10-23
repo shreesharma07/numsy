@@ -4,21 +4,53 @@
 
 ## Layers
 
-```text
-            ┌──────────────┐   ┌──────────────────────┐   ┌──────────────────────────┐
- entry      │  CLI          │   │  Library consumers    │   │  Web UI (public/)         │
- points     │  src/cli      │   │  import '@numsy/numsy'│   │  → REST (src/controllers) │
-            └──────┬───────┘   └──────────┬───────────┘   └────────────┬─────────────┘
-                   │                      │                            │
- core              ▼                      ▼                            ▼
-            ┌─────────────────────────────────────────┐   ┌──────────────────────────┐
-            │  Numsy facade (src/core)                 │   │  NestJS services          │
-            │  Parser · PhoneValidator · FileProcessor │   │  (src/services)           │
-            └──────────────────┬──────────────────────┘   └────────────┬─────────────┘
-                               ▼                                       ▼
- shared     ┌──────────────────────────────────────────────────────────────────────┐
-            │  src/common: pure functions (phone, export, data) · helpers · types   │
-            └──────────────────────────────────────────────────────────────────────┘
+```mermaid
+flowchart TB
+  subgraph entry["Entry points"]
+    direction LR
+    CLI["numsy CLI<br/><code>src/cli</code>"]
+    LIB["Library consumers<br/><code>import '@numsy/numsy'</code>"]
+    UI["Web UI<br/><code>public/</code>"]
+  end
+
+  subgraph core["Core · src/core"]
+    direction LR
+    NUMSY["Numsy facade"]
+    PARSER["Parser"]
+    VALIDATOR["PhoneValidator"]
+    PROCESSOR["FileProcessor"]
+    NUMSY --> PARSER & VALIDATOR & PROCESSOR
+  end
+
+  subgraph server["Web server · NestJS"]
+    direction LR
+    CTRL["AppController<br/><code>src/controllers</code>"]
+    SVC["Services<br/><code>src/services</code>"]
+    CTRL --> SVC
+  end
+
+  subgraph shared["Shared · src/common"]
+    direction LR
+    FN["Pure functions<br/>phone · export · data"]
+    HELP["Helpers<br/>logger · errors · files"]
+    TYPES["Interfaces & types"]
+  end
+
+  CLI --> NUMSY
+  CLI -- "numsy serve" --> CTRL
+  LIB --> NUMSY
+  UI -- "/api/*" --> CTRL
+  core --> shared
+  server --> shared
+
+  classDef entry fill:#FF4D6D,stroke:#111111,color:#111111
+  classDef core fill:#FFB703,stroke:#111111,color:#111111
+  classDef server fill:#8338EC,stroke:#111111,color:#FAF6EF
+  classDef shared fill:#FAF6EF,stroke:#111111,color:#111111
+  class CLI,LIB,UI entry
+  class NUMSY,PARSER,VALIDATOR,PROCESSOR core
+  class CTRL,SVC server
+  class FN,HELP,TYPES shared
 ```
 
 ## Modules
@@ -37,13 +69,47 @@
 | `src/cli/server.ts` | `startServer()` for `numsy serve` / `numsy-serve` |
 | `src/controllers`, `src/services` | NestJS web server used by the UI |
 
-## Data flow: `numsy process file.xlsx -f json`
+## Data flow: `numsy process file.xlsx -f json,xlsx`
 
-1. `run()` parses flags and creates `new Numsy({ enableLogging: false, normalizeColumns: false })`
-2. `analyzeFile()` → `Parser.parseFile()` → rows
-3. `FileProcessor.analyze()` detects phone/name columns, extracts every number per cell, validates and de-dupes
-4. `processDataset()` shapes the report for `--only` / `--country-code`
-5. `emit()` serialises each format and sends it to stdout or a file
+```mermaid
+sequenceDiagram
+  autonumber
+  actor User
+  participant CLI as cli/index.ts · run()
+  participant N as Numsy
+  participant P as Parser
+  participant FP as FileProcessor
+  participant V as PhoneValidator
+  participant O as cli/output.ts · emit()
+
+  User->>CLI: numsy process file.xlsx -f json,xlsx
+  CLI->>N: new Numsy({ enableLogging: false, normalizeColumns: false })
+  CLI->>N: analyzeFile(path, { phoneColumn })
+  N->>FP: analyzeFile()
+  FP->>P: parseFile() → rows
+  FP->>V: detectPhoneColumn(rows)
+  loop every row
+    FP->>V: extractMultiple(cell)
+    V-->>FP: valid + invalid numbers
+  end
+  FP-->>CLI: AnalysisReport (rows, valid, invalid, unique, analytics)
+  CLI->>CLI: processDataset() applies --only / --country-code
+  CLI->>O: emit(dataset, target)
+  O-->>User: JSON on stdout or file · Excel workbook on disk
+```
+
+## Release & delivery
+
+```mermaid
+flowchart LR
+  DEV["Commit<br/>(Conventional Commits)"] --> HOOKS["husky hooks<br/>Biome · commitlint · tests"]
+  HOOKS --> MAIN["push to main"]
+  MAIN --> CI["CI: validate · audit · build<br/>verify:package"]
+  CI --> SR["semantic-release<br/>version · CHANGELOG · tag · GitHub release"]
+  SR --> NPM[("npm<br/>@numsy/numsy")]
+  MAIN --> CF["Cloudflare Pages build<br/>website/"]
+  CF --> SITE[("numsy.pages.dev")]
+```
 
 ## Design rules
 

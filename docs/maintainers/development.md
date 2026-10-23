@@ -33,6 +33,7 @@ pnpm validate         # Biome + type-check + tests
 | | `pnpm verify:package` | Check the npm tarball: build output present, no `website/`, `src/`, `docs/` |
 | npm | `pnpm npm:check` · `npm:fix-cooldown` | Registry status / [cooldown fix](releasing.md#troubleshooting) |
 | Website | `pnpm --filter @numsy/website dev` | Docs site on Vite |
+| | `pnpm --filter @numsy/website deploy:cloudflare` | Build and deploy the site to Cloudflare Pages |
 
 ## Tooling
 
