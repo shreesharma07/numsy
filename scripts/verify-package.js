@@ -29,6 +29,7 @@ const FORBIDDEN = [
   { pattern: /^assets\//, reason: 'brand assets' },
   { pattern: /^scripts\//, reason: 'maintainer scripts' },
   { pattern: /\.map$/, reason: 'source maps' },
+  { pattern: /\.tgz$/, reason: 'nested package tarball (semantic-release tarballDir)' },
   { pattern: /(^|\/)node_modules\//, reason: 'node_modules' },
 ];
 

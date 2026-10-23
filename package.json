@@ -70,8 +70,7 @@
   },
   "packageManager": "pnpm@12.15.0",
   "scripts": {
-    "prebuild": "rimraf dist",
-    "build": "swc src -d dist --copy-files --strip-leading-paths && tsc -p tsconfig.build.json --emitDeclarationOnly --incremental false",
+    "build": "rimraf dist && swc src -d dist --copy-files --strip-leading-paths && tsc -p tsconfig.build.json --emitDeclarationOnly --incremental false",
     "build:nest": "nest build",
     "dev": "nodemon",
     "dev:server": "nodemon --exec ts-node src/server.ts",
