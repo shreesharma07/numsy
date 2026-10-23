@@ -8,14 +8,25 @@
 </p>
 
 <p align="center">
-  <a href="https://www.npmjs.com/package/numsy"><img src="https://img.shields.io/npm/v/numsy?style=flat-square&color=FF4D6D&label=npm" alt="npm version" /></a>
-  <a href="https://www.npmjs.com/package/numsy"><img src="https://img.shields.io/npm/dw/numsy?style=flat-square&color=FFB703&label=downloads" alt="npm downloads" /></a>
-  <a href="https://github.com/shreesharma07/numsy/actions/workflows/main.yml"><img src="https://img.shields.io/github/actions/workflow/status/shreesharma07/numsy/main.yml?branch=main&style=flat-square&label=CI" alt="CI status" /></a>
+  <a href="https://www.npmjs.com/package/numsy"><img src="https://badgen.net/npm/v/numsy?icon=npm&color=FF4D6D" alt="npm version" /></a>
+  <a href="https://www.npmjs.com/package/numsy"><img src="https://badgen.net/npm/dw/numsy?icon=npm&color=FFB703&label=downloads" alt="npm weekly downloads" /></a>
+  <a href="https://www.npmjs.com/package/numsy"><img src="https://badgen.net/npm/node/numsy?color=111111" alt="Node.js version" /></a>
+  <a href="https://www.npmjs.com/package/numsy"><img src="https://badgen.net/npm/types/numsy?icon=typescript&color=8338EC" alt="TypeScript types" /></a>
+  <a href="https://packagephobia.com/result?p=numsy"><img src="https://badgen.net/packagephobia/install/numsy?color=555" alt="install size" /></a>
+  <a href="LICENSE"><img src="https://badgen.net/npm/license/numsy?color=111111" alt="MIT license" /></a>
+  <br />
+  <a href="https://github.com/shreesharma07/numsy/releases"><img src="https://badgen.net/github/release/shreesharma07/numsy?icon=github&color=FF4D6D" alt="GitHub release" /></a>
+  <a href="https://github.com/shreesharma07/numsy/stargazers"><img src="https://badgen.net/github/stars/shreesharma07/numsy?icon=github&color=8338EC" alt="GitHub stars" /></a>
+  <a href="https://github.com/shreesharma07/numsy/commits/main"><img src="https://badgen.net/github/last-commit/shreesharma07/numsy/main?icon=github&color=FFB703" alt="last commit" /></a>
+  <a href="https://github.com/shreesharma07/numsy/graphs/contributors"><img src="https://badgen.net/github/contributors/shreesharma07/numsy?icon=github&color=111111" alt="contributors" /></a>
+  <a href="https://github.com/shreesharma07/numsy/issues"><img src="https://badgen.net/github/open-issues/shreesharma07/numsy?icon=github&color=0B7A4B" alt="open issues" /></a>
+  <br />
   <a href="https://codecov.io/gh/shreesharma07/numsy"><img src="https://codecov.io/gh/shreesharma07/numsy/graph/badge.svg?token=A9H550XJVW" alt="codecov" /></a>
-  <a href="https://github.com/shreesharma07/numsy/stargazers"><img src="https://img.shields.io/github/stars/shreesharma07/numsy?style=flat-square&color=8338EC" alt="GitHub stars" /></a>
+  <a href="https://github.com/shreesharma07/numsy/actions/workflows/main.yml"><img src="https://img.shields.io/github/actions/workflow/status/shreesharma07/numsy/main.yml?branch=main&style=flat-square&label=CI" alt="CI status" /></a>
   <a href="https://badge.socket.dev/npm/package/numsy/2.1.0"><img src="https://badge.socket.dev/npm/package/numsy/2.1.0" alt="Socket security score" /></a>
-  <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-111111?style=flat-square" alt="MIT license" /></a>
-  <a href="#built-with-claude"><img src="https://img.shields.io/badge/built%20with-Claude%20Code-8338EC?style=flat-square" alt="Built with Claude Code" /></a>
+  <a href="#local-dashboard"><img src="https://badgen.net/badge/dashboard/localhost%3A6789/8338EC" alt="Local dashboard on localhost:6789" /></a>
+  <a href="#privacy"><img src="https://badgen.net/badge/privacy/no%20storage%20%C2%B7%20no%20AI%20training/0B7A4B" alt="Privacy: no storage, no AI training" /></a>
+  <a href="#built-with-claude"><img src="https://badgen.net/badge/built%20with/Claude%20Code/8338EC" alt="Built with Claude Code" /></a>
 </p>
 
 <p align="center">
