@@ -23,6 +23,10 @@
       "types": "./dist/core/Parser.d.ts",
       "default": "./dist/core/Parser.js"
     },
+    "./engine": {
+      "types": "./dist/engine/index.d.ts",
+      "default": "./dist/engine/index.js"
+    },
     "./package.json": "./package.json"
   },
   "files": [
