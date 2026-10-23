@@ -56,7 +56,9 @@ You'll get progress updates, credit in the release notes (unless you'd rather st
 
 ## <img src="assets/icons/deps.svg" width="22" alt="" /> Dependencies
 
-CI runs `pnpm audit`, Snyk, CodeQL and dependency review. Vulnerable transitive packages are pinned through `pnpm.overrides` in `package.json`.
+[![Socket Badge](https://badge.socket.dev/npm/package/@numsy/numsy/2.0.0)](https://badge.socket.dev/npm/package/@numsy/numsy/2.0.0)
+
+CI runs `pnpm audit`, Snyk, CodeQL and dependency review. Vulnerable transitive packages are pinned through `overrides` in `pnpm-workspace.yaml`, and production dependencies currently report no known vulnerabilities.
 
 ---
 

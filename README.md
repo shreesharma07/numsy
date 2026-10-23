@@ -12,6 +12,7 @@
   <a href="https://www.npmjs.com/package/@numsy/numsy"><img src="https://img.shields.io/npm/dw/@numsy/numsy?style=flat-square&color=FFB703&label=downloads" alt="npm downloads" /></a>
   <a href="https://github.com/shreesharma07/numsy/actions/workflows/main.yml"><img src="https://img.shields.io/github/actions/workflow/status/shreesharma07/numsy/main.yml?branch=main&style=flat-square&label=CI" alt="CI status" /></a>
   <a href="https://github.com/shreesharma07/numsy/stargazers"><img src="https://img.shields.io/github/stars/shreesharma07/numsy?style=flat-square&color=8338EC" alt="GitHub stars" /></a>
+  <a href="https://badge.socket.dev/npm/package/@numsy/numsy/2.0.0"><img src="https://badge.socket.dev/npm/package/@numsy/numsy/2.0.0" alt="Socket security score" /></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-111111?style=flat-square" alt="MIT license" /></a>
   <a href="#built-with-claude"><img src="https://img.shields.io/badge/built%20with-Claude%20Code-8338EC?style=flat-square" alt="Built with Claude Code" /></a>
 </p>
