@@ -10,6 +10,7 @@
 <p align="center">
   <a href="https://www.npmjs.com/package/numsy"><img src="https://badgen.net/npm/v/numsy?icon=npm&color=FF4D6D" alt="npm version" /></a>
   <a href="https://www.npmjs.com/package/numsy"><img src="https://badgen.net/npm/dw/numsy?icon=npm&color=FFB703&label=downloads" alt="npm weekly downloads" /></a>
+  <a href="https://www.jsdelivr.com/package/npm/numsy"><img src="https://data.jsdelivr.com/v1/package/npm/numsy/badge?style=rounded" alt="jsDelivr hits" /></a>
   <a href="https://www.npmjs.com/package/numsy"><img src="https://badgen.net/npm/node/numsy?color=111111" alt="Node.js version" /></a>
   <a href="https://www.npmjs.com/package/numsy"><img src="https://badgen.net/npm/types/numsy?icon=typescript&color=8338EC" alt="TypeScript types" /></a>
   <a href="https://packagephobia.com/result?p=numsy"><img src="https://badgen.net/packagephobia/install/numsy?color=555" alt="install size" /></a>
