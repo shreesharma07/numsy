@@ -23,7 +23,8 @@
   <br />
   <a href="https://codecov.io/gh/shreesharma07/numsy"><img src="https://codecov.io/gh/shreesharma07/numsy/graph/badge.svg?token=A9H550XJVW" alt="codecov" /></a>
   <a href="https://github.com/shreesharma07/numsy/actions/workflows/main.yml"><img src="https://img.shields.io/github/actions/workflow/status/shreesharma07/numsy/main.yml?branch=main&style=flat-square&label=CI" alt="CI status" /></a>
-  <a href="https://badge.socket.dev/npm/package/numsy/2.1.0"><img src="https://badge.socket.dev/npm/package/numsy/2.1.0" alt="Socket security score" /></a>
+  <a href="https://socket.dev/npm/package/numsy/overview/2.2.1"><img src="https://badge.socket.dev/npm/package/numsy/2.2.1" alt="Socket security score" /></a>
+  <a href="https://security.snyk.io/package/npm/numsy"><img src="https://snyk.io/test/npm/numsy/2.2.1/badge.svg" alt="Snyk security" /></a>
   <a href="#local-dashboard"><img src="https://badgen.net/badge/dashboard/localhost%3A6789/8338EC" alt="Local dashboard on localhost:6789" /></a>
   <a href="#privacy"><img src="https://badgen.net/badge/privacy/no%20storage%20%C2%B7%20no%20AI%20training/0B7A4B" alt="Privacy: no storage, no AI training" /></a>
   <a href="#built-with-claude"><img src="https://badgen.net/badge/built%20with/Claude%20Code/8338EC" alt="Built with Claude Code" /></a>
