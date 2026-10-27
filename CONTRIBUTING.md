@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="assets/brand/numsy-mark.svg" width="64" alt="Numsy" />
+  <img src="assets/brand/numsy-app-icon.svg" width="64" alt="Numsy" />
   <h1>Contributing to Numsy</h1>
   <p>Bug reports, fixes, docs and ideas are all welcome. Here's how to make them land smoothly.</p>
   <p>
@@ -110,6 +110,6 @@ Ask in [issues](https://github.com/shreesharma07/numsy/issues) or reach the main
 ---
 
 <p align="center">
-  <img src="assets/brand/numsy-mark.svg" width="28" alt="" /><br />
+  <img src="assets/brand/numsy-app-icon.svg" width="28" alt="" /><br />
   <sub>Built by <a href="https://shrikumarsharma.in">Shri Kumar Sharma</a> with <a href="https://claude.com/claude-code">Claude Code</a> · <a href="https://github.com/shreesharma07">GitHub</a> · <a href="https://www.linkedin.com/in/shreesharma07/">LinkedIn</a></sub>
 </p>

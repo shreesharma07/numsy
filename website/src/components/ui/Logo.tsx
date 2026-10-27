@@ -1,20 +1,36 @@
 import './Logo.css';
 
-/** Tri-colour geometric "N" on a rounded tile. Tile colour follows the theme (--tile). */
+/**
+ * The Numsy app icon: tri-colour geometric "N" on a rounded tile (rx 112 on 512, as
+ * assets/brand/numsy-app-icon.svg). Tile colour follows the theme (--tile). On mount the N
+ * plays the stretch in Logo.css; reduced motion turns it off.
+ */
 export function LogoMark({ size = 36, className }: { size?: number; className?: string }) {
   return (
     <svg
       className={className ? `logo-mark ${className}` : 'logo-mark'}
       width={size}
       height={size}
-      viewBox="0 0 120 120"
+      viewBox="0 0 512 512"
       aria-hidden="true"
       focusable="false"
     >
-      <rect className="logo-mark__tile" width="120" height="120" rx="24" />
-      <path fill="#FF4D6D" d="M26,50 A24,24 0 0 1 50,26 L50,94 L26,94 Z" />
-      <path fill="#8338EC" d="M50,26 L70,56.9 L70,94 L50,63.1 Z" />
-      <path fill="#FFB703" d="M70,26 L94,26 L94,70 A24,24 0 0 1 70,94 Z" />
+      <rect className="logo-mark__tile" width="512" height="512" rx="112" />
+      <path
+        className="logo-mark__left"
+        fill="#FF4D6D"
+        d="M122.88,216.85 A93.97,93.97 0 0 1 216.85,122.88 L216.85,389.12 L122.88,389.12 Z"
+      />
+      <path
+        className="logo-mark__diag"
+        fill="#8338EC"
+        d="M216.85,122.88 L295.15,243.86 L295.15,389.12 L216.85,268.14 Z"
+      />
+      <path
+        className="logo-mark__right"
+        fill="#FFB703"
+        d="M295.15,122.88 L389.12,122.88 L389.12,295.15 A93.97,93.97 0 0 1 295.15,389.12 Z"
+      />
     </svg>
   );
 }

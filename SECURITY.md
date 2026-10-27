@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="assets/brand/numsy-mark.svg" width="64" alt="Numsy" />
+  <img src="assets/brand/numsy-app-icon.svg" width="64" alt="Numsy" />
   <h1>Security Policy</h1>
   <p>How to report a vulnerability, what to expect, and how to run Numsy safely.</p>
   <p>
@@ -73,6 +73,6 @@ pnpm snyk:code        # Snyk static analysis
 ---
 
 <p align="center">
-  <img src="assets/brand/numsy-mark.svg" width="28" alt="" /><br />
+  <img src="assets/brand/numsy-app-icon.svg" width="28" alt="" /><br />
   <sub>Built by <a href="https://shrikumarsharma.in">Shri Kumar Sharma</a> with <a href="https://claude.com/claude-code">Claude Code</a> · <a href="https://github.com/shreesharma07">GitHub</a> · <a href="https://www.linkedin.com/in/shreesharma07/">LinkedIn</a></sub>
 </p>

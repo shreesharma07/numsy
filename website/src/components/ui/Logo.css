@@ -1,9 +1,113 @@
 .logo-mark {
   flex: none;
+  overflow: visible;
 }
 .logo-mark__tile {
   fill: var(--tile);
 }
 .logo-wordmark {
   flex: none;
+}
+
+/* On-load stretch (same as the animated SVGs in assets/brand): the stems pull apart, then
+   swing back in decaying arcs of 46, 10, 4 and 1.5 units; the diagonal scales to fill the
+   gap. Units are the 512 viewBox. */
+.logo-mark__left,
+.logo-mark__diag,
+.logo-mark__right {
+  transform-box: view-box;
+  transform-origin: 256px 256px;
+}
+/* full shorthands: a nameless `animation` shorthand is minified to `none` */
+.logo-mark__left {
+  animation: logo-mark-left 1.4s 0.25s both;
+}
+.logo-mark__right {
+  animation: logo-mark-right 1.4s 0.25s both;
+}
+.logo-mark__diag {
+  animation: logo-mark-diag 1.4s 0.25s both;
+}
+@keyframes logo-mark-left {
+  0% {
+    transform: translateX(0);
+    animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1);
+  }
+  30% {
+    transform: translateX(-46px);
+    animation-timing-function: cubic-bezier(0.33, 0, 0.2, 1);
+  }
+  48% {
+    transform: translateX(10px);
+    animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1);
+  }
+  64% {
+    transform: translateX(-4px);
+    animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1);
+  }
+  80% {
+    transform: translateX(1.5px);
+    animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+@keyframes logo-mark-right {
+  0% {
+    transform: translateX(0);
+    animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1);
+  }
+  30% {
+    transform: translateX(46px);
+    animation-timing-function: cubic-bezier(0.33, 0, 0.2, 1);
+  }
+  48% {
+    transform: translateX(-10px);
+    animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1);
+  }
+  64% {
+    transform: translateX(4px);
+    animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1);
+  }
+  80% {
+    transform: translateX(-1.5px);
+    animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+/* the gap between the stems over the diagonal's width: (78.3 + 92) / 78.3 = 2.175, etc. */
+@keyframes logo-mark-diag {
+  0% {
+    transform: scaleX(1);
+    animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1);
+  }
+  30% {
+    transform: scaleX(2.175);
+    animation-timing-function: cubic-bezier(0.33, 0, 0.2, 1);
+  }
+  48% {
+    transform: scaleX(0.745);
+    animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1);
+  }
+  64% {
+    transform: scaleX(1.102);
+    animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1);
+  }
+  80% {
+    transform: scaleX(0.962);
+    animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1);
+  }
+  100% {
+    transform: scaleX(1);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .logo-mark__left,
+  .logo-mark__diag,
+  .logo-mark__right {
+    animation: none;
+  }
 }

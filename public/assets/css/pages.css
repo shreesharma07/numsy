@@ -314,3 +314,84 @@ footer {
   color: var(--muted);
   font: 0.8rem / 1.5 var(--f-mono);
 }
+
+/* Logo: on-load stretch, as the animated SVGs in assets/brand (units are the 512 viewBox) */
+.mark {
+  overflow: visible;
+}
+.mark__l,
+.mark__d,
+.mark__r {
+  transform-box: view-box;
+  transform-origin: 256px 256px;
+}
+.mark__l {
+  animation: mark-l 1.4s 0.25s both cubic-bezier(0.45, 0, 0.55, 1);
+}
+.mark__r {
+  animation: mark-r 1.4s 0.25s both cubic-bezier(0.45, 0, 0.55, 1);
+}
+.mark__d {
+  animation: mark-d 1.4s 0.25s both cubic-bezier(0.45, 0, 0.55, 1);
+}
+@keyframes mark-l {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  30% {
+    transform: translateX(-46px);
+  }
+  48% {
+    transform: translateX(10px);
+  }
+  64% {
+    transform: translateX(-4px);
+  }
+  80% {
+    transform: translateX(1.5px);
+  }
+}
+@keyframes mark-r {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  30% {
+    transform: translateX(46px);
+  }
+  48% {
+    transform: translateX(-10px);
+  }
+  64% {
+    transform: translateX(4px);
+  }
+  80% {
+    transform: translateX(-1.5px);
+  }
+}
+@keyframes mark-d {
+  0%,
+  100% {
+    transform: scaleX(1);
+  }
+  30% {
+    transform: scaleX(2.175);
+  }
+  48% {
+    transform: scaleX(0.745);
+  }
+  64% {
+    transform: scaleX(1.102);
+  }
+  80% {
+    transform: scaleX(0.962);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .mark__l,
+  .mark__d,
+  .mark__r {
+    animation: none;
+  }
+}
