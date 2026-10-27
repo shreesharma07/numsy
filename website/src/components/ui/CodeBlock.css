@@ -17,22 +17,51 @@
   color: var(--code-muted);
   font-size: 0.68rem;
 }
+/* never scroll sideways: lines wrap, and a continuation sits 2ch in from its line start */
 .code__pre {
   margin: 0;
   padding: 1rem 1.1rem;
-  overflow-x: auto;
+  overflow-x: hidden;
+  white-space: pre-wrap;
+  overflow-wrap: break-word;
   font-size: 0.88rem;
   line-height: 1.65;
   tab-size: 2;
 }
+.code__line {
+  display: block;
+  padding-left: 2ch;
+  text-indent: -2ch;
+}
 .tok-comment {
   color: var(--code-muted);
+  font-style: italic;
 }
 .tok-keyword {
   color: var(--code-key);
 }
 .tok-string {
   color: var(--code-str);
+}
+.tok-number {
+  color: var(--code-num);
+}
+.tok-fn,
+.tok-cmd {
+  color: var(--code-fn);
+}
+.tok-type {
+  color: var(--code-type);
+}
+.tok-prop {
+  color: var(--code-prop);
+}
+.tok-flag,
+.tok-var {
+  color: var(--code-flag);
+}
+.tok-op {
+  color: var(--code-op);
 }
 .tok-prompt {
   color: var(--amber);

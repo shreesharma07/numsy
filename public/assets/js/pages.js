@@ -1,12 +1,10 @@
-// Shared by the server pages: theme toggle (same storage key as the dashboard) and version
+// Shared by the server pages: theme toggle (same storage key as the dashboard, light by default) and version
 (() => {
   const STORAGE_KEY = 'numsy-theme';
   const root = document.documentElement;
   const button = document.getElementById('themeToggle');
 
-  const current = () =>
-    root.getAttribute('data-theme') ||
-    (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+  const current = () => root.getAttribute('data-theme') || 'light';
   const label = () => {
     if (button) button.textContent = current() === 'dark' ? 'Light theme' : 'Dark theme';
   };

@@ -203,12 +203,27 @@ input:focus-visible + .dropzone__target,
 
 /* ---------- settings ---------- */
 
-.settings__summary {
-  list-style: none;
+.settings__head {
+  justify-content: flex-start;
+}
+.settings__head .label {
+  margin-right: auto;
+}
+.settings__toggle {
+  display: none;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  color: var(--fg);
+  background: none;
+  border: 2px solid var(--rule);
   cursor: pointer;
 }
-.settings__summary::-webkit-details-marker {
-  display: none;
+.settings__body {
+  display: grid;
+  align-content: start;
+  gap: var(--space-4);
 }
 .settings__chevron {
   width: 10px;
@@ -218,14 +233,8 @@ input:focus-visible + .dropzone__target,
   transform: rotate(45deg) translateY(-3px);
   transition: transform 0.15s var(--ease);
 }
-.settings[open] .settings__chevron {
+.settings__toggle[aria-expanded="true"] .settings__chevron {
   transform: rotate(-135deg) translateY(-1px);
-}
-.settings:not([open]) {
-  gap: 0;
-}
-.settings__reset {
-  justify-self: start;
 }
 
 .settings__group {
@@ -736,5 +745,82 @@ input:focus-visible + .dropzone__target,
   }
   .opt__seg label {
     font-size: 0.74rem;
+  }
+}
+
+/* ---------- fixed frame (desktop) ----------
+ * The tool keeps one height whatever is loaded: the input keeps its size, Settings scrolls
+ * inside the sidebar, and on the results side only the table body scrolls. Nothing grows the
+ * page, so loading a file or paging never shifts the layout.
+ */
+@media (min-width: 961px) {
+  .dash__layout {
+    height: clamp(680px, calc(100dvh - var(--nav-h) - 2.5rem), 960px);
+    align-items: stretch;
+  }
+  .dash__side {
+    grid-template-rows: auto minmax(0, 1fr);
+    min-height: 0;
+  }
+  .settings {
+    grid-template-rows: auto minmax(0, 1fr);
+    min-height: 0;
+    padding-right: 0;
+  }
+  .settings__body {
+    min-height: 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    scrollbar-gutter: stable;
+    padding-right: calc(var(--dash-pad) - 6px);
+  }
+  .settings__head {
+    padding-right: var(--dash-pad);
+  }
+  .dash__main {
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+  }
+  .dash__main > * {
+    flex: none;
+  }
+  .dash__main > .dash__empty {
+    flex: 1;
+    align-content: center;
+  }
+  .dash__main > .results {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+  }
+  .results__scroll {
+    flex: 1;
+    min-height: 0;
+    max-height: none;
+    overscroll-behavior: contain;
+  }
+  /* export in one row: label, buttons, and the status line beside them */
+  .exportbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-2) var(--space-4);
+    padding: var(--space-3) var(--dash-pad);
+  }
+  .exportbar__message {
+    flex: 1 1 0%;
+    min-width: 0;
+  }
+}
+
+/* narrow screens: Settings collapses behind its chevron */
+@media (max-width: 960px) {
+  .settings__toggle {
+    display: inline-grid;
+  }
+  .settings__body[data-open="false"] {
+    display: none;
   }
 }

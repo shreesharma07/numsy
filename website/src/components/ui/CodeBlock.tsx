@@ -1,4 +1,4 @@
-import { type Lang, tokenize } from '../../lib/highlight';
+import { type Lang, toLines, tokenize } from '../../lib/highlight';
 import { CopyButton } from './CopyButton';
 import './CodeBlock.css';
 
@@ -21,7 +21,7 @@ export function CodeBlock({
   copyText,
   className,
 }: CodeBlockProps) {
-  const tokens = tokenize(code, lang);
+  const lines = toLines(tokenize(code, lang));
   const toCopy = copyText ?? (lang === 'sh' ? code.replace(/^\$ /gm, '') : code);
   return (
     <div className={className ? `code ${className}` : 'code'}>
@@ -33,16 +33,24 @@ export function CodeBlock({
       )}
       <pre className="code__pre">
         <code>
-          {tokens.map((t, i) =>
-            t.kind === 'plain' ? (
-              t.text
-            ) : (
-              // biome-ignore lint/suspicious/noArrayIndexKey: tokens are a static, ordered list
-              <span key={i} className={`tok-${t.kind}`}>
-                {t.text}
-              </span>
-            ),
-          )}
+          {/* one block per line: long lines wrap with a hanging indent instead of scrolling */}
+          {lines.map((line, n) => (
+            // biome-ignore lint/suspicious/noArrayIndexKey: lines are a static, ordered list
+            <span key={n} className="code__line">
+              {line.length === 0
+                ? '\n'
+                : line.map((t, i) =>
+                    t.kind === 'plain' ? (
+                      t.text
+                    ) : (
+                      // biome-ignore lint/suspicious/noArrayIndexKey: tokens are a static, ordered list
+                      <span key={i} className={`tok-${t.kind}`}>
+                        {t.text}
+                      </span>
+                    ),
+                  )}
+            </span>
+          ))}
         </code>
       </pre>
     </div>

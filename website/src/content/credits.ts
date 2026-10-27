@@ -224,6 +224,15 @@ export const credits: Credit[] = [
     category: 'Data & APIs',
   },
   {
+    name: 'Snyk',
+    url: 'https://snyk.io',
+    license: 'Free hosted badge service (Snyk terms)',
+    licenseUrl: 'https://snyk.io/policies/terms-of-service/',
+    usedFor:
+      'Vulnerability badge for each published npm version on the home page, and release audits.',
+    category: 'Data & APIs',
+  },
+  {
     name: 'contrib.rocks',
     url: 'https://contrib.rocks',
     license: 'Free hosted service (no license declared)',

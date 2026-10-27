@@ -2,14 +2,13 @@ import { pkg, repo } from '../../content/site';
 import { useGitHubRepo } from '../../hooks/useGitHubRepo';
 import { useNpmStats } from '../../hooks/useNpmStats';
 import { Stat, StatGrid } from '../ui';
-import './LiveStats.css';
+import { SupplyChain } from './SupplyChain';
 
 /** Live GitHub + npm numbers with static fallbacks (never "undefined"/NaN). */
 export function LiveStats() {
   const gh = useGitHubRepo();
   const npm = useNpmStats();
   const version = npm.version ?? pkg.fallbackVersion;
-  const socket = pkg.socketBadge(version);
   return (
     <>
       <StatGrid label="Live project stats">
@@ -19,12 +18,7 @@ export function LiveStats() {
         <Stat label="Downloads / week" value={npm.weeklyDownloads} href={pkg.npmUrl} />
         <Stat label="License" value={pkg.license} href={repo.file('LICENSE')} />
       </StatGrid>
-      <p className="live-stats__badges">
-        <span className="label">Supply-chain security</span>
-        <a href={socket} rel="noopener">
-          <img src={socket} alt={`Socket security score for numsy ${version}`} height="20" />
-        </a>
-      </p>
+      <SupplyChain version={version} />
     </>
   );
 }

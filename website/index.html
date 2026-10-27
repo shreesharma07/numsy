@@ -8,8 +8,7 @@
     <!-- route-meta:end -->
     <meta name="author" content="Shri Kumar Sharma" />
     <meta name="color-scheme" content="light dark" />
-    <meta name="theme-color" content="#FAF6EF" media="(prefers-color-scheme: light)" />
-    <meta name="theme-color" content="#111111" media="(prefers-color-scheme: dark)" />
+    <meta name="theme-color" content="#FAF6EF" />
     <link rel="icon" href="/brand/favicon.svg" type="image/svg+xml" />
     <link rel="icon" href="/brand/favicon-32.png" sizes="32x32" type="image/png" />
     <link rel="icon" href="/brand/favicon-16.png" sizes="16x16" type="image/png" />
@@ -49,7 +48,7 @@
       }
     </script>
     <script>
-      // Apply the saved theme before first paint; otherwise CSS follows prefers-color-scheme.
+      // Apply the saved theme before first paint; with no saved choice the site stays light.
       (() => {
         try {
           const t = localStorage.getItem('numsy-theme');

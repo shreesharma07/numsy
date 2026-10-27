@@ -1,5 +1,5 @@
 import type { ViewResult } from '@numsy/engine';
-import { useId } from 'react';
+import { useId, useLayoutEffect, useRef } from 'react';
 import { Badge, Button } from '../components/ui';
 
 interface ResultsTableProps {
@@ -47,6 +47,15 @@ export function ResultsTable({
   const sizeId = useId();
   const first = view.total ? (view.page - 1) * view.pageSize + 1 : 0;
   const last = Math.min(view.page * view.pageSize, view.total);
+  const scroller = useRef<HTMLDivElement>(null);
+  const firstRow = view.rows[0]?.n;
+
+  // A new page, page size, row set or search starts at its first row, not where the last one
+  // was scrolled to
+  // biome-ignore lint/correctness/useExhaustiveDependencies: these identify a different page
+  useLayoutEffect(() => {
+    if (scroller.current) scroller.current.scrollTop = 0;
+  }, [view.page, view.pageSize, view.total, firstRow]);
 
   return (
     <section className="results" aria-label="Rows">
@@ -73,7 +82,7 @@ export function ResultsTable({
         )}
       </div>
 
-      <div className={busy ? 'results__scroll is-busy' : 'results__scroll'}>
+      <div ref={scroller} className={busy ? 'results__scroll is-busy' : 'results__scroll'}>
         {view.rows.length === 0 ? (
           <p className="results__empty">
             {search ? 'No rows match your search.' : 'No rows in this set.'}

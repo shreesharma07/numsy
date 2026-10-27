@@ -15,9 +15,18 @@ export const pkg = {
   name: 'numsy',
   npmUrl: 'https://www.npmjs.com/package/numsy',
   /** Shown until the npm registry answers */
-  fallbackVersion: '2.0.0',
+  fallbackVersion: '2.2.1',
   /** Socket supply-chain score badge and report for a published version */
   socketBadge: (version: string) => `https://badge.socket.dev/npm/package/numsy/${version}`,
+  socketReport: (version: string) => `https://socket.dev/npm/package/numsy/overview/${version}`,
+  /** Snyk vulnerability badge for a published version, and the public package page */
+  snykBadge: (version: string) => `https://snyk.io/test/npm/numsy/${version}/badge.svg`,
+  snykReport: 'https://security.snyk.io/package/npm/numsy',
+  /** Latest maintainer audit (docs/reports); update together with the report */
+  audit: {
+    date: '27 Oct 2026',
+    report: repo.file('docs/reports/2026-10-27-snyk-security-audit.md'),
+  },
   license: 'MIT',
   node: '20',
   install: {

@@ -27,6 +27,13 @@
   --code-muted: #a39c90;
   --code-key: #ffb703;
   --code-str: #ff8fa3;
+  /* code is always on a dark panel, so these hold in both themes (all ≥ 7:1 on #111) */
+  --code-num: #c9a7ff;
+  --code-fn: #5fd8c2;
+  --code-type: #82c0ff;
+  --code-prop: #ffd29e;
+  --code-flag: #b4a8ff;
+  --code-op: #ff9e7a;
   --focus: #8338ec;
   --tile: #111111;
   --on-tile: #faf6ef;
@@ -62,27 +69,6 @@
   --ease: cubic-bezier(0.2, 0.7, 0.2, 1);
 
   color-scheme: light;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
-    --bg: #111111;
-    --bg-alt: #191816;
-    --surface: #1d1c1a;
-    --fg: #faf6ef;
-    --muted: #c9c2b6;
-    --rule: #faf6ef;
-    --rule-soft: rgb(250 246 239 / 0.16);
-    --code-bg: #0a0a0a;
-    --focus: #ffb703;
-    --tile: #faf6ef;
-    --on-tile: #111111;
-    --hard-shadow: 5px 5px 0 #ff4d6d;
-    --ok: #5bd69b;
-    --bad: #ff8fa3;
-    --footer-bg: #0a0a0a;
-    color-scheme: dark;
-  }
 }
 
 :root[data-theme="dark"] {

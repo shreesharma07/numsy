@@ -43,5 +43,6 @@
   color: var(--code-fg);
   border: var(--border);
   font: 400 0.76rem / 1.55 var(--f-mono);
-  overflow-x: auto;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
 }
