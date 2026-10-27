@@ -1,6 +1,6 @@
 // Shared by the server pages: theme toggle (same storage key as the dashboard) and version
 (() => {
-  const KEY = 'numsy-theme';
+  const STORAGE_KEY = 'numsy-theme';
   const root = document.documentElement;
   const button = document.getElementById('themeToggle');
 
@@ -12,7 +12,7 @@
   };
 
   try {
-    const saved = localStorage.getItem(KEY);
+    const saved = localStorage.getItem(STORAGE_KEY);
     if (saved === 'light' || saved === 'dark') root.setAttribute('data-theme', saved);
   } catch {}
   label();
@@ -21,7 +21,7 @@
     const next = current() === 'dark' ? 'light' : 'dark';
     root.setAttribute('data-theme', next);
     try {
-      localStorage.setItem(KEY, next);
+      localStorage.setItem(STORAGE_KEY, next);
     } catch {}
     label();
   });

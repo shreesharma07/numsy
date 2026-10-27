@@ -5,7 +5,7 @@ import type { ThemeName } from '../types';
  * Theme = explicit choice (data-theme on <html>, persisted in localStorage) or, when unset,
  * the OS preference. index.html applies the stored choice before first paint.
  */
-const KEY = 'numsy-theme';
+const STORAGE_KEY = 'numsy-theme';
 const listeners = new Set<() => void>();
 const mq =
   typeof window !== 'undefined' ? window.matchMedia?.('(prefers-color-scheme: dark)') : undefined;
@@ -31,7 +31,7 @@ function subscribe(cb: () => void) {
 export function setTheme(next: ThemeName): void {
   document.documentElement.setAttribute('data-theme', next);
   try {
-    localStorage.setItem(KEY, next);
+    localStorage.setItem(STORAGE_KEY, next);
   } catch {
     // private mode / blocked storage: the choice just won't persist
   }

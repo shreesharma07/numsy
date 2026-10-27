@@ -137,8 +137,10 @@ export class AppController {
 
     try {
       // Validate and sanitize file path before processing
-      const normalizedFilePath = path.normalize(path.resolve(file.path));
+      // Rebuild the path from the server-generated filename so nothing request-derived
+      // can steer it outside the upload directory
       const normalizedUploadDir = path.normalize(path.resolve(this.uploadDir));
+      const normalizedFilePath = path.join(normalizedUploadDir, path.basename(file.filename));
 
       // Ensure the file is within the upload directory
       if (!normalizedFilePath.startsWith(normalizedUploadDir + path.sep)) {

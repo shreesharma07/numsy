@@ -6,7 +6,15 @@ version: v1.25.0
 
 # Ignore specific vulnerabilities
 
-ignore: {}
+ignore:
+  SNYK-JS-INFLIGHT-6095116:
+    - '*':
+        reason: >-
+          No fixed version exists. Pulled in only by exceljs > archiver > archiver-utils > glob@7;
+          exceljs only appends buffers to archives and never calls archiver's glob/directory
+          helpers, so inflight is not reached. Revisit when exceljs drops glob@7.
+        expires: 2027-04-27T00:00:00.000Z
+        created: 2026-10-27T00:00:00.000Z
 
 # Patch specific vulnerabilities
 
@@ -38,6 +46,8 @@ failThreshold:
   medium: 0
   low: 10
 
-# Organization (update with your Snyk org slug)
+# Organization (Snyk org slug)
+# Note: the Snyk CLI does not read this key. Pass --org=shreesharma07,
+# run `snyk config set org=shreesharma07`, or set SNYK_CFG_ORG.
 
-# org: your-org-name
+org: shreesharma07

@@ -57,9 +57,18 @@ You'll get progress updates, credit in the release notes (unless you'd rather st
 
 ## <img src="assets/icons/deps.svg" width="22" alt="" /> Dependencies
 
-[![Socket Badge](https://badge.socket.dev/npm/package/numsy/2.1.0)](https://badge.socket.dev/npm/package/numsy/2.1.0)
+[![Socket Badge](https://badge.socket.dev/npm/package/numsy/2.2.1)](https://badge.socket.dev/npm/package/numsy/2.2.1)
 
-CI runs `pnpm audit`, Snyk, CodeQL and dependency review. Vulnerable transitive packages are pinned through `overrides` in `pnpm-workspace.yaml`, and production dependencies currently report no known vulnerabilities.
+CI runs `pnpm audit`, Snyk, CodeQL and dependency review. Vulnerable transitive packages are pinned through `overrides` in `pnpm-workspace.yaml`. Accepted risks are documented: Snyk ignores in `.snyk` and pnpm exceptions in `auditConfig`.
+
+The latest audit ([2026-10-27 Snyk report](docs/reports/2026-10-27-snyk-security-audit.md)) found **no known vulnerabilities in production dependencies**. Two issues are formally accepted, each with a reason: `inflight` (no fix exists, code path unused) and `zod` (build-only dev tool).
+
+Run the same checks locally:
+
+```bash
+pnpm security:check   # pnpm audit + Snyk open source scan
+pnpm snyk:code        # Snyk static analysis
+```
 
 ---
 

@@ -1,14 +1,14 @@
 import { DEFAULT_SETTINGS, resolveSettings, type Settings } from '@numsy/engine';
 import { useCallback, useEffect, useState } from 'react';
 
-const KEY = 'numsy.dashboard.settings.v1';
+const STORAGE_KEY = 'numsy.dashboard.settings.v1';
 
 /** Column choices belong to one file, so they are never remembered */
 const remembered = (settings: Settings) => ({ ...settings, phoneColumn: '', nameColumn: '' });
 
 const load = (): Settings => {
   try {
-    const raw = localStorage.getItem(KEY);
+    const raw = localStorage.getItem(STORAGE_KEY);
     return raw ? remembered(resolveSettings(JSON.parse(raw))) : DEFAULT_SETTINGS;
   } catch {
     return DEFAULT_SETTINGS;
@@ -23,7 +23,7 @@ export function useSettings() {
 
   useEffect(() => {
     try {
-      localStorage.setItem(KEY, JSON.stringify(remembered(settings)));
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(remembered(settings)));
     } catch {
       // private mode or blocked storage: settings just aren't remembered
     }

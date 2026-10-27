@@ -21,6 +21,14 @@ overrides:
   "ajv@>=7.0.0-alpha.0 <8.18.0": ">=8.18.0"
   "multer@<2.1.1": ">=2.1.1"
   "uuid@<11.1.1": ">=11.1.1 <12"
+  "multer@<2.5.0": ">=2.5.0"
+  "unzipper@<0.12.5": ">=0.12.5"
+# Audited exceptions (see docs/reports/2026-10-27-snyk-security-audit.md)
+# GHSA-mrhx-c7xc-m3w5: zod 3.x via @codecov/vite-plugin, a website build-only devDependency that
+# validates its own options; no patched 3.x exists and the plugin relies on zod 3-only APIs.
+auditConfig:
+  ignoreGhsas:
+    - GHSA-mrhx-c7xc-m3w5
 minimumReleaseAgeExclude:
   - "@swc/core-darwin-arm64@1.16.20"
   - "@swc/core-darwin-x64@1.16.20"
