@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.2.1](https://github.com/shreesharma07/numsy/compare/v2.2.0...v2.2.1) (2026-10-27)
+
+### 🐛 Bug Fixes
+
+* **security:** patch `multer` and `unzipper`, fix Snyk scripts and policy ([856794d](https://github.com/shreesharma07/numsy/commit/856794d91e0aaa44e5823dca521bf9607b0548bb))
+
 ## [2.2.0](https://github.com/shreesharma07/numsy/compare/v2.1.1...v2.2.0) (2026-10-23)
 
 ### ✨ Features
