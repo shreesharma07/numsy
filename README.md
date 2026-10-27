@@ -13,6 +13,10 @@
   <a href="https://www.npmjs.com/package/numsy"><img src="https://badgen.net/npm/node/numsy?color=111111" alt="Node.js version" /></a>
   <a href="https://www.npmjs.com/package/numsy"><img src="https://badgen.net/npm/types/numsy?icon=typescript&color=8338EC" alt="TypeScript types" /></a>
   <a href="https://packagephobia.com/result?p=numsy"><img src="https://badgen.net/packagephobia/install/numsy?color=555" alt="install size" /></a>
+  <a href="https://bundlephobia.com/package/numsy"><img src="https://badgen.net/bundlephobia/min/numsy?color=FF4D6D" alt="minified size" /></a>
+  <a href="https://bundlephobia.com/package/numsy"><img src="https://badgen.net/bundlephobia/minzip/numsy?color=FFB703" alt="minified + gzip size" /></a>
+  <a href="https://bundlephobia.com/package/numsy"><img src="https://badgen.net/bundlephobia/dependency-count/numsy?color=8338EC" alt="dependency count" /></a>
+  <a href="https://bundlephobia.com/package/numsy"><img src="https://badgen.net/bundlephobia/tree-shaking/numsy?color=0B7A4B" alt="tree-shaking support" /></a>
   <a href="LICENSE"><img src="https://badgen.net/npm/license/numsy?color=111111" alt="MIT license" /></a>
   <br />
   <a href="https://github.com/shreesharma07/numsy/releases"><img src="https://badgen.net/github/release/shreesharma07/numsy?icon=github&color=FF4D6D" alt="GitHub release" /></a>
